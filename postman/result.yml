@@ -1,0 +1,2006 @@
+openapi: 3.0.0
+info:
+  title: Prometheus-X Consent Manager
+  version: 1.0.0
+servers:
+  - url: http://{{apiurl}}
+tags:
+  - name: users
+  - name: consents
+  - name: participants
+  - name: data-exchange
+paths:
+  /users/signup:
+    post:
+      tags:
+        - users
+      summary: Signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                firstName: <string>
+                lastName: <string>
+                email: <string>
+                password: <string>
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1066'
+            ETag:
+              schema:
+                type: string
+                example: W/"42a-ZJeCshBL22i+iLohn3grvfKMaGQ"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:00:31 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                user:
+                  firstName: pblt8tki
+                  lastName: RWFdeY0P
+                  email: KmWIBNF7mf@example.com
+                  password: $2b$10$myB63oF3jWU1JY6eUaKK2uVJ9NFCK9r22m.5P2d/wIrpGYx2obP9W
+                  identifiers: []
+                  oauth:
+                    scopes:
+                      - Read user data
+                      - Modify user data
+                    refreshToken: >-
+                      fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8
+                  jsonld: |-
+                    {
+                      "@context": "http://schema.org",
+                      "@type": "Person",
+                      "name": "pblt8tki RWFdeY0P",
+                      "email": "KmWIBNF7mf@example.com",
+                      "url": "undefined:3000/v1/users/64f1fc8fbd8a3583c76d62bc"
+                    }
+                  schema_version: v0.1.0
+                  _id: 64f1fc8fbd8a3583c76d62bc
+                  createdAt: '2023-09-01T15:00:31.044Z'
+                  updatedAt: '2023-09-01T15:00:31.044Z'
+                  __v: 0
+                accessToken: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NGYxZmM4ZmJkOGEzNTgzYzc2ZDYyYmMiLCJlbWFpbCI6IkttV0lCTkY3bWZAZXhhbXBsZS5jb20iLCJzY29wZXMiOlsiUmVhZCB1c2VyIGRhdGEiLCJNb2RpZnkgdXNlciBkYXRhIl0sImlhdCI6MTY5MzU4MDQzMSwiZXhwIjoxNjkzNTg0MDMxfQ.PMl9WaTi-oMSUSk9ivMBcO4j5WLzpT1jjJRgQetUY4A
+                refreshToken: >-
+                  fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: <string>
+                password: <string>
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '853'
+            ETag:
+              schema:
+                type: string
+                example: W/"355-HC4VvlHixu7/doolM3v5yr8EkS8"
+            Set-Cookie:
+              schema:
+                type: string
+                example: >-
+                  consentmanagersessid=s%3A73db37f0-ccc9-49e6-8f0f-32b3c17f55d1.I4oF6QQBTkAkOjbr2d9f3tov%2F8kNZk7%2FqbSjXz8p1gI;
+                  Path=/; Expires=Sat, 02 Sep 2023 15:00:35 GMT; HttpOnly;
+                  SameSite=Lax
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:00:35 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                user:
+                  _id: 64f1fc8fbd8a3583c76d62bc
+                  firstName: pblt8tki
+                  lastName: RWFdeY0P
+                  email: KmWIBNF7mf@example.com
+                  identifiers: []
+                  jsonld: |-
+                    {
+                      "@context": "http://schema.org",
+                      "@type": "Person",
+                      "name": "pblt8tki RWFdeY0P",
+                      "email": "KmWIBNF7mf@example.com",
+                      "url": "undefined:3000/v1/users/64f1fc8fbd8a3583c76d62bc"
+                    }
+                  schema_version: v0.1.0
+                  createdAt: '2023-09-01T15:00:31.044Z'
+                  updatedAt: '2023-09-01T15:00:35.883Z'
+                  __v: 0
+                accessToken: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NGYxZmM4ZmJkOGEzNTgzYzc2ZDYyYmMiLCJlbWFpbCI6IkttV0lCTkY3bWZAZXhhbXBsZS5jb20iLCJzY29wZXMiOlsiUmVhZCB1c2VyIGRhdGEiLCJNb2RpZnkgdXNlciBkYXRhIl0sImlhdCI6MTY5MzU4MDQzNSwiZXhwIjoxNjkzNTg0MDM1fQ.x74CzmjjHNY4CTpaOvH44P2rRfB7wjSSMJLPyNkHZjA
+                refreshToken: >-
+                  c8197010c01bdf601a6bfdb72cf46bf98c3388fcf04771f87bee96f8c436bf77
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get By Id
+      parameters:
+        - name: userId
+          in: path
+          schema:
+            type: string
+          required: true
+          description: User ID
+          example: '{{lastCreatedUserID}}'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '466'
+            ETag:
+              schema:
+                type: string
+                example: W/"1d2-ui/cE/uv9vtnXSfr/hj7lhr5ugA"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:00:40 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                _id: 64f1fc8fbd8a3583c76d62bc
+                firstName: pblt8tki
+                lastName: RWFdeY0P
+                email: KmWIBNF7mf@example.com
+                identifiers: []
+                jsonld: |-
+                  {
+                    "@context": "http://schema.org",
+                    "@type": "Person",
+                    "name": "pblt8tki RWFdeY0P",
+                    "email": "KmWIBNF7mf@example.com",
+                    "url": "undefined:3000/v1/users/64f1fc8fbd8a3583c76d62bc"
+                  }
+                schema_version: v0.1.0
+                createdAt: '2023-09-01T15:00:31.044Z'
+                updatedAt: '2023-09-01T15:00:35.883Z'
+                __v: 0
+  /consents/me:
+    get:
+      tags:
+        - consents
+      summary: Get my consents
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1813'
+            ETag:
+              schema:
+                type: string
+                example: W/"715-VwThzuwW1SpYSDdxZJv5FOdXM3M"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:00:25 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                consents:
+                  - _id: 64f1e1d278743e80ebc60d48
+                    userIdentifiers: []
+                    purposes: []
+                    data:
+                      - >-
+                        {"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}
+                    schema_version: 0.1.0
+                    user: 64f1e17aac8edafbb8f23a26
+                    identifier: 58505ac5-8560-419b-b728-16d11b753dd8
+                    consented: true
+                    jsonld: >-
+                      {"version":"KI-CR-v1.1.O","consentReceiptID":"58505ac5-8560-419b-b728-16d11b753dd8","collectionMethod":"","jurisdiction":"","consentTimestamp":null,"publicKey":"","language":"","piiPrincipalId":"bkChXUYZ
+                      4IxkToKO","piiControllers":[{"id":"http://localhost:3000/","name":"consentmanager-pdi"}],"policyUrl":"http://example.com/policies/policy-abc","data":[{"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}],"services":[[{"service":"Demo
+                      purpose","purposes":[{"uid":"purpose-1","purpose":"Demo
+                      purpose","action":"http://example.com/actions/authenticate","assigner":"http://localhost:3000/64ef1907b8dfb749e4565640","assignee":"http://localhost:3000/64ef190bb8dfb749e4565644","purposeCategory":["2
+                      - Contracted
+                      Service"],"consentType":"EXPLICIT","piiCategory":["1 -
+                      Biographical","2 - Contact","4 -
+                      Communications/Social"],"primaryPurpose":true,"termination":"Subscription
+                      end date + 1
+                      year","thirdPartyDisclosure":true,"thirdPartyName":"The
+                      Ankh-morpork Deadbeat Debt Collectors
+                      Society"}]}]],"sensitive":true,"spiCat":["1 -
+                      Biographical","7 -
+                      Financial"],"contract":"http://example.com/contract/666"}
+                    status: granted
+                    __v: 0
+                    createdAt: '2023-09-01T13:06:26.444Z'
+                    updatedAt: '2023-09-01T14:57:37.074Z'
+                totalCount: 1
+                totalPages: 1
+  /consents/me/{id}:
+    get:
+      tags:
+        - consents
+      summary: Get my consent by ID
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Consent id
+          example: '{{lastReviewedConsentID}}'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1768'
+            ETag:
+              schema:
+                type: string
+                example: W/"6e8-uIaPs7U1Im/qFrL+a3jGjS7qNf0"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:00:19 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                _id: 64f1e1d278743e80ebc60d48
+                userIdentifiers: []
+                purposes: []
+                data:
+                  - >-
+                    {"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}
+                schema_version: 0.1.0
+                user: 64f1e17aac8edafbb8f23a26
+                identifier: 58505ac5-8560-419b-b728-16d11b753dd8
+                consented: true
+                jsonld: >-
+                  {"version":"KI-CR-v1.1.O","consentReceiptID":"58505ac5-8560-419b-b728-16d11b753dd8","collectionMethod":"","jurisdiction":"","consentTimestamp":null,"publicKey":"","language":"","piiPrincipalId":"bkChXUYZ
+                  4IxkToKO","piiControllers":[{"id":"http://localhost:3000/","name":"consentmanager-pdi"}],"policyUrl":"http://example.com/policies/policy-abc","data":[{"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}],"services":[[{"service":"Demo
+                  purpose","purposes":[{"uid":"purpose-1","purpose":"Demo
+                  purpose","action":"http://example.com/actions/authenticate","assigner":"http://localhost:3000/64ef1907b8dfb749e4565640","assignee":"http://localhost:3000/64ef190bb8dfb749e4565644","purposeCategory":["2
+                  - Contracted
+                  Service"],"consentType":"EXPLICIT","piiCategory":["1 -
+                  Biographical","2 - Contact","4 -
+                  Communications/Social"],"primaryPurpose":true,"termination":"Subscription
+                  end date + 1
+                  year","thirdPartyDisclosure":true,"thirdPartyName":"The
+                  Ankh-morpork Deadbeat Debt Collectors
+                  Society"}]}]],"sensitive":true,"spiCat":["1 - Biographical","7
+                  - Financial"],"contract":"http://example.com/contract/666"}
+                status: granted
+                __v: 0
+                createdAt: '2023-09-01T13:06:26.444Z'
+                updatedAt: '2023-09-01T14:57:37.074Z'
+  /consents/{userId}:
+    get:
+      tags:
+        - consents
+      summary: Get user consents
+      parameters:
+        - name: userId
+          in: path
+          schema:
+            type: string
+          required: true
+          description: User identifier for the participant
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /consents/{userId}/{id}:
+    get:
+      tags:
+        - consents
+      summary: Get user consent by ID
+      parameters:
+        - name: userId
+          in: path
+          schema:
+            type: string
+          required: true
+          description: User Identifier
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Consent ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /consents/review/{dataProviderId}/{dataConsumerId}:
+    get:
+      tags:
+        - consents
+      summary: Review
+      parameters:
+        - name: dataProviderId
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Data Provider Participant ID
+          example: 64f1df5db2face281e55d8fa
+        - name: dataConsumerId
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Data Consumer Participant ID
+          example: 64f1df7452a3febe2b054b38
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1178'
+            ETag:
+              schema:
+                type: string
+                example: W/"49a-zp+vCBViDErdlBy5UNNJqTPAs3E"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 13:06:26 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                - version: KI-CR-v1.1.O
+                  consentReceiptID: 58505ac5-8560-419b-b728-16d11b753dd8
+                  collectionMethod: ''
+                  jurisdiction: ''
+                  consentTimestamp: null
+                  publicKey: ''
+                  language: ''
+                  piiPrincipalId: bkChXUYZ 4IxkToKO
+                  piiControllers:
+                    - id: http://localhost:3000/
+                      name: consentmanager-pdi
+                  policyUrl: http://example.com/policies/policy-abc
+                  data:
+                    - uid: data-1
+                      type: http://example.com/datatypes/personal-info
+                      purpose: http://example.com/purposes/user-authentication
+                  services:
+                    - - service: Demo purpose
+                        purposes:
+                          - uid: purpose-1
+                            purpose: Demo purpose
+                            action: http://example.com/actions/authenticate
+                            assigner: http://localhost:3000/64ef1907b8dfb749e4565640
+                            assignee: http://localhost:3000/64ef190bb8dfb749e4565644
+                            purposeCategory:
+                              - 2 - Contracted Service
+                            consentType: EXPLICIT
+                            piiCategory:
+                              - 1 - Biographical
+                              - 2 - Contact
+                              - 4 - Communications/Social
+                            primaryPurpose: true
+                            termination: Subscription end date + 1 year
+                            thirdPartyDisclosure: true
+                            thirdPartyName: The Ankh-morpork Deadbeat Debt Collectors Society
+                  sensitive: true
+                  spiCat:
+                    - 1 - Biographical
+                    - 7 - Financial
+                  contract: http://example.com/contract/666
+  /consents:
+    post:
+      tags:
+        - consents
+      summary: Give Consent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                consentId: <string>
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1768'
+            ETag:
+              schema:
+                type: string
+                example: W/"6e8-uIaPs7U1Im/qFrL+a3jGjS7qNf0"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 14:57:37 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                _id: 64f1e1d278743e80ebc60d48
+                userIdentifiers: []
+                purposes: []
+                data:
+                  - >-
+                    {"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}
+                schema_version: 0.1.0
+                user: 64f1e17aac8edafbb8f23a26
+                identifier: 58505ac5-8560-419b-b728-16d11b753dd8
+                consented: true
+                jsonld: >-
+                  {"version":"KI-CR-v1.1.O","consentReceiptID":"58505ac5-8560-419b-b728-16d11b753dd8","collectionMethod":"","jurisdiction":"","consentTimestamp":null,"publicKey":"","language":"","piiPrincipalId":"bkChXUYZ
+                  4IxkToKO","piiControllers":[{"id":"http://localhost:3000/","name":"consentmanager-pdi"}],"policyUrl":"http://example.com/policies/policy-abc","data":[{"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}],"services":[[{"service":"Demo
+                  purpose","purposes":[{"uid":"purpose-1","purpose":"Demo
+                  purpose","action":"http://example.com/actions/authenticate","assigner":"http://localhost:3000/64ef1907b8dfb749e4565640","assignee":"http://localhost:3000/64ef190bb8dfb749e4565644","purposeCategory":["2
+                  - Contracted
+                  Service"],"consentType":"EXPLICIT","piiCategory":["1 -
+                  Biographical","2 - Contact","4 -
+                  Communications/Social"],"primaryPurpose":true,"termination":"Subscription
+                  end date + 1
+                  year","thirdPartyDisclosure":true,"thirdPartyName":"The
+                  Ankh-morpork Deadbeat Debt Collectors
+                  Society"}]}]],"sensitive":true,"spiCat":["1 - Biographical","7
+                  - Financial"],"contract":"http://example.com/contract/666"}
+                status: granted
+                __v: 0
+                createdAt: '2023-09-01T13:06:26.444Z'
+                updatedAt: '2023-09-01T14:57:37.074Z'
+  /consents/{id}:
+    delete:
+      tags:
+        - consents
+      summary: Revoke consent
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Consent ID
+          example: '{{lastGivenConsentID}}'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '1769'
+            ETag:
+              schema:
+                type: string
+                example: W/"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 14:57:28 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                _id: 64f1e1d278743e80ebc60d48
+                userIdentifiers: []
+                purposes: []
+                data:
+                  - >-
+                    {"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}
+                schema_version: 0.1.0
+                user: 64f1e17aac8edafbb8f23a26
+                identifier: 58505ac5-8560-419b-b728-16d11b753dd8
+                consented: false
+                jsonld: >-
+                  {"version":"KI-CR-v1.1.O","consentReceiptID":"58505ac5-8560-419b-b728-16d11b753dd8","collectionMethod":"","jurisdiction":"","consentTimestamp":null,"publicKey":"","language":"","piiPrincipalId":"bkChXUYZ
+                  4IxkToKO","piiControllers":[{"id":"http://localhost:3000/","name":"consentmanager-pdi"}],"policyUrl":"http://example.com/policies/policy-abc","data":[{"uid":"data-1","type":"http://example.com/datatypes/personal-info","purpose":"http://example.com/purposes/user-authentication"}],"services":[[{"service":"Demo
+                  purpose","purposes":[{"uid":"purpose-1","purpose":"Demo
+                  purpose","action":"http://example.com/actions/authenticate","assigner":"http://localhost:3000/64ef1907b8dfb749e4565640","assignee":"http://localhost:3000/64ef190bb8dfb749e4565644","purposeCategory":["2
+                  - Contracted
+                  Service"],"consentType":"EXPLICIT","piiCategory":["1 -
+                  Biographical","2 - Contact","4 -
+                  Communications/Social"],"primaryPurpose":true,"termination":"Subscription
+                  end date + 1
+                  year","thirdPartyDisclosure":true,"thirdPartyName":"The
+                  Ankh-morpork Deadbeat Debt Collectors
+                  Society"}]}]],"sensitive":true,"spiCat":["1 - Biographical","7
+                  - Financial"],"contract":"http://example.com/contract/666"}
+                status: revoked
+                __v: 0
+                createdAt: '2023-09-01T13:06:26.444Z'
+                updatedAt: '2023-09-01T14:57:28.229Z'
+  /participants:
+    post:
+      tags:
+        - participants
+      summary: Signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                hasLegallyBindingName: <string>
+                identifier: <string:DID>
+                address:
+                  addressLocality: <string>
+                  addressRegion: <string>
+                  postalCode: <string>
+                  streetAddress: <string>
+                url: <string>
+                description: <string>
+                hasBusinessIdentifier: <string>
+                hasMemberParticipant: []
+                hasLogo: <string>
+                contactPoint:
+                  - email: <string>
+                    telephone: <string>
+                    contactType: <string>
+                hasCompanyType: <string>
+                hasPhoneNumber: <string>
+                hasMemberPerson:
+                  - name: <string>
+                    email: <string>
+                email: <string>
+                password: <string>
+                endpoints:
+                  dataExport: https://example.com/export
+                  dataImport: https://example.com/import
+      responses:
+        '201':
+          description: Created
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '3044'
+            ETag:
+              schema:
+                type: string
+                example: W/"be4-sRbhXTg8Ttju5SR9kPwt9rrtw4c"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:01:57 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                hasLegallyBindingName: <string>
+                identifier: <string:DID>
+                address:
+                  addressLocality: <string>
+                  addressRegion: <string>
+                  postalCode: <string>
+                  streetAddress: <string>
+                url: <string>
+                description: <string>
+                hasBusinessIdentifier: <string>
+                hasMemberParticipant: []
+                hasLogo: <string>
+                contactPoint:
+                  - email: <string>
+                    telephone: <string>
+                    contactType: <string>
+                    _id: 64f1fce5bd8a3583c76d62c5
+                hasCompanyType: <string>
+                hasPhoneNumber: <string>
+                hasMemberPerson:
+                  - name: <string>
+                    email: <string>
+                    _id: 64f1fce5bd8a3583c76d62c6
+                email: <string>
+                password: $2b$10$p3JzGw2fcVJ7hK6smHWW3e/sxZK1qpG1yOSE2Bi2dmOnsvqI98NrO
+                endpoints:
+                  dataExport: https://example.com/export
+                  dataImport: https://example.com/import
+                jsonld: |-
+                  {
+                    "@context": {
+                      "sh": "http://www.w3.org/ns/shacl#",
+                      "schema": "http://www.w3.org/2001/XMLSchema#",
+                      "xsd": "http://www.w3.org/2001/XMLSchema#",
+                      "gax-core": "http://w3id.org/gaia-x/core#",
+                      "gax-participant": "http://w3id.org/gaia-x/participant#",
+                      "dcat": "http://www.w3.org/ns/dcat#",
+                      "dcterms": "http://purl.org/dc/terms/",
+                      "did": "https://www.w3.org/TR/did-core/#"
+                    },
+                    "@id": "64f1fce5bd8a3583c76d62c4",
+                    "@type": "Participant",
+                    "did:identifier": "<string:DID>",
+                    "consentManager": {
+                      "solution": "http://localhost:3000/",
+                      "idInSolution": "64f1fce5bd8a3583c76d62c4"
+                    },
+                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "address": {
+                      "@type": "schema:PostalAddress",
+                      "schema:addressLocality": "<string>",
+                      "schema:addressRegion": "<string>",
+                      "schema:postalCode": "<string>",
+                      "schema:streetAddress": "<string>"
+                    },
+                    "url": {
+                      "@type": "xsd:anyURI",
+                      "@value": "<string>"
+                    },
+                    "description": {
+                      "@type": "xsd:string",
+                      "@value": "<string>"
+                    },
+                    "gax-participant:hasBusinessIdentifier": "<string>",
+                    "gax-participant:hasLogo": {
+                      "@value": "<string>",
+                      "@type": "xsd:anyURI"
+                    },
+                    "gax-participant:hasMemberParticipant": [],
+                    "contactPoint": [
+                      {
+                        "@type": "schema:ContactPoint",
+                        "schema:email": "<string>",
+                        "schema:telephone": "<string>",
+                        "schema:contactType": "<string>"
+                      }
+                    ],
+                    "gax-participant:hasCompanyType": "<string>",
+                    "gax-participant:hasPhoneNumber": "<string>",
+                    "gax-participant:hasMemberPerson": [
+                      {
+                        "@type": "schema:Person",
+                        "schema:name": "<string>"
+                      }
+                    ],
+                    "email": "<string>",
+                    "endpoints": {
+                      "dataExport": "https://example.com/export",
+                      "dataImport": "https://example.com/import"
+                    }
+                  }
+                schema_version: v0.0.1
+                _id: 64f1fce5bd8a3583c76d62c4
+                clientID: 842b0932afe0e82d60fa03f8eb34c8fe
+                clientSecret: >-
+                  1230a49c81d95884328849127f3596672b50362d0116d4e6acf04eec8bb54dc7
+                createdAt: '2023-09-01T15:01:57.526Z'
+                updatedAt: '2023-09-01T15:01:57.526Z'
+                __v: 0
+    get:
+      tags:
+        - participants
+      summary: Get Participants
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '0'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '20088'
+            ETag:
+              schema:
+                type: string
+                example: W/"4e78-1bq5U2RelzAlwzMQJRmwHQWPFDE"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:02:05 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                participants:
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: ''
+                      dataImport: ''
+                    _id: 64f1d9d399858e42532bdfbf
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1d9d399858e42532bdfc0
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1d9d399858e42532bdfc1
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1d9d399858e42532bdfbf",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1d9d399858e42532bdfbf"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>"
+                      }
+                    schema_version: v0.0.1
+                    clientID: f35ae697a4e8192a9199cfb2eb49d602
+                    clientSecret: >-
+                      8e397bcd9768bc3ff52dca99bf2cb6cd26f4cfaa7ab08284b49125a1f113a943
+                    createdAt: '2023-09-01T12:32:19.826Z'
+                    updatedAt: '2023-09-01T12:32:19.826Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: ''
+                      dataImport: ''
+                    _id: 64f1d9d999858e42532bdfc3
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1d9d999858e42532bdfc4
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1d9d999858e42532bdfc5
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1d9d999858e42532bdfc3",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1d9d999858e42532bdfc3"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>"
+                      }
+                    schema_version: v0.0.1
+                    clientID: cd303614379927a5407590b3ab5822ef
+                    clientSecret: >-
+                      3429437bfd6ed9a1ec7af0ce20eebf523f930ebe0a37ddfe7be2c3f19a6fbe90
+                    createdAt: '2023-09-01T12:32:25.508Z'
+                    updatedAt: '2023-09-01T12:32:25.508Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: ''
+                      dataImport: ''
+                    _id: 64f1da5e99858e42532bdfd7
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1da5e99858e42532bdfd8
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1da5e99858e42532bdfd9
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1da5e99858e42532bdfd7",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1da5e99858e42532bdfd7"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>"
+                      }
+                    schema_version: v0.0.1
+                    clientID: 2da4df71fc576d9667970099802cdfb1
+                    clientSecret: >-
+                      2c5a48f6c57109a3a5fd34bcdabc9a2c97a1b73a24497769f98ad77858be1700
+                    createdAt: '2023-09-01T12:34:38.200Z'
+                    updatedAt: '2023-09-01T12:34:38.200Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: ''
+                      dataImport: ''
+                    _id: 64f1df5db2face281e55d8fa
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1df5db2face281e55d8fb
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1df5db2face281e55d8fc
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1df5db2face281e55d8fa",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1df5db2face281e55d8fa"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>",
+                        "endpoints": {
+                          "dataExport": "",
+                          "dataImport": ""
+                        }
+                      }
+                    schema_version: v0.0.1
+                    clientID: 0e89e69ff0e895a7c0b1219addc367f7
+                    clientSecret: >-
+                      b63f69cc5c66d4dbb43fd294b1ce5d1b53ba95f5f152f7e2b16515b3c0f6e28b
+                    createdAt: '2023-09-01T12:55:57.675Z'
+                    updatedAt: '2023-09-01T12:55:57.675Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: ''
+                      dataImport: ''
+                    _id: 64f1df7452a3febe2b054b38
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1df7452a3febe2b054b39
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1df7452a3febe2b054b3a
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1df7452a3febe2b054b38",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1df7452a3febe2b054b38"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>",
+                        "endpoints": {
+                          "dataExport": "",
+                          "dataImport": ""
+                        }
+                      }
+                    schema_version: v0.0.1
+                    clientID: f9d1f8cd03d9a0c1a7eda16e0769b8fb
+                    clientSecret: >-
+                      14e1c7ef5271670a07af8e6a1ea26062fe38362184c11d5301f702bfe36fd443
+                    createdAt: '2023-09-01T12:56:20.843Z'
+                    updatedAt: '2023-09-01T12:56:20.843Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: https://example.com/export
+                      dataImport: https://example.com/import
+                    _id: 64f1df921ddff0e8f2f82f3d
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1df921ddff0e8f2f82f3e
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1df921ddff0e8f2f82f3f
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1df921ddff0e8f2f82f3d",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1df921ddff0e8f2f82f3d"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>",
+                        "endpoints": {
+                          "dataExport": "https://example.com/export",
+                          "dataImport": "https://example.com/import"
+                        }
+                      }
+                    schema_version: v0.0.1
+                    clientID: f12f3e2575f4303371125fddd907998c
+                    clientSecret: >-
+                      c56af16928e7b7fe0d692d5d068c16d91e1175be9039c10d3d266a75687c9019
+                    createdAt: '2023-09-01T12:56:50.649Z'
+                    updatedAt: '2023-09-01T12:56:50.649Z'
+                    __v: 0
+                  - address:
+                      addressLocality: <string>
+                      addressRegion: <string>
+                      postalCode: <string>
+                      streetAddress: <string>
+                    endpoints:
+                      dataExport: https://example.com/export
+                      dataImport: https://example.com/import
+                    _id: 64f1fce5bd8a3583c76d62c4
+                    hasLegallyBindingName: <string>
+                    identifier: <string:DID>
+                    url: <string>
+                    description: <string>
+                    hasBusinessIdentifier: <string>
+                    hasMemberParticipant: []
+                    hasLogo: <string>
+                    contactPoint:
+                      - email: <string>
+                        telephone: <string>
+                        contactType: <string>
+                        _id: 64f1fce5bd8a3583c76d62c5
+                    hasCompanyType: <string>
+                    hasPhoneNumber: <string>
+                    hasMemberPerson:
+                      - name: <string>
+                        email: <string>
+                        _id: 64f1fce5bd8a3583c76d62c6
+                    email: <string>
+                    jsonld: |-
+                      {
+                        "@context": {
+                          "sh": "http://www.w3.org/ns/shacl#",
+                          "schema": "http://www.w3.org/2001/XMLSchema#",
+                          "xsd": "http://www.w3.org/2001/XMLSchema#",
+                          "gax-core": "http://w3id.org/gaia-x/core#",
+                          "gax-participant": "http://w3id.org/gaia-x/participant#",
+                          "dcat": "http://www.w3.org/ns/dcat#",
+                          "dcterms": "http://purl.org/dc/terms/",
+                          "did": "https://www.w3.org/TR/did-core/#"
+                        },
+                        "@id": "64f1fce5bd8a3583c76d62c4",
+                        "@type": "Participant",
+                        "did:identifier": "<string:DID>",
+                        "consentManager": {
+                          "solution": "http://localhost:3000/",
+                          "idInSolution": "64f1fce5bd8a3583c76d62c4"
+                        },
+                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "address": {
+                          "@type": "schema:PostalAddress",
+                          "schema:addressLocality": "<string>",
+                          "schema:addressRegion": "<string>",
+                          "schema:postalCode": "<string>",
+                          "schema:streetAddress": "<string>"
+                        },
+                        "url": {
+                          "@type": "xsd:anyURI",
+                          "@value": "<string>"
+                        },
+                        "description": {
+                          "@type": "xsd:string",
+                          "@value": "<string>"
+                        },
+                        "gax-participant:hasBusinessIdentifier": "<string>",
+                        "gax-participant:hasLogo": {
+                          "@value": "<string>",
+                          "@type": "xsd:anyURI"
+                        },
+                        "gax-participant:hasMemberParticipant": [],
+                        "contactPoint": [
+                          {
+                            "@type": "schema:ContactPoint",
+                            "schema:email": "<string>",
+                            "schema:telephone": "<string>",
+                            "schema:contactType": "<string>"
+                          }
+                        ],
+                        "gax-participant:hasCompanyType": "<string>",
+                        "gax-participant:hasPhoneNumber": "<string>",
+                        "gax-participant:hasMemberPerson": [
+                          {
+                            "@type": "schema:Person",
+                            "schema:name": "<string>"
+                          }
+                        ],
+                        "email": "<string>",
+                        "endpoints": {
+                          "dataExport": "https://example.com/export",
+                          "dataImport": "https://example.com/import"
+                        }
+                      }
+                    schema_version: v0.0.1
+                    clientID: 842b0932afe0e82d60fa03f8eb34c8fe
+                    clientSecret: >-
+                      1230a49c81d95884328849127f3596672b50362d0116d4e6acf04eec8bb54dc7
+                    createdAt: '2023-09-01T15:01:57.526Z'
+                    updatedAt: '2023-09-01T15:01:57.526Z'
+                    __v: 0
+                totalCount: 7
+                totalPages: 1
+  /participants/login:
+    post:
+      tags:
+        - participants
+      summary: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: <string>
+                password: <string>
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '51'
+            ETag:
+              schema:
+                type: string
+                example: W/"33-rG8jwNKQqDBNCP/k/4WPVECmI4Q"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:02:02 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: successfully logged in
+  /participants/me:
+    get:
+      tags:
+        - participants
+      summary: Get my participant info
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '2815'
+            ETag:
+              schema:
+                type: string
+                example: W/"aff-TmX/j8MX1YRRKkxWTJv/MNzpeVs"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 12:33:00 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                address:
+                  addressLocality: <string>
+                  addressRegion: <string>
+                  postalCode: <string>
+                  streetAddress: <string>
+                _id: 64f1d9d399858e42532bdfbf
+                hasLegallyBindingName: <string>
+                identifier: <string:DID>
+                url: <string>
+                description: <string>
+                hasBusinessIdentifier: <string>
+                hasMemberParticipant: []
+                hasLogo: <string>
+                contactPoint:
+                  - email: <string>
+                    telephone: <string>
+                    contactType: <string>
+                    _id: 64f1d9d399858e42532bdfc0
+                hasCompanyType: <string>
+                hasPhoneNumber: <string>
+                hasMemberPerson:
+                  - name: <string>
+                    email: <string>
+                    _id: 64f1d9d399858e42532bdfc1
+                email: <string>
+                password: $2b$10$DZlJ4/Prlz8AOJVxPqf8eev0Crwi99opV4rdM.opThGCt.gvL3faq
+                jsonld: |-
+                  {
+                    "@context": {
+                      "sh": "http://www.w3.org/ns/shacl#",
+                      "schema": "http://www.w3.org/2001/XMLSchema#",
+                      "xsd": "http://www.w3.org/2001/XMLSchema#",
+                      "gax-core": "http://w3id.org/gaia-x/core#",
+                      "gax-participant": "http://w3id.org/gaia-x/participant#",
+                      "dcat": "http://www.w3.org/ns/dcat#",
+                      "dcterms": "http://purl.org/dc/terms/",
+                      "did": "https://www.w3.org/TR/did-core/#"
+                    },
+                    "@id": "64f1d9d399858e42532bdfbf",
+                    "@type": "Participant",
+                    "did:identifier": "<string:DID>",
+                    "consentManager": {
+                      "solution": "http://localhost:3000/",
+                      "idInSolution": "64f1d9d399858e42532bdfbf"
+                    },
+                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "address": {
+                      "@type": "schema:PostalAddress",
+                      "schema:addressLocality": "<string>",
+                      "schema:addressRegion": "<string>",
+                      "schema:postalCode": "<string>",
+                      "schema:streetAddress": "<string>"
+                    },
+                    "url": {
+                      "@type": "xsd:anyURI",
+                      "@value": "<string>"
+                    },
+                    "description": {
+                      "@type": "xsd:string",
+                      "@value": "<string>"
+                    },
+                    "gax-participant:hasBusinessIdentifier": "<string>",
+                    "gax-participant:hasLogo": {
+                      "@value": "<string>",
+                      "@type": "xsd:anyURI"
+                    },
+                    "gax-participant:hasMemberParticipant": [],
+                    "contactPoint": [
+                      {
+                        "@type": "schema:ContactPoint",
+                        "schema:email": "<string>",
+                        "schema:telephone": "<string>",
+                        "schema:contactType": "<string>"
+                      }
+                    ],
+                    "gax-participant:hasCompanyType": "<string>",
+                    "gax-participant:hasPhoneNumber": "<string>",
+                    "gax-participant:hasMemberPerson": [
+                      {
+                        "@type": "schema:Person",
+                        "schema:name": "<string>"
+                      }
+                    ],
+                    "email": "<string>"
+                  }
+                schema_version: v0.0.1
+                clientID: f35ae697a4e8192a9199cfb2eb49d602
+                clientSecret: >-
+                  8e397bcd9768bc3ff52dca99bf2cb6cd26f4cfaa7ab08284b49125a1f113a943
+                createdAt: '2023-09-01T12:32:19.826Z'
+                updatedAt: '2023-09-01T12:32:19.826Z'
+                __v: 0
+  /participants/{id}:
+    get:
+      tags:
+        - participants
+      summary: Get by ID
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          description: Participant ID
+          example: '{{lastCreatedParticipantID}}'
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '2970'
+            ETag:
+              schema:
+                type: string
+                example: W/"b9a-cd+kWbD0GbDDovjwwUx60miMj78"
+            Date:
+              schema:
+                type: string
+                example: Fri, 01 Sep 2023 15:02:15 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                address:
+                  addressLocality: <string>
+                  addressRegion: <string>
+                  postalCode: <string>
+                  streetAddress: <string>
+                endpoints:
+                  dataExport: https://example.com/export
+                  dataImport: https://example.com/import
+                _id: 64f1fce5bd8a3583c76d62c4
+                hasLegallyBindingName: <string>
+                identifier: <string:DID>
+                url: <string>
+                description: <string>
+                hasBusinessIdentifier: <string>
+                hasMemberParticipant: []
+                hasLogo: <string>
+                contactPoint:
+                  - email: <string>
+                    telephone: <string>
+                    contactType: <string>
+                    _id: 64f1fce5bd8a3583c76d62c5
+                hasCompanyType: <string>
+                hasPhoneNumber: <string>
+                hasMemberPerson:
+                  - name: <string>
+                    email: <string>
+                    _id: 64f1fce5bd8a3583c76d62c6
+                email: <string>
+                jsonld: |-
+                  {
+                    "@context": {
+                      "sh": "http://www.w3.org/ns/shacl#",
+                      "schema": "http://www.w3.org/2001/XMLSchema#",
+                      "xsd": "http://www.w3.org/2001/XMLSchema#",
+                      "gax-core": "http://w3id.org/gaia-x/core#",
+                      "gax-participant": "http://w3id.org/gaia-x/participant#",
+                      "dcat": "http://www.w3.org/ns/dcat#",
+                      "dcterms": "http://purl.org/dc/terms/",
+                      "did": "https://www.w3.org/TR/did-core/#"
+                    },
+                    "@id": "64f1fce5bd8a3583c76d62c4",
+                    "@type": "Participant",
+                    "did:identifier": "<string:DID>",
+                    "consentManager": {
+                      "solution": "http://localhost:3000/",
+                      "idInSolution": "64f1fce5bd8a3583c76d62c4"
+                    },
+                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "address": {
+                      "@type": "schema:PostalAddress",
+                      "schema:addressLocality": "<string>",
+                      "schema:addressRegion": "<string>",
+                      "schema:postalCode": "<string>",
+                      "schema:streetAddress": "<string>"
+                    },
+                    "url": {
+                      "@type": "xsd:anyURI",
+                      "@value": "<string>"
+                    },
+                    "description": {
+                      "@type": "xsd:string",
+                      "@value": "<string>"
+                    },
+                    "gax-participant:hasBusinessIdentifier": "<string>",
+                    "gax-participant:hasLogo": {
+                      "@value": "<string>",
+                      "@type": "xsd:anyURI"
+                    },
+                    "gax-participant:hasMemberParticipant": [],
+                    "contactPoint": [
+                      {
+                        "@type": "schema:ContactPoint",
+                        "schema:email": "<string>",
+                        "schema:telephone": "<string>",
+                        "schema:contactType": "<string>"
+                      }
+                    ],
+                    "gax-participant:hasCompanyType": "<string>",
+                    "gax-participant:hasPhoneNumber": "<string>",
+                    "gax-participant:hasMemberPerson": [
+                      {
+                        "@type": "schema:Person",
+                        "schema:name": "<string>"
+                      }
+                    ],
+                    "email": "<string>",
+                    "endpoints": {
+                      "dataExport": "https://example.com/export",
+                      "dataImport": "https://example.com/import"
+                    }
+                  }
+                schema_version: v0.0.1
+                clientID: 842b0932afe0e82d60fa03f8eb34c8fe
+                clientSecret: >-
+                  1230a49c81d95884328849127f3596672b50362d0116d4e6acf04eec8bb54dc7
+                createdAt: '2023-09-01T15:01:57.526Z'
+                updatedAt: '2023-09-01T15:01:57.526Z'
+                __v: 0
+  /data-exchange/push/user:
+    post:
+      tags:
+        - data-exchange
+      summary: User triggered data exchange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                consentId: <string>
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /data-exchange/push:
+    post:
+      tags:
+        - data-exchange
+      summary: Provider triggered data exchange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                consentId: <string>
+                userId: <string>
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

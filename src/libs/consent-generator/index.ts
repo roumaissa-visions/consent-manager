@@ -1,0 +1,1 @@
+export { ConsentGenerator } from "./ConsentGenerator";

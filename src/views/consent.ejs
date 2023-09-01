@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Consent</title>
+</head>
+<body>
+    <h1>OAuth Consent</h1>
+    <p>Client: <%= clientName %></p>
+    <p>Requested Scopes:</p>
+    <ul>
+        <% for (const scope of requestedScopes) { %>
+            <li>
+                <label>
+                    <input type="checkbox" name="scopes" value="<%= scope.name %>">
+                    <%= scope.name %> - <%= scope.description %>
+                </label>
+            </li>
+        <% } %>
+    </ul>
+    <form method="post" action="/oauth/authorize">
+        <button type="submit">Authorize</button>
+    </form>
+</body>
+</html>

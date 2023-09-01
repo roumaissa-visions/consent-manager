@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "dist",
+    "allowJs": true,
+    "lib": ["ES2021.String", "ES7"],
+    "resolveJsonModule": true,
+    "typeRoots": ["src/types/*/**"]
+  },
+  "include": ["src/**/*"],
+  "files": ["src/types/index.d.ts"]
+}
