@@ -30,6 +30,7 @@ export const verifyParticipantJWT = (
     req.userParticipant = {
       id: decodedToken.sub,
     };
+    req.session.userParticipant = { id: decodedToken.sub };
 
     next();
   } catch (error) {

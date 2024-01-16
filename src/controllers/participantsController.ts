@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import Participant from "../models/Participant/Participant.model";
 import { NotFoundError } from "../errors/NotFoundError";
-import { participantToSelfDescription } from "../utils/selfDescriptions";
 import crypto from "crypto";
 import { PARTICIPANT_SELECTION } from "../utils/schemaSelection";
+import { issueJwt } from "../libs/jwt";
 
 /**
  * Retrieves a participant by id
@@ -40,7 +40,8 @@ export const registerParticipant = async (
     const participantData = req.body;
     const newParticipant = new Participant(participantData);
 
-    newParticipant.jsonld = participantToSelfDescription(newParticipant);
+    // TODO
+    newParticipant.jsonld = "";
 
     const selfDescriptionData = JSON.parse(newParticipant.jsonld);
     if (selfDescriptionData.endpoints) {
@@ -75,18 +76,19 @@ export const loginParticipant = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password } = req.body;
-    const participant = await Participant.findOne({ email });
+    const { clientID, clientSecret } = req.body;
+    const participant = await Participant.findOne({ clientID, clientSecret });
 
-    if (!participant) throw new NotFoundError("User not found");
-    const isPasswordValid = await participant.validatePassword(password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "invalid credentials" });
-    }
+    if (!participant) throw new NotFoundError("Participant not found");
 
-    req.session.userParticipant = { id: participant.id };
+    const jwt = issueJwt(participant);
 
-    return res.json({ success: true, message: "successfully logged in" });
+    return res.json({
+      success: true,
+      jwt,
+      message:
+        "Successfully retrieved JWT for authenticating requests to the API",
+    });
   } catch (err) {
     next(err);
   }

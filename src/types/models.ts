@@ -21,63 +21,9 @@ export interface IParticipant extends Document, AllSchemas {
   identifier: string;
 
   /**
-   * @type schema:PostalAddress
+   * URL to the self-description of the participant in a catalog
    */
-  address: {
-    addressLocality: string;
-    addressRegion: string;
-    postalCode: string;
-    streetAddress: string;
-  };
-
-  url: string;
-
-  description: string;
-
-  /**
-   * @type gax-participant:hasBusinessIdentifier
-   */
-  hasBusinessIdentifier: string;
-
-  /**
-   * Sub participants
-   * ref: IParticipant
-   * @type gax-participant:hasMemberParticipant
-   */
-  hasMemberParticipant: Types.ObjectId[] | IParticipant[];
-
-  /**
-   * Logo
-   * @type gax-participant:hasLogo
-   */
-  hasLogo: string;
-
-  /**
-   * @type schema:ContactPoint
-   */
-  contactPoint: {
-    email: string;
-    telephone: string;
-    contactType: string;
-  }[];
-
-  /**
-   * @type gax-participant:hasCompanyType
-   */
-  hasCompanyType: string;
-
-  /**
-   * @type gax-participant:hasPhoneNumber
-   */
-  hasPhoneNumber: string;
-
-  /**
-   * @type: gax-participant:hasMemberPerson
-   */
-  hasMemberPerson: {
-    name: string;
-    email: string;
-  }[];
+  selfDescriptionURL: string;
 
   endpoints: {
     dataImport?: string;
@@ -88,13 +34,16 @@ export interface IParticipant extends Document, AllSchemas {
 
   email: string;
 
-  password: string;
-
   /**
    * Credentials to communicate with the Consent API
    */
   clientID: string;
   clientSecret: string;
+
+  /**
+   * URL / Endpoint for the "data space connector" of the participant
+   */
+  dataspaceEndpoint: string;
 }
 
 export interface IParticipantModel extends Model<IParticipant> {

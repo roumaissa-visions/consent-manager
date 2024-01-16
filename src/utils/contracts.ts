@@ -96,7 +96,10 @@ export const buildConsentsFromContracts = async (
         purposes.push(...s.purposes.map((p: any) => p.purpose));
       }
     });
-    savedConsent.purposes = purposes;
+    savedConsent.purposes = purposes.map((purpose) => ({
+      legalBasis: "",
+      purpose: purpose,
+    }));
     savedConsent.data = consent.data.map((data: any) => JSON.stringify(data));
     savedConsent.jsonld = JSON.stringify(consent);
     savedConsent.status = "pending";
