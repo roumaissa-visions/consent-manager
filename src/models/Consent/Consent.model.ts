@@ -10,9 +10,21 @@ const schema = new Schema<IConsent>(
     consented: { type: Boolean, required: true },
     purposes: [{ type: String }],
     data: [{ type: String }],
-    status: { type: String, enum: ["pending", "granted", "revoked"] },
+    status: {
+      type: String,
+      enum: ["pending", "granted", "revoked", "expired"],
+    },
+    piiPrincipalRights: [String],
+    privacyNotice: { type: String, default: "" }, // TODO Should be required but left out for initial implementations
+    processingLocations: [String],
+    storageLocations: [String],
+    recipientThirdParties: [
+      { name: String, location: String, natureOfDataAccess: String },
+    ],
+    retentionPeriod: String,
+    withdrawalMethod: String,
     jsonld: { type: String, required: true },
-    schema_version: { type: String, default: "0.1.0" },
+    schema_version: { type: String, default: "0.2.0" },
   },
   { timestamps: true }
 );

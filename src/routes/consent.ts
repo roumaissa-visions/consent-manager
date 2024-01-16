@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
   getConsentReview,
+  getPrivacyNoticeById,
+  getPrivacyNotices,
   getUserConsentById,
   getUserConsents,
   giveConsent,
@@ -25,6 +27,7 @@ r.get(
   setUserIdForParticipant,
   getUserConsents
 );
+
 r.get(
   "/:userId/:id",
   verifyParticipantJWT,
@@ -37,6 +40,9 @@ r.get(
   verifyUserJWT,
   getConsentReview
 );
+
+r.get("/:userId/:providerId/:consumerId", verifyUserJWT, getPrivacyNotices);
+r.get("/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
 
 r.post(
   "/",

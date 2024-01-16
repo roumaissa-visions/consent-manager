@@ -16,7 +16,7 @@ const userSchema = new Schema<IUser>(
       required: true,
       default: "",
     },
-    identifiers: [{ type: Schema.Types.ObjectId, ref: "Identifier" }],
+    identifiers: [{ type: Schema.Types.ObjectId, ref: "UserIdentifier" }],
     oauth: {
       scopes: [{ type: String }],
       refreshToken: { type: String },

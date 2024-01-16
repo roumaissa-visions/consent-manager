@@ -12,6 +12,8 @@ import Participant from "../models/Participant/Participant.model";
 import { USER_SELECTION } from "../utils/schemaSelection";
 import User from "../models/User/User.model";
 import { BadRequestError } from "../errors/BadRequestError";
+import { IPrivacyNotice } from "../types/models";
+import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
 
 /**
  * Gets the list of given consents of a user
@@ -37,6 +39,51 @@ export const getUserConsents = async (
     const totalPages = Math.ceil(totalCount / parseInt(limit.toString()));
 
     res.json({ consents, totalCount, totalPages });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Gets the privacy notices for a consent based on existing
+ * contracts between two participants
+ */
+export const getPrivacyNotices = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { providerId, consumerId, userId } = req.body;
+    const contracts = await getContractsBetweenParties(providerId, consumerId);
+
+    // TODO get ecosystem contracts as well
+
+    const privacyNotices: IPrivacyNotice[] = [];
+    // TODO contract to privacy notice method
+
+    return res.json(privacyNotices);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Returns the privacy notice by ID
+ * @author Felix Bole
+ */
+export const getPrivacyNoticeById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pn = await PrivacyNotice.findById(req.params.privacyNoticeId);
+    if (!pn) {
+      return res.status(404).json({ error: "Privacy notice not found" });
+    }
+
+    return res.json(pn);
   } catch (err) {
     next(err);
   }
