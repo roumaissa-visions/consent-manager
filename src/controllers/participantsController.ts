@@ -4,6 +4,7 @@ import { NotFoundError } from "../errors/NotFoundError";
 import crypto from "crypto";
 import { PARTICIPANT_SELECTION } from "../utils/schemaSelection";
 import { issueJwt } from "../libs/jwt";
+import axios from "axios";
 
 /**
  * Retrieves a participant by id
@@ -43,6 +44,9 @@ export const registerParticipant = async (
     // TODO
     newParticipant.jsonld = "";
 
+    newParticipant.selfDescriptionURL =
+      participantData.selfDescriptionURL || "";
+
     const selfDescriptionData = JSON.parse(newParticipant.jsonld);
     if (selfDescriptionData.endpoints) {
       const { dataExport, dataImport, consentImport, consentExport } =
@@ -53,13 +57,15 @@ export const registerParticipant = async (
       newParticipant.endpoints.consentExport = consentExport || "";
     }
 
-    const clientID = crypto.randomBytes(16).toString("hex");
-    const clientSecret = crypto.randomBytes(32).toString("hex");
-
-    newParticipant.clientID = clientID;
-    newParticipant.clientSecret = clientSecret;
+    newParticipant.clientID = participantData.clientID;
+    newParticipant.clientSecret = participantData.clientSecret;
 
     const createdParticipant = await newParticipant.save();
+
+    const sdData = await axios.get(participantData.selfDescriptionURL);
+
+    // TODO find DSC endpoint to call to configure RSA key
+    // and send src/config/keys/consentSignaturePublic.pem contents
 
     res.status(201).json(createdParticipant);
   } catch (err) {

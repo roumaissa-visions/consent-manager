@@ -11,7 +11,9 @@
     "prettier": "prettier --write ./src/",
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
-    "format": "npm run prettier && npm run lint:fix"
+    "format": "npm run prettier && npm run lint:fix",
+    "generatePrivateKey": "openssl genrsa -des3 -out src/config/keys/consentSignature.pem 2048",
+    "generatePublicKey": "openssl rsa -in src/config/keys/consentSignature.pem -outform PEM -pubout -out src/config/keys/consentSignaturePublic.pem"
   },
   "keywords": [
     "Prometheus-X",
