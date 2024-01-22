@@ -4,10 +4,13 @@ import { NotFoundError } from "../../errors/NotFoundError";
 
 const schema = new Schema<IConsent>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    userIdentifiers: [{ type: Schema.Types.ObjectId, ref: "UserIdentifier" }],
     identifier: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    providerUserIdentifier: String,
+    consumerUserIdentifier: String,
     consented: { type: Boolean, required: true },
+    dataProvider: { type: String, required: true },
+    recipients: [{ type: String, required: true }],
     purposes: [{ type: String }],
     data: [{ type: String }],
     status: {
@@ -15,7 +18,7 @@ const schema = new Schema<IConsent>(
       enum: ["pending", "granted", "revoked", "expired"],
     },
     piiPrincipalRights: [String],
-    privacyNotice: { type: String, default: "" }, // TODO Should be required but left out for initial implementations
+    privacyNotice: { type: String, default: "" },
     processingLocations: [String],
     storageLocations: [String],
     recipientThirdParties: [
@@ -23,6 +26,7 @@ const schema = new Schema<IConsent>(
     ],
     retentionPeriod: String,
     withdrawalMethod: String,
+    token: { type: String, default: "" },
     jsonld: { type: String, required: true },
     schema_version: { type: String, default: "0.2.0" },
   },

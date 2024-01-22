@@ -724,7 +724,7 @@ paths:
             schema:
               type: object
               example:
-                hasLegallyBindingName: <string>
+                legalName: <string>
                 identifier: <string:DID>
                 address:
                   addressLocality: <string>
@@ -791,7 +791,7 @@ paths:
               schema:
                 type: object
               example:
-                hasLegallyBindingName: <string>
+                legalName: <string>
                 identifier: <string:DID>
                 address:
                   addressLocality: <string>
@@ -838,7 +838,7 @@ paths:
                       "solution": "http://localhost:3000/",
                       "idInSolution": "64f1fce5bd8a3583c76d62c4"
                     },
-                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "gax-participant:legalName": "<string>",
                     "address": {
                       "@type": "schema:PostalAddress",
                       "schema:addressLocality": "<string>",
@@ -956,7 +956,7 @@ paths:
                       dataExport: ''
                       dataImport: ''
                     _id: 64f1d9d399858e42532bdfbf
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -994,7 +994,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1d9d399858e42532bdfbf"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1050,7 +1050,7 @@ paths:
                       dataExport: ''
                       dataImport: ''
                     _id: 64f1d9d999858e42532bdfc3
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1088,7 +1088,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1d9d999858e42532bdfc3"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1144,7 +1144,7 @@ paths:
                       dataExport: ''
                       dataImport: ''
                     _id: 64f1da5e99858e42532bdfd7
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1182,7 +1182,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1da5e99858e42532bdfd7"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1238,7 +1238,7 @@ paths:
                       dataExport: ''
                       dataImport: ''
                     _id: 64f1df5db2face281e55d8fa
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1276,7 +1276,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1df5db2face281e55d8fa"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1336,7 +1336,7 @@ paths:
                       dataExport: ''
                       dataImport: ''
                     _id: 64f1df7452a3febe2b054b38
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1374,7 +1374,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1df7452a3febe2b054b38"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1434,7 +1434,7 @@ paths:
                       dataExport: https://example.com/export
                       dataImport: https://example.com/import
                     _id: 64f1df921ddff0e8f2f82f3d
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1472,7 +1472,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1df921ddff0e8f2f82f3d"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1532,7 +1532,7 @@ paths:
                       dataExport: https://example.com/export
                       dataImport: https://example.com/import
                     _id: 64f1fce5bd8a3583c76d62c4
-                    hasLegallyBindingName: <string>
+                    legalName: <string>
                     identifier: <string:DID>
                     url: <string>
                     description: <string>
@@ -1570,7 +1570,7 @@ paths:
                           "solution": "http://localhost:3000/",
                           "idInSolution": "64f1fce5bd8a3583c76d62c4"
                         },
-                        "gax-participant:hasLegallyBindingName": "<string>",
+                        "gax-participant:legalName": "<string>",
                         "address": {
                           "@type": "schema:PostalAddress",
                           "schema:addressLocality": "<string>",
@@ -1731,7 +1731,7 @@ paths:
                   postalCode: <string>
                   streetAddress: <string>
                 _id: 64f1d9d399858e42532bdfbf
-                hasLegallyBindingName: <string>
+                legalName: <string>
                 identifier: <string:DID>
                 url: <string>
                 description: <string>
@@ -1770,7 +1770,7 @@ paths:
                       "solution": "http://localhost:3000/",
                       "idInSolution": "64f1d9d399858e42532bdfbf"
                     },
-                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "gax-participant:legalName": "<string>",
                     "address": {
                       "@type": "schema:PostalAddress",
                       "schema:addressLocality": "<string>",
@@ -1880,7 +1880,7 @@ paths:
                   dataExport: https://example.com/export
                   dataImport: https://example.com/import
                 _id: 64f1fce5bd8a3583c76d62c4
-                hasLegallyBindingName: <string>
+                legalName: <string>
                 identifier: <string:DID>
                 url: <string>
                 description: <string>
@@ -1918,7 +1918,7 @@ paths:
                       "solution": "http://localhost:3000/",
                       "idInSolution": "64f1fce5bd8a3583c76d62c4"
                     },
-                    "gax-participant:hasLegallyBindingName": "<string>",
+                    "gax-participant:legalName": "<string>",
                     "address": {
                       "@type": "schema:PostalAddress",
                       "schema:addressLocality": "<string>",
