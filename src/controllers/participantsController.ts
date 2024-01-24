@@ -75,8 +75,8 @@ export const registerParticipant = async (
       publicKey: base64Key,
       uri:
         process.env.NODE_ENV === "development"
-          ? `${process.env.URL}:${process.env.PORT}`
-          : `${process.env.URL}`,
+          ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+          : `${process.env.URL}${process.env.API_PREFIX}/`,
     });
 
     const createdParticipant = await newParticipant.save();

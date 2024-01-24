@@ -3,6 +3,7 @@ import { IPrivacyNoticeDocument } from "../../types/models";
 
 const schema = new Schema<IPrivacyNoticeDocument>(
   {
+    contract: String,
     title: String,
     lastUpdated: String,
     dataProvider: String,
@@ -36,7 +37,7 @@ const schema = new Schema<IPrivacyNoticeDocument>(
     automatedDecisionMaking: {
       details: String,
     },
-    jsonld: { type: String, required: true },
+    jsonld: { type: String },
     schema_version: { type: String, default: "0.1.0" },
   },
   { timestamps: true }

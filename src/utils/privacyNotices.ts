@@ -10,6 +10,7 @@ export const bilateralContractToPrivacyNotice = (
   contract: BilateralContract
 ): IPrivacyNotice => {
   const privacyNotice: IPrivacyNotice = {
+    contract: `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/${contract._id}`,
     title: contract.profile,
     lastUpdated: Date.now().toString(),
     dataProvider: contract.dataProvider,
@@ -56,6 +57,7 @@ export const ecosystemContractToPrivacyNotice = (
   contract: EcosystemContract
 ) => {
   const privacyNotice: IPrivacyNotice = {
+    contract: `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/${contract._id}`,
     title: contract.profile,
     lastUpdated: Date.now().toString(),
     dataProvider: "",

@@ -161,6 +161,11 @@ export interface IConsent extends Document, AllSchemas {
 
 export interface IPrivacyNotice {
   /**
+   * Contract self-description.
+   */
+  contract: string;
+
+  /**
    * Title of the privacy notice.
    */
   title: string;

@@ -6,7 +6,10 @@ import { BadRequestError } from "../errors/BadRequestError";
 import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
 import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
-import { IPrivacyNotice, IUserIdentifier } from "../types/models";
+import {
+  IPrivacyNotice,
+  IUserIdentifier,
+} from "../types/models";
 import Participant from "../models/Participant/Participant.model";
 import { NodemailerClient } from "../libs/emails/nodemailer";
 import { Logger } from "../libs/loggers";
@@ -15,6 +18,7 @@ import { createPrivateKey, privateEncrypt } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import crypto from "crypto";
+import _ from "lodash";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -59,39 +63,60 @@ export const getPrivacyNotices = async (
   next: NextFunction
 ) => {
   try {
-    const { providerId, consumerId } = req.body;
-
-    const existingPrivacyNotices = await PrivacyNotice.find({
-      dataProvider: providerId,
-      recipients: { $in: consumerId },
-    });
+    let { providerId, consumerId } = req.params;
 
     const privacyNotices = await getPrivacyNoticesFromContractsBetweenParties(
       providerId,
       consumerId
     );
 
+    consumerId = Buffer.from(consumerId, "base64").toString();
+    providerId = Buffer.from(providerId, "base64").toString();
+
+    const existingPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerId,
+      recipients: { $in: consumerId },
+    }).lean();
+
+    const existingPrivacyNoticesIds = existingPrivacyNotices
+      .map((element: { contract: any }) => element.contract)
+      .sort();
+
+    const privacyNoticesIds = privacyNotices
+      .map((element: { contract: any }) => element.contract)
+      .sort();
+
     if (!privacyNotices && !existingPrivacyNotices)
       return res.status(404).json({ error: "No contracts found" });
 
-    // TODO existing privacy notices should be used if similar ones come
-    // from the contracts analysis.
+    const filteredPrivacyNoticesComingFromContracts: IPrivacyNotice[] = [];
 
-    const finalPrivacyNotices: IPrivacyNotice[] = []; // This is what will be sent back
-    const filteredPrivacyNoticesComingFromContracts: IPrivacyNotice[] = []; // These are new and should be saved after the filtering
+    if (!_.isEqual(existingPrivacyNoticesIds, privacyNoticesIds)) {
+      const filteredIds = privacyNoticesIds.filter(
+        (element) => !existingPrivacyNoticesIds.includes(element)
+      );
 
-    // Find the privacy notices from the existing ones that are similar to the ones
-    // coming from the contracts
-    // If a similar one is found it should be used alongside the other existing
-    // privacy notices in the final returned result.
+      filteredPrivacyNoticesComingFromContracts.push(
+        ...privacyNotices.filter((element) =>
+          filteredIds.includes(element.contract)
+        )
+      ); // These are new and should be saved after the filtering
 
-    await Promise.all(
-      filteredPrivacyNoticesComingFromContracts.map((pn) => {
+      // Find the privacy notices from the existing ones that are similar to the ones
+      // coming from the contracts
+      // If a similar one is found it should be used alongside the other existing
+      // privacy notices in the final returned result.
+
+      for (const pn of filteredPrivacyNoticesComingFromContracts) {
         const newPn = new PrivacyNotice(pn);
-        newPn.save();
-        return newPn;
-      })
-    );
+        await newPn.save();
+      }
+    }
+
+    const finalPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerId,
+      recipients: { $in: consumerId },
+    }).lean(); // This is what will be sent back
 
     return res.json(finalPrivacyNotices);
   } catch (err) {

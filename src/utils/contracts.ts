@@ -30,6 +30,7 @@ type Policy = {
 };
 
 export type BilateralContract = {
+  _id: string;
   uid: string;
   dataProvider: string;
   dataConsumer: string;
@@ -51,6 +52,7 @@ export type BilateralContract = {
 };
 
 export type EcosystemContract = {
+  _id: string;
   uid: string;
   profile: string;
   ecosystem: string;
@@ -163,8 +165,11 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
   dataProviderID: string,
   dataConsumerID: string
 ): Promise<IPrivacyNotice[]> => {
-  const bilateralContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${dataProviderID}?hasSigned=true&isParticipant=false`;
-  const ecosystemContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${dataProviderID}?hasSigned=true&isParticipant=false`;
+  const bilateralContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${dataProviderID}?hasSigned=true`;
+  const ecosystemContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${dataProviderID}?hasSigned=true`;
+
+  dataConsumerID = Buffer.from(dataConsumerID, "base64").toString();
+  dataProviderID = Buffer.from(dataProviderID, "base64").toString();
 
   const [
     bilateralContractsRes,
@@ -195,59 +200,73 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
       ? dataConsumerSDResponse.data
       : dataConsumerID;
 
-  const bilateralPrivacyNotices = bilateralContractsRes.data.map(
-    (contract: BilateralContract) => bilateralContractToPrivacyNotice(contract)
-  );
+  let bilateralPrivacyNotices = [];
+  if (
+    bilateralContractsRes?.data.contracts &&
+    bilateralContractsRes?.data.contracts.length > 0
+  ) {
+    bilateralPrivacyNotices = bilateralContractsRes?.data.contracts.map(
+      (contract: BilateralContract) =>
+        bilateralContractToPrivacyNotice(contract)
+    );
+  }
+  let ecosystemPrivacyNotices = [];
+  if (
+    ecosystemContractsRes.data.contracts &&
+    ecosystemContractsRes.data.contracts.length > 0
+  ) {
+    ecosystemPrivacyNotices = await Promise.all(
+      ecosystemContractsRes.data.contracts.map(
+        async (contract: EcosystemContract) => {
+          // Populate the Privacy Notice
+          const pn = ecosystemContractToPrivacyNotice(contract);
+          const consumerServiceOfferings = contract.serviceOfferings.filter(
+            (so) => so.participant === dataConsumerID
+          );
 
-  const ecosystemPrivacyNotices = await Promise.all(
-    ecosystemContractsRes.data.map(async (contract: EcosystemContract) => {
-      // Populate the Privacy Notice
-      const pn = ecosystemContractToPrivacyNotice(contract);
-      const consumerServiceOfferings = contract.serviceOfferings.filter(
-        (so) => so.participant === dataConsumerID
-      );
+          const consumerSOsThatArePurposes = await Promise.all(
+            consumerServiceOfferings.map(async (so) => {
+              if (so.serviceOffering.startsWith("http")) {
+                const soSelfDescription = await axios.get(so.serviceOffering);
+                if (soSelfDescription.data?.softwareResources?.length > 0)
+                  return so;
+              }
+              return null;
+            })
+          );
 
-      const consumerSOsThatArePurposes = await Promise.all(
-        consumerServiceOfferings.map(async (so) => {
-          if (so.serviceOffering.startsWith("http")) {
-            const soSelfDescription = await axios.get(so.serviceOffering);
-            if (soSelfDescription.data?.softwareResources?.length > 0)
-              return so;
-          }
-          return null;
-        })
-      );
+          const filteredConsumerSOs = consumerSOsThatArePurposes.filter(
+            (so) => so !== null
+          );
 
-      const filteredConsumerSOs = consumerSOsThatArePurposes.filter(
-        (so) => so !== null
-      );
+          pn.dataProvider = dataProviderID;
 
-      pn.dataProvider = dataProviderID;
+          pn.controllerDetails.name =
+            typeof dataProviderSD === "string"
+              ? dataProviderSD
+              : dataProviderID;
 
-      pn.controllerDetails.name =
-        typeof dataProviderSD === "string"
-          ? dataProviderSD
-          : dataProviderSD?.legalName;
+          pn.data = getDataFromPoliciesInEcosystemContract(
+            contract,
+            dataProviderID
+          );
 
-      pn.data = getDataFromPoliciesInEcosystemContract(
-        contract,
-        dataProviderID
-      );
+          pn.purposes = filteredConsumerSOs.map((so) => ({
+            purpose: so.serviceOffering,
+            legalBasis: "",
+          }));
 
-      pn.purposes = filteredConsumerSOs.map((so) => ({
-        purpose: so.serviceOffering,
-        legalBasis: "",
-      }));
+          pn.recipients.push(
+            typeof dataConsumerSD === "string"
+              ? dataConsumerSD
+              : dataConsumerID
+          );
 
-      pn.recipients.push(
-        typeof dataConsumerSD === "string"
-          ? dataConsumerSD
-          : dataConsumerSD?.legalName
-      );
-
-      return pn;
-    })
-  );
+          return pn;
+        }
+      )
+    );
+  }
 
   return [...bilateralPrivacyNotices, ...ecosystemPrivacyNotices];
 };

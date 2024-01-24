@@ -47,6 +47,7 @@
     "@types/express-serve-static-core": "^4.17.36",
     "@types/express-session": "^1.17.7",
     "@types/jsonwebtoken": "^9.0.2",
+    "@types/lodash": "^4.14.202",
     "@types/mocha": "^10.0.1",
     "@types/morgan": "^1.9.9",
     "@types/node": "^18.11.17",

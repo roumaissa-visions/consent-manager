@@ -570,6 +570,74 @@
         }
       }
     },
+    "/consents/{userId}/{providerId}/{consumerId}": {
+      "get": {
+        "tags": ["consents"],
+        "summary": "Get privacy notice",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "User Identifier"
+          },
+          {
+            "name": "providerId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Provider ID"
+          },
+          {
+            "name": "consumerId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consumer ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/consents/{privacyNoticeId}": {
+      "get": {
+        "tags": ["consents"],
+        "summary": "Get user consent by ID",
+        "parameters": [
+          {
+            "name": "privacyNoticeId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "privacy notice id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
     "/consents/review/{dataProviderId}/{dataConsumerId}": {
       "get": {
         "tags": ["consents"],
@@ -726,7 +794,9 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "consentId": "<string>"
+                  "privacyNoticeId": "<string>",
+                  "email": "<string>",
+                  "data": "<string>"
                 }
               }
             }
@@ -922,38 +992,19 @@
                 "example": {
                   "legalName": "<string>",
                   "identifier": "<string:DID>",
-                  "address": {
-                    "addressLocality": "<string>",
-                    "addressRegion": "<string>",
-                    "postalCode": "<string>",
-                    "streetAddress": "<string>"
-                  },
-                  "url": "<string>",
-                  "description": "<string>",
-                  "hasBusinessIdentifier": "<string>",
-                  "hasMemberParticipant": [],
-                  "hasLogo": "<string>",
-                  "contactPoint": [
-                    {
-                      "email": "<string>",
-                      "telephone": "<string>",
-                      "contactType": "<string>"
-                    }
-                  ],
-                  "hasCompanyType": "<string>",
-                  "hasPhoneNumber": "<string>",
-                  "hasMemberPerson": [
-                    {
-                      "name": "<string>",
-                      "email": "<string>"
-                    }
-                  ],
+                  "selfDescriptionURL": "<string>",
                   "email": "<string>",
-                  "password": "<string>",
+                  "dataspaceEndpoint": "<string>",
                   "endpoints": {
                     "dataExport": "https://example.com/export",
-                    "dataImport": "https://example.com/import"
-                  }
+                    "dataImport": "https://example.com/import",
+                    "consentImport": "https://example.com/import",
+                    "consentExport": "https://example.com/import"
+                  },
+                  "clientID": "<string>",
+                  "clientSecret": "<string>",
+                  "jsonld": "<string>",
+                  "schema_version": "<string>"
                 }
               }
             }
