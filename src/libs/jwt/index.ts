@@ -4,7 +4,7 @@ import { IUser, IParticipant } from "../../types/models";
 export const issueJwt = (participant: IParticipant) => {
   const jwtPayload = {
     sub: participant.id,
-    participant_name: participant.hasLegallyBindingName,
+    participant_name: participant.legalName,
   };
 
   const jwtOptions: jwt.SignOptions = {

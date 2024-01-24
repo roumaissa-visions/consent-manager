@@ -3,7 +3,7 @@ import { IParticipant } from "../../types/models";
 
 const participantSchema = new Schema<IParticipant>(
   {
-    hasLegallyBindingName: {
+    legalName: {
       type: String,
       required: true,
     },

@@ -1,10 +1,11 @@
 import { Schema, model } from "mongoose";
-import { IPrivacyNotice } from "../../types/models";
+import { IPrivacyNoticeDocument } from "../../types/models";
 
-const schema = new Schema<IPrivacyNotice>(
+const schema = new Schema<IPrivacyNoticeDocument>(
   {
     title: String,
     lastUpdated: String,
+    dataProvider: String,
     controllerDetails: {
       name: String,
       contact: String,
@@ -41,6 +42,6 @@ const schema = new Schema<IPrivacyNotice>(
   { timestamps: true }
 );
 
-const PrivacyNotice = model<IPrivacyNotice>("PrivacyNotice", schema);
+const PrivacyNotice = model<IPrivacyNoticeDocument>("PrivacyNotice", schema);
 
 export default PrivacyNotice;
