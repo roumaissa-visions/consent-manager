@@ -6,15 +6,12 @@ import { BadRequestError } from "../errors/BadRequestError";
 import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
 import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
-import {
-  IPrivacyNotice,
-  IUserIdentifier,
-} from "../types/models";
+import { IPrivacyNotice, IUserIdentifier } from "../types/models";
 import Participant from "../models/Participant/Participant.model";
 import { NodemailerClient } from "../libs/emails/nodemailer";
 import { Logger } from "../libs/loggers";
 import axios from "axios";
-import { createPrivateKey, privateEncrypt } from "crypto";
+import * as CryptoJS from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import crypto from "crypto";
@@ -22,6 +19,10 @@ import _ from "lodash";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
+);
+
+const AESKey = readFileSync(
+  path.join(__dirname, "..", "config", "keys", "AESKey.pem")
 );
 
 /**
@@ -218,6 +219,7 @@ export const giveConsent = async (
     const dataProvider = await Participant.findOne({
       selfDescriptionURL: dataProviderSD,
     });
+
     const dataConsumerSD =
       privacyNotice.recipients.length > 0 ? privacyNotice.recipients[0] : null;
     const dataConsumer = await Participant.findOne({
@@ -230,31 +232,71 @@ export const giveConsent = async (
         .json({ error: "Data consumer not found in privacy notice" });
 
     // Find user identifiers
-    const providerUserIdentifier = user.identifiers.find(
+    let providerUserIdentifier = user.identifiers.find(
       (id) => id.attachedParticipant?.toString() === dataProvider?.id
     );
-    const consumerUserIdentifier = user.identifiers.find(
+
+    let consumerUserIdentifier = user.identifiers.find(
       (id) => id.attachedParticipant?.toString() === dataConsumer?.id
     );
 
     if (!providerUserIdentifier) {
-      return res
-        .status(400)
-        .json({ error: "User identifier does not exist in data provider" });
+      //if not foung in attached participants
+      // search in userIdentifier to rattached it
+
+      const userIdentifiers = await UserIdentifier.findOne({
+        attachedParticipant: dataProvider?.id,
+        email: user.email,
+      }).lean();
+
+      if (!userIdentifiers) {
+        return res
+          .status(400)
+          .json({ error: "User identifier does not exist in data provider" });
+      }
+      if (!user.identifiers.includes(userIdentifiers._id)) {
+        user.identifiers.push(userIdentifiers._id);
+        await user.save();
+      }
+
+      providerUserIdentifier = userIdentifiers._id;
     }
 
     const consent = new Consent({
-      privacyNotice: privacyNotice,
+      privacyNotice: privacyNotice._id,
       user: req.user?.id,
-      providerUserIdentifier,
-      consumerUserIdentifier,
-      dataProvider: dataProvider,
+      providerUserIdentifier: providerUserIdentifier._id,
+      consumerUserIdentifier: consumerUserIdentifier._id,
+      dataProvider: dataProvider?._id,
+      dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
       data: data,
-      status: "pending",
+      status: "granted",
       consented: true,
     });
+
+    if (!consumerUserIdentifier) {
+      //if not foung in attached consumer participants
+      // search in userIdentifier to rattached it
+
+      const userIdentifiers = await UserIdentifier.findOne({
+        attachedParticipant: dataConsumer?.id,
+        email: user.email,
+      }).lean();
+
+      if (!userIdentifiers) {
+        return res
+          .status(400)
+          .json({ error: "User identifier does not exist in data Consumer" });
+      }
+      if (!user.identifiers.includes(userIdentifiers._id)) {
+        user.identifiers.push(userIdentifiers._id);
+        await user.save();
+      }
+
+      consumerUserIdentifier = userIdentifiers._id;
+    }
 
     // If user identifier in consumer was not found it is possible it exists
     // for another email. If it's the case, the user should provide the email
@@ -300,9 +342,21 @@ export const giveConsent = async (
       }
     }
 
+    const verification = await Consent.findOne({
+      providerUserIdentifier: providerUserIdentifier._id,
+      consumerUserIdentifier: consumerUserIdentifier._id,
+      dataProvider: dataProvider._id,
+      privacyNotice: privacyNoticeId,
+      user: userId,
+    }).lean();
+
+    if (verification) {
+      return res.status(200).json(verification);
+    }
+
     await consent.save();
 
-    res.status(200).json(consent);
+    res.status(201).json(consent);
   } catch (err) {
     next(err);
   }
@@ -388,7 +442,9 @@ export const triggerDataExchange = async (
 ) => {
   try {
     const { consentId } = req.params;
-    const consent = await Consent.findById(consentId);
+    const consent: any = await Consent.findById(consentId)
+      .populate([{ path: "dataProvider" }])
+      .lean();
     if (!consent) return res.status(404).json({ error: "consent not found" });
 
     if (consent.status !== "granted") {
@@ -398,26 +454,38 @@ export const triggerDataExchange = async (
     }
 
     const payload = {
-      ...consent.toJSON(),
+      ...consent,
     };
 
-    const privateKey = createPrivateKey(consentSignaturePrivateKey);
-    const signedConsent = privateEncrypt(
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      AESKey.toString().trim(),
+      iv
+    );
+    const signedConsent = Buffer.concat([
+      cipher.update(Buffer.from(JSON.stringify(payload)).toString(), "utf-8"),
+      cipher.final(),
+    ]);
+
+    const privateKey = CryptoJS.createPrivateKey({
+      key: consentSignaturePrivateKey.toString().trim(),
+      passphrase: "",
+    });
+    const encrypted = CryptoJS.privateEncrypt(
       {
         key: privateKey,
         padding: crypto.constants.RSA_PKCS1_PADDING,
       },
-      Buffer.from(JSON.stringify(payload))
+      AESKey
     );
 
-    // TODO find consent/export endpoint in data provider's self description
-    // consent.dataProvider
-
     try {
-      // TODO replace url
-      await axios.post("TODO_ENDPOINT_CONSENT_EXPORT_OF_PROVIDER", {
-        signedConsent,
+      await axios.post(consent.dataProvider.endpoints.consentExport, {
+        signedConsent: `${iv.toString("hex")}:${signedConsent.toString("hex")}`,
+        encrypted,
       });
+
       return res.status(200).json({
         message:
           "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
@@ -449,8 +517,11 @@ export const attachTokenToConsent = async (
   next: NextFunction
 ) => {
   try {
-    const { token, consentId } = req.body;
-    const consent = await Consent.findById(consentId);
+    const { consentId } = req.params;
+    const { token } = req.body;
+    const consent: any = await Consent.findById(consentId)
+      .populate([{ path: "dataConsumer" }])
+      .lean();
     if (!consent) return res.status(404).json({ error: "Consent not found" });
 
     consent.token = token;
@@ -458,11 +529,11 @@ export const attachTokenToConsent = async (
     await consent.save();
 
     const payload = {
-      ...consent.toJSON(),
+      ...consent,
     };
 
-    const privateKey = createPrivateKey(consentSignaturePrivateKey);
-    const signedConsent = privateEncrypt(
+    const privateKey = CryptoJS.createPrivateKey(consentSignaturePrivateKey);
+    const signedConsent = CryptoJS.privateEncrypt(
       {
         key: privateKey,
         padding: crypto.constants.RSA_PKCS1_PADDING,

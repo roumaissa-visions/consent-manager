@@ -183,3 +183,37 @@ export const deleteParticipant = async (
     next(err);
   }
 };
+
+/*
+  Allow to post to all participants the public key
+ */
+export const exportPublicKeyToParticipants = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const base64Key = fs.readFileSync(
+      path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
+      { encoding: "base64" }
+    );
+
+    const participants = await Participant.find().lean();
+
+    for (const participant of participants) {
+      const sd = await axios.get(participant.selfDescriptionURL);
+      const sdData = await axios.get(sd.data.dataspaceEndpoint);
+      await axios.put(sdData.data.content._links.consentConfiguration.href, {
+        publicKey: base64Key,
+        uri:
+          process.env.NODE_ENV === "development"
+            ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+            : `${process.env.URL}${process.env.API_PREFIX}/`,
+      });
+    }
+
+    res.json(participants);
+  } catch (err) {
+    next(err);
+  }
+};
