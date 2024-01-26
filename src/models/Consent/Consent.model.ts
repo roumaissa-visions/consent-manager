@@ -1,8 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IConsent } from "../../types/models";
 import { NotFoundError } from "../../errors/NotFoundError";
-import Participant from "../Participant/Participant.model";
-import ParticipantModel from "../Participant/Participant.model";
 
 const schema = new Schema<IConsent>(
   {

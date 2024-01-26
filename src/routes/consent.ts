@@ -8,6 +8,7 @@ import {
   giveConsent,
   revokeConsent,
   triggerDataExchange,
+  verifyToken,
 } from "../controllers/consentsController";
 import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
 // import { checkIDFormatMiddleware } from "../middleware/objectIdFormatCheck";
@@ -60,6 +61,13 @@ r.post(
   verifyParticipantJWT,
   // verifyContract,
   attachTokenToConsent
+);
+
+r.post(
+  "/:consentId/validate",
+  verifyParticipantJWT,
+  // verifyContract,
+  verifyToken
 );
 
 export default r;

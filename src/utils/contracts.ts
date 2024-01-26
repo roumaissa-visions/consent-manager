@@ -73,26 +73,31 @@ export type EcosystemContract = {
   jsonLD: string;
 };
 
-export const getDataFromPliciesInBilateralContract = (
+export const getDataFromPoliciesInBilateralContract = (
   contract: BilateralContract
 ) => {
   const policiesMatchingServiceOffering = contract.policy.filter(
     (policy) =>
-      policy.permission.find(
-        (p) => p.target === (contract as BilateralContract)?.serviceOffering
+      policy.permission.find((p) =>
+        (contract as BilateralContract)?.serviceOffering.includes(p.target)
       ) ||
-      policy.prohibition.find(
-        (p) => p.target === (contract as BilateralContract)?.serviceOffering
+      policy.prohibition.find((p) =>
+        (contract as BilateralContract)?.serviceOffering.includes(p.target)
       )
   );
 
+  //TODO: target to self-description ?
   const dataFromPermissions = policiesMatchingServiceOffering.map((policy) => {
-    const result = policy.permission.map((permission) => permission.target);
+    const result = policy.permission.map(
+      () => (contract as BilateralContract)?.serviceOffering
+    );
     return result;
   });
 
   const dataFromProhibitions = policiesMatchingServiceOffering.map((policy) => {
-    const result = policy.prohibition.map((prohibition) => prohibition.target);
+    const result = policy.prohibition.map(
+      () => (contract as BilateralContract)?.serviceOffering
+    );
     return result;
   });
 
@@ -114,29 +119,36 @@ export const getDataFromPoliciesInEcosystemContract = (
   contract: EcosystemContract,
   dataProvider?: string
 ) => {
-  const policies = dataProvider
+  const serviceOffering = dataProvider
     ? contract.serviceOfferings
         ?.filter((so) => so.participant === dataProvider)
-        .map((so) => so.policies)
-    : contract.serviceOfferings?.map((so) => so.policies);
+        .map((element) => element.serviceOffering)
+    : [];
 
-  const combinedPolicies = [...policies].reduce((acc, curr) =>
-    acc.concat(curr)
+  const policies = (contract.rolesAndObligations as any)[0].policies?.filter(
+    (policy: any) =>
+      policy.permission && policy.permission.length > 0
+        ? serviceOffering.includes(policy.permission[0].target)
+        : null
   );
 
-  const filteredPolicies = combinedPolicies.filter(
-    (policy) =>
-      policy.permission.find((p) => p.target !== null) ||
-      policy.prohibition.find((p) => p.target !== null)
+  const filteredPolicies = policies.filter(
+    (policy: any) =>
+      policy.permission.find((p: any) => p.target !== null) ||
+      policy.prohibition.find((p: any) => p.target !== null)
   );
 
-  const dataFromPermissions = filteredPolicies.map((policy) => {
-    const result = policy.permission.map((permission) => permission.target);
+  const dataFromPermissions = filteredPolicies.map((policy: any) => {
+    const result = policy.permission.map(
+      (permission: any) => permission.target
+    );
     return result;
   });
 
-  const dataFromProhibitions = filteredPolicies.map((policy) => {
-    const result = policy.prohibition.map((prohibition) => prohibition.target);
+  const dataFromProhibitions = filteredPolicies.map((policy: any) => {
+    const result = policy.prohibition.map(
+      (prohibition: any) => prohibition.target
+    );
     return result;
   });
 
@@ -257,9 +269,7 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
           }));
 
           pn.recipients.push(
-            typeof dataConsumerSD === "string"
-              ? dataConsumerSD
-              : dataConsumerID
+            typeof dataConsumerSD === "string" ? dataConsumerSD : dataConsumerID
           );
 
           return pn;

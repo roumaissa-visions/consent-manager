@@ -271,7 +271,7 @@ export const giveConsent = async (
       dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
-      data: data,
+      data: privacyNotice.data,
       status: "granted",
       consented: true,
     });
@@ -457,32 +457,11 @@ export const triggerDataExchange = async (
       ...consent,
     };
 
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(
-      "aes-256-cbc",
-      AESKey.toString().trim(),
-      iv
-    );
-    const signedConsent = Buffer.concat([
-      cipher.update(Buffer.from(JSON.stringify(payload)).toString(), "utf-8"),
-      cipher.final(),
-    ]);
-
-    const privateKey = CryptoJS.createPrivateKey({
-      key: consentSignaturePrivateKey.toString().trim(),
-      passphrase: "",
-    });
-    const encrypted = CryptoJS.privateEncrypt(
-      {
-        key: privateKey,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-      },
-      AESKey
-    );
+    const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
     try {
       await axios.post(consent.dataProvider.endpoints.consentExport, {
-        signedConsent: `${iv.toString("hex")}:${signedConsent.toString("hex")}`,
+        signedConsent,
         encrypted,
       });
 
@@ -520,53 +499,63 @@ export const attachTokenToConsent = async (
     const { consentId } = req.params;
     const { token } = req.body;
     const consent: any = await Consent.findById(consentId)
-      .populate([{ path: "dataConsumer" }])
+      .populate([
+        { path: "dataConsumer", select: "-clientID -clientSecret" },
+        { path: "dataProvider", select: "-clientID -clientSecret" },
+        { path: "providerUserIdentifier" },
+        { path: "consumerUserIdentifier" },
+      ])
       .lean();
     if (!consent) return res.status(404).json({ error: "Consent not found" });
 
-    consent.token = token;
-
-    await consent.save();
+    const updatedConsent = await Consent.findByIdAndUpdate(
+      consentId,
+      {
+        token: token,
+      },
+      { new: true }
+    )
+      .populate([
+        { path: "dataConsumer", select: "-clientID -clientSecret" },
+        { path: "dataProvider", select: "-clientID -clientSecret" },
+        { path: "providerUserIdentifier" },
+        { path: "consumerUserIdentifier" },
+      ])
+      .lean();
 
     const payload = {
-      ...consent,
+      ...updatedConsent,
     };
 
-    const privateKey = CryptoJS.createPrivateKey(consentSignaturePrivateKey);
-    const signedConsent = CryptoJS.privateEncrypt(
-      {
-        key: privateKey,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-      },
-      Buffer.from(JSON.stringify(payload))
-    );
+    const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
     try {
-      // TODO find data consumer endpoint "consent import"
       await axios.post(
-        "TODO_ENDPOINT_CONSENT_IMPORT_CONSUMER",
+        consent.dataConsumer.endpoints.consentImport,
         {
-          dataProviderEndpoint: "", // TODO find data provider "data export" endpoint
+          dataProviderEndpoint: consent.dataProvider.endpoints.dataExport,
           signedConsent,
+          encrypted,
         },
         { headers: { "Content-Type": "application/json" } }
       );
     } catch (err) {
       Logger.error({ location: "consents.attachToken", message: err.message });
-      return res.status(424).json({
-        message: `an error occured after calling the data consumer's /consent/import endpoint`,
-        data: {
-          details: {
-            errorMessage: err.message,
-          },
-        },
-      });
+      // return res.status(424).json({
+      //   message: `an error occured after calling the data consumer's /consent/import endpoint`,
+      //   data: {
+      //     details: {
+      //       errorMessage: err.message,
+      //     },
+      //   },
+      // });
     }
 
     return res
       .status(200)
       .json({ message: "successfully forwarded consent to the data consumer" });
   } catch (err) {
+    Logger.error(err);
     next(err);
   }
 };
@@ -580,7 +569,8 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    const { consentId, token } = req.body;
+    const { consentId } = req.params;
+    const { token } = req.body;
     const consent = await Consent.findById(consentId);
     if (!consent) return res.status(404).json({ error: "Consent not found" });
     const consentToken = consent.token;
@@ -589,8 +579,44 @@ export const verifyToken = async (
         .status(400)
         .json({ error: "token does not match consent token" });
 
-    return res.status(200).json({ message: "token matches consent token" });
+    return res
+      .status(200)
+      .json({ message: "token matches consent token", verified: true });
   } catch (err) {
     next(err);
+  }
+};
+
+const encryptPayloadAndKey = (payload: object) => {
+  try {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      AESKey.toString().trim(),
+      iv
+    );
+    const signedConsent = Buffer.concat([
+      cipher.update(Buffer.from(JSON.stringify(payload)).toString(), "utf-8"),
+      cipher.final(),
+    ]);
+
+    const privateKey = CryptoJS.createPrivateKey({
+      key: consentSignaturePrivateKey.toString().trim(),
+      passphrase: "",
+    });
+    const encrypted = CryptoJS.privateEncrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      AESKey
+    );
+
+    return {
+      signedConsent: `${iv.toString("hex")}:${signedConsent.toString("hex")}`,
+      encrypted,
+    };
+  } catch (e) {
+    Logger.error(e);
   }
 };
