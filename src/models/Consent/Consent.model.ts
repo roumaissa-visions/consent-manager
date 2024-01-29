@@ -5,6 +5,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 const schema = new Schema<IConsent>(
   {
     identifier: { type: String },
+    contract: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     providerUserIdentifier: {
       type: Schema.Types.ObjectId,

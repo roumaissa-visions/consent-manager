@@ -162,6 +162,11 @@ export interface IConsent extends Document, AllSchemas {
    * make the data request
    */
   token?: string;
+
+  /**
+   * The Contract where the consent have been generated
+   */
+  contract: string;
 }
 
 export interface IPrivacyNotice {

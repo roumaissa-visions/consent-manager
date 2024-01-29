@@ -274,6 +274,7 @@ export const giveConsent = async (
       data: privacyNotice.data,
       status: "granted",
       consented: true,
+      contract: privacyNotice.contract,
     });
 
     if (!consumerUserIdentifier) {
