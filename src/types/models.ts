@@ -12,13 +12,50 @@ export interface AllSchemas {
   updatedAt: Date;
 }
 
+export interface LegalPerson {
+  /**
+   * Country's registration number, which identifies one specific entity
+   * Can be local / EUID / EORI / vatID / leiCode
+   */
+  registrationNumber: string;
+
+  headquartersAddress: {
+    /**
+     * Physical location of the headquarters in ISO 3166-2 alpha2, alpha-3 or numeric format.
+     */
+    countryCode: string;
+  };
+
+  legalAddress: {
+    /**
+     * Physical location of the headquarters in ISO 3166-2 alpha2, alpha-3 or numeric format.
+     */
+    countryCode: string;
+  };
+
+  /**
+   * A list of direct participant that this entity is a subOrganization of, if any.
+   */
+  parentOrganization: string[];
+
+  /**
+   * A list of direct participant with a legal mandate on this entity, e.g., as a subsidiary.
+   */
+  subOrganization: string[];
+}
+
 export interface IParticipant extends Document, AllSchemas {
   legalName: string;
 
   /**
    * DID identifier
    */
-  identifier: string;
+  did: string;
+
+  /**
+   * Legal information about the organisation / person
+   */
+  legalPerson: LegalPerson;
 
   /**
    * URL to the self-description of the participant in a catalog
