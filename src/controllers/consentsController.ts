@@ -11,13 +11,18 @@ import Participant from "../models/Participant/Participant.model";
 import { NodemailerClient } from "../libs/emails/nodemailer";
 import { Logger } from "../libs/loggers";
 import axios from "axios";
-import { createPrivateKey, privateEncrypt } from "crypto";
+import * as CryptoJS from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import crypto from "crypto";
+import _ from "lodash";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
+);
+
+const AESKey = readFileSync(
+  path.join(__dirname, "..", "config", "keys", "AESKey.pem")
 );
 
 /**
@@ -59,39 +64,60 @@ export const getPrivacyNotices = async (
   next: NextFunction
 ) => {
   try {
-    const { providerId, consumerId } = req.body;
-
-    const existingPrivacyNotices = await PrivacyNotice.find({
-      dataProvider: providerId,
-      recipients: { $in: consumerId },
-    });
+    let { providerId, consumerId } = req.params;
 
     const privacyNotices = await getPrivacyNoticesFromContractsBetweenParties(
       providerId,
       consumerId
     );
 
+    consumerId = Buffer.from(consumerId, "base64").toString();
+    providerId = Buffer.from(providerId, "base64").toString();
+
+    const existingPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerId,
+      recipients: { $in: consumerId },
+    }).lean();
+
+    const existingPrivacyNoticesIds = existingPrivacyNotices
+      .map((element: { contract: any }) => element.contract)
+      .sort();
+
+    const privacyNoticesIds = privacyNotices
+      .map((element: { contract: any }) => element.contract)
+      .sort();
+
     if (!privacyNotices && !existingPrivacyNotices)
       return res.status(404).json({ error: "No contracts found" });
 
-    // TODO existing privacy notices should be used if similar ones come
-    // from the contracts analysis.
+    const filteredPrivacyNoticesComingFromContracts: IPrivacyNotice[] = [];
 
-    const finalPrivacyNotices: IPrivacyNotice[] = []; // This is what will be sent back
-    const filteredPrivacyNoticesComingFromContracts: IPrivacyNotice[] = []; // These are new and should be saved after the filtering
+    if (!_.isEqual(existingPrivacyNoticesIds, privacyNoticesIds)) {
+      const filteredIds = privacyNoticesIds.filter(
+        (element) => !existingPrivacyNoticesIds.includes(element)
+      );
 
-    // Find the privacy notices from the existing ones that are similar to the ones
-    // coming from the contracts
-    // If a similar one is found it should be used alongside the other existing
-    // privacy notices in the final returned result.
+      filteredPrivacyNoticesComingFromContracts.push(
+        ...privacyNotices.filter((element) =>
+          filteredIds.includes(element.contract)
+        )
+      ); // These are new and should be saved after the filtering
 
-    await Promise.all(
-      filteredPrivacyNoticesComingFromContracts.map((pn) => {
+      // Find the privacy notices from the existing ones that are similar to the ones
+      // coming from the contracts
+      // If a similar one is found it should be used alongside the other existing
+      // privacy notices in the final returned result.
+
+      for (const pn of filteredPrivacyNoticesComingFromContracts) {
         const newPn = new PrivacyNotice(pn);
-        newPn.save();
-        return newPn;
-      })
-    );
+        await newPn.save();
+      }
+    }
+
+    const finalPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerId,
+      recipients: { $in: consumerId },
+    }).lean(); // This is what will be sent back
 
     return res.json(finalPrivacyNotices);
   } catch (err) {
@@ -193,6 +219,7 @@ export const giveConsent = async (
     const dataProvider = await Participant.findOne({
       selfDescriptionURL: dataProviderSD,
     });
+
     const dataConsumerSD =
       privacyNotice.recipients.length > 0 ? privacyNotice.recipients[0] : null;
     const dataConsumer = await Participant.findOne({
@@ -205,31 +232,72 @@ export const giveConsent = async (
         .json({ error: "Data consumer not found in privacy notice" });
 
     // Find user identifiers
-    const providerUserIdentifier = user.identifiers.find(
+    let providerUserIdentifier = user.identifiers.find(
       (id) => id.attachedParticipant?.toString() === dataProvider?.id
     );
-    const consumerUserIdentifier = user.identifiers.find(
+
+    let consumerUserIdentifier = user.identifiers.find(
       (id) => id.attachedParticipant?.toString() === dataConsumer?.id
     );
 
     if (!providerUserIdentifier) {
-      return res
-        .status(400)
-        .json({ error: "User identifier does not exist in data provider" });
+      //if not foung in attached participants
+      // search in userIdentifier to rattached it
+
+      const userIdentifiers = await UserIdentifier.findOne({
+        attachedParticipant: dataProvider?.id,
+        email: user.email,
+      }).lean();
+
+      if (!userIdentifiers) {
+        return res
+          .status(400)
+          .json({ error: "User identifier does not exist in data provider" });
+      }
+      if (!user.identifiers.includes(userIdentifiers._id)) {
+        user.identifiers.push(userIdentifiers._id);
+        await user.save();
+      }
+
+      providerUserIdentifier = userIdentifiers._id;
     }
 
     const consent = new Consent({
-      privacyNotice: privacyNotice,
+      privacyNotice: privacyNotice._id,
       user: req.user?.id,
-      providerUserIdentifier,
-      consumerUserIdentifier,
-      dataProvider: dataProvider,
+      providerUserIdentifier: providerUserIdentifier._id,
+      consumerUserIdentifier: consumerUserIdentifier._id,
+      dataProvider: dataProvider?._id,
+      dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
-      data: data,
-      status: "pending",
+      data: privacyNotice.data,
+      status: "granted",
       consented: true,
+      contract: privacyNotice.contract,
     });
+
+    if (!consumerUserIdentifier) {
+      //if not foung in attached consumer participants
+      // search in userIdentifier to rattached it
+
+      const userIdentifiers = await UserIdentifier.findOne({
+        attachedParticipant: dataConsumer?.id,
+        email: user.email,
+      }).lean();
+
+      if (!userIdentifiers) {
+        return res
+          .status(400)
+          .json({ error: "User identifier does not exist in data Consumer" });
+      }
+      if (!user.identifiers.includes(userIdentifiers._id)) {
+        user.identifiers.push(userIdentifiers._id);
+        await user.save();
+      }
+
+      consumerUserIdentifier = userIdentifiers._id;
+    }
 
     // If user identifier in consumer was not found it is possible it exists
     // for another email. If it's the case, the user should provide the email
@@ -275,9 +343,21 @@ export const giveConsent = async (
       }
     }
 
+    const verification = await Consent.findOne({
+      providerUserIdentifier: providerUserIdentifier._id,
+      consumerUserIdentifier: consumerUserIdentifier._id,
+      dataProvider: dataProvider._id,
+      privacyNotice: privacyNoticeId,
+      user: userId,
+    }).lean();
+
+    if (verification) {
+      return res.status(200).json(verification);
+    }
+
     await consent.save();
 
-    res.status(200).json(consent);
+    res.status(201).json(consent);
   } catch (err) {
     next(err);
   }
@@ -363,7 +443,9 @@ export const triggerDataExchange = async (
 ) => {
   try {
     const { consentId } = req.params;
-    const consent = await Consent.findById(consentId);
+    const consent: any = await Consent.findById(consentId)
+      .populate([{ path: "dataProvider" }])
+      .lean();
     if (!consent) return res.status(404).json({ error: "consent not found" });
 
     if (consent.status !== "granted") {
@@ -373,26 +455,17 @@ export const triggerDataExchange = async (
     }
 
     const payload = {
-      ...consent.toJSON(),
+      ...consent,
     };
 
-    const privateKey = createPrivateKey(consentSignaturePrivateKey);
-    const signedConsent = privateEncrypt(
-      {
-        key: privateKey,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-      },
-      Buffer.from(JSON.stringify(payload))
-    );
-
-    // TODO find consent/export endpoint in data provider's self description
-    // consent.dataProvider
+    const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
     try {
-      // TODO replace url
-      await axios.post("TODO_ENDPOINT_CONSENT_EXPORT_OF_PROVIDER", {
+      await axios.post(consent.dataProvider.endpoints.consentExport, {
         signedConsent,
+        encrypted,
       });
+
       return res.status(200).json({
         message:
           "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
@@ -424,53 +497,66 @@ export const attachTokenToConsent = async (
   next: NextFunction
 ) => {
   try {
-    const { token, consentId } = req.body;
-    const consent = await Consent.findById(consentId);
+    const { consentId } = req.params;
+    const { token } = req.body;
+    const consent: any = await Consent.findById(consentId)
+      .populate([
+        { path: "dataConsumer", select: "-clientID -clientSecret" },
+        { path: "dataProvider", select: "-clientID -clientSecret" },
+        { path: "providerUserIdentifier" },
+        { path: "consumerUserIdentifier" },
+      ])
+      .lean();
     if (!consent) return res.status(404).json({ error: "Consent not found" });
 
-    consent.token = token;
-
-    await consent.save();
+    const updatedConsent = await Consent.findByIdAndUpdate(
+      consentId,
+      {
+        token: token,
+      },
+      { new: true }
+    )
+      .populate([
+        { path: "dataConsumer", select: "-clientID -clientSecret" },
+        { path: "dataProvider", select: "-clientID -clientSecret" },
+        { path: "providerUserIdentifier" },
+        { path: "consumerUserIdentifier" },
+      ])
+      .lean();
 
     const payload = {
-      ...consent.toJSON(),
+      ...updatedConsent,
     };
 
-    const privateKey = createPrivateKey(consentSignaturePrivateKey);
-    const signedConsent = privateEncrypt(
-      {
-        key: privateKey,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-      },
-      Buffer.from(JSON.stringify(payload))
-    );
+    const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
     try {
-      // TODO find data consumer endpoint "consent import"
       await axios.post(
-        "TODO_ENDPOINT_CONSENT_IMPORT_CONSUMER",
+        consent.dataConsumer.endpoints.consentImport,
         {
-          dataProviderEndpoint: "", // TODO find data provider "data export" endpoint
+          dataProviderEndpoint: consent.dataProvider.endpoints.dataExport,
           signedConsent,
+          encrypted,
         },
         { headers: { "Content-Type": "application/json" } }
       );
     } catch (err) {
       Logger.error({ location: "consents.attachToken", message: err.message });
-      return res.status(424).json({
-        message: `an error occured after calling the data consumer's /consent/import endpoint`,
-        data: {
-          details: {
-            errorMessage: err.message,
-          },
-        },
-      });
+      // return res.status(424).json({
+      //   message: `an error occured after calling the data consumer's /consent/import endpoint`,
+      //   data: {
+      //     details: {
+      //       errorMessage: err.message,
+      //     },
+      //   },
+      // });
     }
 
     return res
       .status(200)
       .json({ message: "successfully forwarded consent to the data consumer" });
   } catch (err) {
+    Logger.error(err);
     next(err);
   }
 };
@@ -484,7 +570,8 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    const { consentId, token } = req.body;
+    const { consentId } = req.params;
+    const { token } = req.body;
     const consent = await Consent.findById(consentId);
     if (!consent) return res.status(404).json({ error: "Consent not found" });
     const consentToken = consent.token;
@@ -493,8 +580,44 @@ export const verifyToken = async (
         .status(400)
         .json({ error: "token does not match consent token" });
 
-    return res.status(200).json({ message: "token matches consent token" });
+    return res
+      .status(200)
+      .json({ message: "token matches consent token", verified: true });
   } catch (err) {
     next(err);
+  }
+};
+
+const encryptPayloadAndKey = (payload: object) => {
+  try {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      AESKey.toString().trim(),
+      iv
+    );
+    const signedConsent = Buffer.concat([
+      cipher.update(Buffer.from(JSON.stringify(payload)).toString(), "utf-8"),
+      cipher.final(),
+    ]);
+
+    const privateKey = CryptoJS.createPrivateKey({
+      key: consentSignaturePrivateKey.toString().trim(),
+      passphrase: "",
+    });
+    const encrypted = CryptoJS.privateEncrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      AESKey
+    );
+
+    return {
+      signedConsent: `${iv.toString("hex")}:${signedConsent.toString("hex")}`,
+      encrypted,
+    };
+  } catch (e) {
+    Logger.error(e);
   }
 };

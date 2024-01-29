@@ -124,14 +124,19 @@ export interface IUser extends Document, AllSchemas {
 
 export interface IConsent extends Document, AllSchemas {
   user: Types.ObjectId | null;
-  providerUserIdentifier: string;
-  consumerUserIdentifier: string;
+  providerUserIdentifier: Types.ObjectId;
+  consumerUserIdentifier: Types.ObjectId;
   identifier: string;
   consented: boolean;
   /**
    * The DID / Self-Description URL of the dataProvider
    */
-  dataProvider: string;
+  dataProvider: Types.ObjectId;
+
+  /**
+   * The DID / Self-Description URL of the dataConsumer
+   */
+  dataConsumer: Types.ObjectId;
 
   /**
    * Information about the recipients or categories of recipients of the personal data.
@@ -194,9 +199,19 @@ export interface IConsent extends Document, AllSchemas {
    * make the data request
    */
   token?: string;
+
+  /**
+   * The Contract where the consent have been generated
+   */
+  contract: string;
 }
 
 export interface IPrivacyNotice {
+  /**
+   * Contract self-description.
+   */
+  contract: string;
+
   /**
    * Title of the privacy notice.
    */

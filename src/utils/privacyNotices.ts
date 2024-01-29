@@ -2,14 +2,14 @@ import { IPrivacyNotice } from "../types/models";
 import {
   BilateralContract,
   EcosystemContract,
-  getDataFromPliciesInBilateralContract,
-  getDataFromPoliciesInEcosystemContract,
+  getDataFromPoliciesInBilateralContract,
 } from "./contracts";
 
 export const bilateralContractToPrivacyNotice = (
   contract: BilateralContract
 ): IPrivacyNotice => {
   const privacyNotice: IPrivacyNotice = {
+    contract: `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/${contract._id}`,
     title: contract.profile,
     lastUpdated: Date.now().toString(),
     dataProvider: contract.dataProvider,
@@ -26,7 +26,7 @@ export const bilateralContractToPrivacyNotice = (
       purpose: p?.purpose,
       legalBasis: p?.legalBasis || "",
     })),
-    data: getDataFromPliciesInBilateralContract(contract),
+    data: getDataFromPoliciesInBilateralContract(contract),
     categoriesOfData: [],
     recipients: [contract.dataConsumer],
     internationalTransfers: {
@@ -56,6 +56,7 @@ export const ecosystemContractToPrivacyNotice = (
   contract: EcosystemContract
 ) => {
   const privacyNotice: IPrivacyNotice = {
+    contract: `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/${contract._id}`,
     title: contract.profile,
     lastUpdated: Date.now().toString(),
     dataProvider: "",
@@ -72,7 +73,7 @@ export const ecosystemContractToPrivacyNotice = (
       purpose: p?.purpose,
       legalBasis: "",
     })),
-    data: getDataFromPoliciesInEcosystemContract(contract),
+    data: [],
     categoriesOfData: [],
     recipients: [],
     internationalTransfers: {

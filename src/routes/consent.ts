@@ -1,11 +1,14 @@
 import { Router } from "express";
 import {
+  attachTokenToConsent,
   getPrivacyNoticeById,
   getPrivacyNotices,
   getUserConsentById,
   getUserConsents,
   giveConsent,
   revokeConsent,
+  triggerDataExchange,
+  verifyToken,
 } from "../controllers/consentsController";
 import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
 // import { checkIDFormatMiddleware } from "../middleware/objectIdFormatCheck";
@@ -45,5 +48,26 @@ r.post(
 );
 
 r.delete("/:id", verifyUserJWT, revokeConsent);
+
+r.post(
+  "/:consentId/data-exchange",
+  verifyUserJWT,
+  // verifyContract,
+  triggerDataExchange
+);
+
+r.post(
+  "/:consentId/token",
+  verifyParticipantJWT,
+  // verifyContract,
+  attachTokenToConsent
+);
+
+r.post(
+  "/:consentId/validate",
+  verifyParticipantJWT,
+  // verifyContract,
+  verifyToken
+);
 
 export default r;

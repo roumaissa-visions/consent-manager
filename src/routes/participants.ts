@@ -5,6 +5,7 @@ import {
 } from "../middleware/joiValidation";
 import {
   deleteParticipant,
+  exportPublicKeyToParticipants,
   getAllParticipants,
   getMyParticipant,
   getParticipantById,
@@ -23,6 +24,8 @@ r.get("/:id", getParticipantById);
 // ? Still TBD: matching of participant information in different PDIs
 r.post("/", setJoiValidationSchema, validatePayload, registerParticipant);
 r.post("/login", loginParticipant);
+
+r.post("/sync-public-key", exportPublicKeyToParticipants);
 
 r.use(verifyParticipantJWT);
 r.delete("/me", deleteParticipant);
