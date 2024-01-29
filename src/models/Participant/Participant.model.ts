@@ -3,14 +3,25 @@ import { IParticipant } from "../../types/models";
 
 const participantSchema = new Schema<IParticipant>(
   {
+    did: {
+      type: String,
+      required: true,
+      default: "",
+    },
     legalName: {
       type: String,
       required: true,
     },
-    identifier: {
-      type: String,
-      required: true,
-      default: "",
+    legalPerson: {
+      registrationNumber: { type: String, default: "" },
+      headquartersAddress: {
+        countryCode: { type: String, default: "" },
+      },
+      legalAddress: {
+        countryCode: { type: String, default: "" },
+      },
+      parentOrganization: [{ type: String }],
+      subOrganization: [{ type: String }],
     },
     selfDescriptionURL: {
       type: String,
