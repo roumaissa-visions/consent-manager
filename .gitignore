@@ -3,4 +3,6 @@ dist
 reference-models/
 src/config/keys/*
 !src/config/keys/.gitnull
+*.env.*
 .env
+!.env.sample
