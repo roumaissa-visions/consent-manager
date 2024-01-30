@@ -119,42 +119,35 @@ export const getDataFromPoliciesInEcosystemContract = (
   contract: EcosystemContract,
   dataProvider?: string
 ) => {
-  const serviceOffering = dataProvider
-    ? contract.serviceOfferings
-        ?.filter((so) => so.participant === dataProvider)
-        .map((element) => element.serviceOffering)
-    : [];
+  const policies = dataProvider
+      ? contract.serviceOfferings
+          ?.filter((so) => so.participant === dataProvider)
+          .map((so) => so.policies)
+      : contract.serviceOfferings?.map((so) => so.policies);
 
-  const policies = (contract.rolesAndObligations as any)[0].policies?.filter(
-    (policy: any) =>
-      policy.permission && policy.permission.length > 0
-        ? serviceOffering.includes(policy.permission[0].target)
-        : null
+  const combinedPolicies = [...policies].reduce((acc, curr) =>
+      acc.concat(curr)
   );
 
-  const filteredPolicies = policies.filter(
-    (policy: any) =>
-      policy.permission.find((p: any) => p.target !== null) ||
-      policy.prohibition.find((p: any) => p.target !== null)
+  const filteredPolicies = combinedPolicies.filter(
+      (policy) =>
+          policy.permission.find((p) => p.target !== null) ||
+          policy.prohibition.find((p) => p.target !== null)
   );
 
-  const dataFromPermissions = filteredPolicies.map((policy: any) => {
-    const result = policy.permission.map(
-      (permission: any) => permission.target
-    );
+  const dataFromPermissions = filteredPolicies.map((policy) => {
+    const result = policy.permission.map((permission) => permission.target);
     return result;
   });
 
-  const dataFromProhibitions = filteredPolicies.map((policy: any) => {
-    const result = policy.prohibition.map(
-      (prohibition: any) => prohibition.target
-    );
+  const dataFromProhibitions = filteredPolicies.map((policy) => {
+    const result = policy.prohibition.map((prohibition) => prohibition.target);
     return result;
   });
 
   const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
-    (acc, curr) => acc.concat(curr),
-    []
+      (acc, curr) => acc.concat(curr),
+      []
   );
 
   return combinedData;
