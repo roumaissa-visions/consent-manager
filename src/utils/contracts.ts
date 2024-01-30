@@ -125,7 +125,7 @@ export const getDataFromPoliciesInEcosystemContract = (
         .map((element) => element.serviceOffering)
     : [];
 
-  const policies = (contract.rolesAndObligations as any)[0].policies?.filter(
+  const policies = (contract.serviceOfferings as any)[0].policies?.filter(
     (policy: any) =>
       policy.permission && policy.permission.length > 0
         ? serviceOffering.includes(policy.permission[0].target)
