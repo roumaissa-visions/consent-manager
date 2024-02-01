@@ -111,7 +111,7 @@ export const verifyUserJWT = (
   try {
     const decodedToken = jwt.verify(
       token,
-      process.env.JWT_SECRET_KEY
+      process.env.OAUTH_SECRET_KEY
     ) as JwtPayload;
 
     req.decodedToken = decodedToken;
