@@ -4,3 +4,4 @@ reference-models/
 src/config/keys/*
 !src/config/keys/.gitnull
 .env
+.idea
