@@ -8,12 +8,6 @@ import crypto from "crypto";
  * @returns The session object
  */
 export const initSession: any = () => {
-  let mongoUri = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
-
-  if (process.env.MONGO_USERNAME && process.env.MONGO_PASSWORD) {
-    mongoUri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
-  }
-
   return session({
     genid: () => {
       return crypto.randomUUID();
@@ -27,6 +21,6 @@ export const initSession: any = () => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
     },
-    store: MongoStore.create({ mongoUrl: mongoUri }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   });
 };

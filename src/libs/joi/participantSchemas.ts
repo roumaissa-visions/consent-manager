@@ -3,6 +3,7 @@ import Joi from "joi";
 export const participantCreationSchema = Joi.object({
   legalName: Joi.string().required(),
   identifier: Joi.string().required(),
+  did: Joi.string(),
   selfDescriptionURL: Joi.string(),
   email: Joi.string().required(),
   endpoints: Joi.object({

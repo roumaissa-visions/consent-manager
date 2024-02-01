@@ -1,13 +1,7 @@
 import mongoose from "mongoose";
 
 export async function loadMongoose() {
-  let mongoUri = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
-
-  if (process.env.MONGO_USERNAME && process.env.MONGO_PASSWORD) {
-    mongoUri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`;
-  }
-
-  const connect = await mongoose.connect(mongoUri);
+  const connect = await mongoose.connect(process.env.MONGO_URI);
   const connection = connect.connection;
   connection.on(
     "error",

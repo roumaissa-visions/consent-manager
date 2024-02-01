@@ -6,3 +6,4 @@ src/config/keys/*
 *.env.*
 .env
 !.env.sample
+.idea
