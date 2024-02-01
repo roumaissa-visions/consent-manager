@@ -64,20 +64,22 @@ export const registerParticipant = async (
     newParticipant.clientID = participantData.clientID;
     newParticipant.clientSecret = participantData.clientSecret;
 
-    const sdData = await axios.get(participantData.selfDescriptionURL);
+    if(participantData.dataspaceEndpoint){
+      const sdData = await axios.get(participantData.dataspaceEndpoint);
 
-    const base64Key = fs.readFileSync(
-      path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
-      { encoding: "base64" }
-    );
+      const base64Key = fs.readFileSync(
+          path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
+          { encoding: "base64" }
+      );
 
-    await axios.put(sdData.data.content._links.consentConfiguration.href, {
-      publicKey: base64Key,
-      uri:
-        process.env.NODE_ENV === "development"
-          ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
-          : `${process.env.URL}${process.env.API_PREFIX}/`,
-    });
+      await axios.put(sdData.data.content._links.consentConfiguration.href, {
+        publicKey: base64Key,
+        uri:
+            process.env.NODE_ENV === "development"
+                ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+                : `${process.env.URL}${process.env.API_PREFIX}/`,
+      });
+    }
 
     const createdParticipant = await newParticipant.save();
 
