@@ -85,8 +85,6 @@ export const verifyParticipantJWT = async (
         .json({ error: error, message: "Unauthorized resource" });
     }
   }
-
-  return res.status(200).json({ message: "ok" });
 };
 
 export const verifyUserJWT = (
