@@ -218,13 +218,13 @@ export const giveConsent = async (
     const dataProviderSD = privacyNotice.dataProvider;
     const dataProvider = await Participant.findOne({
       selfDescriptionURL: dataProviderSD,
-    });
+    }).lean();
 
     const dataConsumerSD =
       privacyNotice.recipients.length > 0 ? privacyNotice.recipients[0] : null;
     const dataConsumer = await Participant.findOne({
       selfDescriptionURL: dataConsumerSD,
-    });
+    }).lean();
 
     if (!dataConsumerSD)
       return res
@@ -233,11 +233,11 @@ export const giveConsent = async (
 
     // Find user identifiers
     let providerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataProvider?.id
+      (id) => id.attachedParticipant?.toString() === dataProvider?._id
     );
 
     let consumerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataConsumer?.id
+      (id) => id.attachedParticipant?.toString() === dataConsumer?._id
     );
 
     if (!providerUserIdentifier) {
@@ -245,7 +245,7 @@ export const giveConsent = async (
       // search in userIdentifier to rattached it
 
       const userIdentifiers = await UserIdentifier.findOne({
-        attachedParticipant: dataProvider?.id,
+        attachedParticipant: dataProvider?._id,
         email: user.email,
       }).lean();
 
@@ -282,7 +282,7 @@ export const giveConsent = async (
       // search in userIdentifier to rattached it
 
       const userIdentifiers = await UserIdentifier.findOne({
-        attachedParticipant: dataConsumer?.id,
+        attachedParticipant: dataConsumer?._id,
         email: user.email,
       }).lean();
 
@@ -312,7 +312,7 @@ export const giveConsent = async (
 
       const existingUserIdentifier = await findMatchingUserIdentifier(
         email,
-        dataConsumer?.id
+        dataConsumer?._id
       );
 
       if (!existingUserIdentifier) {
@@ -327,7 +327,7 @@ export const giveConsent = async (
           process.env.API_PREFIX
         }/consents/emailverification?privacyNotice=${
           privacyNotice.id
-        }&dataProvider=${dataProvider.id}&data=${JSON.stringify(data)}`;
+        }&dataProvider=${dataProvider._id}&data=${JSON.stringify(data)}`;
 
         await NodemailerClient.sendMessageFromLocalTemplate(
           { to: email, subject: "Consent validation" },
