@@ -262,21 +262,6 @@ export const giveConsent = async (
       providerUserIdentifier = userIdentifiers._id;
     }
 
-    const consent = new Consent({
-      privacyNotice: privacyNotice._id,
-      user: req.user?.id,
-      providerUserIdentifier: providerUserIdentifier._id,
-      consumerUserIdentifier: consumerUserIdentifier._id,
-      dataProvider: dataProvider?._id,
-      dataConsumer: dataConsumer?._id,
-      recipients: privacyNotice.recipients,
-      purposes: privacyNotice.purposes,
-      data: privacyNotice.data,
-      status: "granted",
-      consented: true,
-      contract: privacyNotice.contract,
-    });
-
     if (!consumerUserIdentifier) {
       //if not foung in attached consumer participants
       // search in userIdentifier to rattached it
@@ -343,6 +328,21 @@ export const giveConsent = async (
       }
     }
 
+    const consent = new Consent({
+      privacyNotice: privacyNotice._id,
+      user: req.user?.id,
+      providerUserIdentifier: providerUserIdentifier,
+      consumerUserIdentifier: consumerUserIdentifier,
+      dataProvider: dataProvider?._id,
+      dataConsumer: dataConsumer?._id,
+      recipients: privacyNotice.recipients,
+      purposes: privacyNotice.purposes,
+      data: privacyNotice.data,
+      status: "granted",
+      consented: true,
+      contract: privacyNotice.contract,
+    });
+
     const verification = await Consent.findOne({
       providerUserIdentifier: providerUserIdentifier._id,
       consumerUserIdentifier: consumerUserIdentifier._id,
@@ -355,9 +355,9 @@ export const giveConsent = async (
       return res.status(200).json(verification);
     }
 
-    await consent.save();
+    const newConsent = await consent.save();
 
-    res.status(201).json(consent);
+    res.status(201).json(newConsent);
   } catch (err) {
     next(err);
   }
