@@ -188,6 +188,7 @@ export const deleteParticipant = async (
 
 /*
   Allow to post to all participants the public key
+  deprecated
  */
 export const exportPublicKeyToParticipants = async (
   req: Request,
@@ -226,6 +227,26 @@ export const exportPublicKeyToParticipants = async (
     }
 
     res.json(participants);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/*
+  Allow to post to all participants the public key
+ */
+export const getPublicKey = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+  try {
+    const base64Key = fs.readFileSync(
+        path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
+        { encoding: "base64" }
+    );
+
+    res.json({key: base64Key});
   } catch (err) {
     next(err);
   }
