@@ -218,13 +218,13 @@ export const giveConsent = async (
     const dataProviderSD = privacyNotice.dataProvider;
     const dataProvider = await Participant.findOne({
       selfDescriptionURL: dataProviderSD,
-    });
+    }).lean();
 
     const dataConsumerSD =
       privacyNotice.recipients.length > 0 ? privacyNotice.recipients[0] : null;
     const dataConsumer = await Participant.findOne({
       selfDescriptionURL: dataConsumerSD,
-    });
+    }).lean();
 
     if (!dataConsumerSD)
       return res
@@ -233,11 +233,11 @@ export const giveConsent = async (
 
     // Find user identifiers
     let providerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataProvider?.id
+      (id) => id.attachedParticipant?.toString() === dataProvider?._id
     );
 
     let consumerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataConsumer?.id
+      (id) => id.attachedParticipant?.toString() === dataConsumer?._id
     );
 
     if (!providerUserIdentifier) {
@@ -245,7 +245,7 @@ export const giveConsent = async (
       // search in userIdentifier to rattached it
 
       const userIdentifiers = await UserIdentifier.findOne({
-        attachedParticipant: dataProvider?.id,
+        attachedParticipant: dataProvider?._id,
         email: user.email,
       }).lean();
 
@@ -262,27 +262,12 @@ export const giveConsent = async (
       providerUserIdentifier = userIdentifiers._id;
     }
 
-    const consent = new Consent({
-      privacyNotice: privacyNotice._id,
-      user: req.user?.id,
-      providerUserIdentifier: providerUserIdentifier._id,
-      consumerUserIdentifier: consumerUserIdentifier._id,
-      dataProvider: dataProvider?._id,
-      dataConsumer: dataConsumer?._id,
-      recipients: privacyNotice.recipients,
-      purposes: privacyNotice.purposes,
-      data: privacyNotice.data,
-      status: "granted",
-      consented: true,
-      contract: privacyNotice.contract,
-    });
-
     if (!consumerUserIdentifier) {
       //if not foung in attached consumer participants
       // search in userIdentifier to rattached it
 
       const userIdentifiers = await UserIdentifier.findOne({
-        attachedParticipant: dataConsumer?.id,
+        attachedParticipant: dataConsumer?._id,
         email: user.email,
       }).lean();
 
@@ -312,7 +297,7 @@ export const giveConsent = async (
 
       const existingUserIdentifier = await findMatchingUserIdentifier(
         email,
-        dataConsumer?.id
+        dataConsumer?._id
       );
 
       if (!existingUserIdentifier) {
@@ -327,7 +312,7 @@ export const giveConsent = async (
           process.env.API_PREFIX
         }/consents/emailverification?privacyNotice=${
           privacyNotice.id
-        }&dataProvider=${dataProvider.id}&data=${JSON.stringify(data)}`;
+        }&dataProvider=${dataProvider._id}&data=${JSON.stringify(data)}`;
 
         await NodemailerClient.sendMessageFromLocalTemplate(
           { to: email, subject: "Consent validation" },
@@ -343,6 +328,21 @@ export const giveConsent = async (
       }
     }
 
+    const consent = new Consent({
+      privacyNotice: privacyNotice._id,
+      user: req.user?.id,
+      providerUserIdentifier: providerUserIdentifier,
+      consumerUserIdentifier: consumerUserIdentifier,
+      dataProvider: dataProvider?._id,
+      dataConsumer: dataConsumer?._id,
+      recipients: privacyNotice.recipients,
+      purposes: privacyNotice.purposes,
+      data: privacyNotice.data,
+      status: "granted",
+      consented: true,
+      contract: privacyNotice.contract,
+    });
+
     const verification = await Consent.findOne({
       providerUserIdentifier: providerUserIdentifier._id,
       consumerUserIdentifier: consumerUserIdentifier._id,
@@ -355,9 +355,9 @@ export const giveConsent = async (
       return res.status(200).json(verification);
     }
 
-    await consent.save();
+    const newConsent = await consent.save();
 
-    res.status(201).json(consent);
+    res.status(201).json(newConsent);
   } catch (err) {
     next(err);
   }

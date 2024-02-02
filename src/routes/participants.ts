@@ -9,6 +9,7 @@ import {
   getAllParticipants,
   getMyParticipant,
   getParticipantById,
+  getPublicKey,
   loginParticipant,
   registerParticipant,
 } from "../controllers/participantsController";
@@ -17,6 +18,7 @@ const r: Router = Router();
 
 r.get("/", getAllParticipants);
 r.get("/me", verifyParticipantJWT, getMyParticipant);
+r.get("/consent-signature",verifyParticipantJWT, getPublicKey);
 r.get("/:id", getParticipantById);
 
 // Registering a participant should be a request sent from a catalog registry
@@ -25,7 +27,7 @@ r.get("/:id", getParticipantById);
 r.post("/", setJoiValidationSchema, validatePayload, registerParticipant);
 r.post("/login", loginParticipant);
 
-r.post("/sync-public-key", exportPublicKeyToParticipants);
+// r.post("/sync-public-key", exportPublicKeyToParticipants);
 
 r.use(verifyParticipantJWT);
 r.delete("/me", deleteParticipant);

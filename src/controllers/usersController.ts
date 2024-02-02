@@ -139,3 +139,43 @@ export const registerUserIdentifier = async (
     next(err);
   }
 };
+
+/**
+ * Registers new users identifier in the PDI
+ * Used by Participants to declare users from their platform by uploading a csv file
+ */
+export const registerUserIdentifiers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+  try {
+    const { users } = req.body;
+    const usersResponse = [];
+
+    for(const user of users){
+      if (!user.email && !user.identifier)
+        throw new BadRequestError("Missing or invalid fields", [
+          { field: "email", message: "Email must exist if identifier does not" },
+          {
+            field: "identifier",
+            message: "identifier must exist if email does not",
+          },
+        ]);
+
+      const newId = new UserIdentifier({
+        attachedParticipant: req.userParticipant.id,
+        email: user.email,
+        identifier: user.internalID,
+      });
+
+      await newId.save();
+
+      usersResponse.push(newId)
+    }
+
+    return res.json(usersResponse);
+  } catch (err) {
+    next(err);
+  }
+};

@@ -85,8 +85,6 @@ export const verifyParticipantJWT = async (
         .json({ error: error, message: "Unauthorized resource" });
     }
   }
-
-  return res.status(200).json({ message: "ok" });
 };
 
 export const verifyUserJWT = (
@@ -113,7 +111,7 @@ export const verifyUserJWT = (
   try {
     const decodedToken = jwt.verify(
       token,
-      process.env.JWT_SECRET_KEY
+      process.env.OAUTH_SECRET_KEY
     ) as JwtPayload;
 
     req.decodedToken = decodedToken;
