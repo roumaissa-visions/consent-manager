@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Participant from "../models/Participant/Participant.model";
 import { NotFoundError } from "../errors/NotFoundError";
-import crypto from "crypto";
 import { PARTICIPANT_SELECTION } from "../utils/schemaSelection";
 import { issueJwt } from "../libs/jwt";
 import axios from "axios";
@@ -24,6 +23,29 @@ export const getParticipantById = async (
 
     if (!participant) throw new NotFoundError("Participant not found");
     res.json(participant);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Finds a participant using its service key (clientID)
+ */
+export const getParticipantByClientId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { clientId } = req.params;
+
+    const participant = await Participant.findOne({
+      clientID: clientId,
+    }).select(PARTICIPANT_SELECTION);
+    if (!participant)
+      return res.status(404).json({ error: "participant not found" });
+
+    return res.status(200).json(participant);
   } catch (err) {
     next(err);
   }
