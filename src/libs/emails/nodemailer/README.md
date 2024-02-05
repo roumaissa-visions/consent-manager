@@ -39,12 +39,12 @@ await NodemailerClient.sendMessage(
 
 ```js
 await NodemailerClient.sendMessageFromLocalTemplate(
-    {
-        to: "foo@bar.com",
-        subject: "Email from Nodemailer",
-    },
-    "myTemplate",
-    { myVariable: "123", foo: "bar" }
+  {
+    to: "foo@bar.com",
+    subject: "Email from Nodemailer",
+  },
+  "myTemplate",
+  { myVariable: "123", foo: "bar" }
 );
 ```
 
