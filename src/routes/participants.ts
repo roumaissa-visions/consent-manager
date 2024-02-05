@@ -20,7 +20,7 @@ const r: Router = Router();
 r.get("/", getAllParticipants);
 r.get("/me", verifyParticipantJWT, getMyParticipant);
 r.get("/clientId/:clientId", getParticipantByClientId);
-r.get("/consent-signature",verifyParticipantJWT, getPublicKey);
+r.get("/consent-signature", verifyParticipantJWT, getPublicKey);
 r.get("/:id", getParticipantById);
 
 // Registering a participant should be a request sent from a catalog registry

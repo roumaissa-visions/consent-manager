@@ -120,19 +120,19 @@ export const getDataFromPoliciesInEcosystemContract = (
   dataProvider?: string
 ) => {
   const policies = dataProvider
-      ? contract.serviceOfferings
-          ?.filter((so) => so.participant === dataProvider)
-          .map((so) => so.policies)
-      : contract.serviceOfferings?.map((so) => so.policies);
+    ? contract.serviceOfferings
+        ?.filter((so) => so.participant === dataProvider)
+        .map((so) => so.policies)
+    : contract.serviceOfferings?.map((so) => so.policies);
 
   const combinedPolicies = [...policies].reduce((acc, curr) =>
-      acc.concat(curr)
+    acc.concat(curr)
   );
 
   const filteredPolicies = combinedPolicies.filter(
-      (policy) =>
-          policy.permission.find((p) => p.target !== null) ||
-          policy.prohibition.find((p) => p.target !== null)
+    (policy) =>
+      policy.permission.find((p) => p.target !== null) ||
+      policy.prohibition.find((p) => p.target !== null)
   );
 
   const dataFromPermissions = filteredPolicies.map((policy) => {
@@ -146,8 +146,8 @@ export const getDataFromPoliciesInEcosystemContract = (
   });
 
   const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
-      (acc, curr) => acc.concat(curr),
-      []
+    (acc, curr) => acc.concat(curr),
+    []
   );
 
   return combinedData;

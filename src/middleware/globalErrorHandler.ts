@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors/BadRequestError";
-import {Logger} from "../libs/loggers";
+import { Logger } from "../libs/loggers";
 
 export const globalErrorHandler = (
   err: Error,
@@ -13,8 +13,8 @@ export const globalErrorHandler = (
   } else {
     Logger.error({
       message: err.message,
-      location: err.stack
-    })
+      location: err.stack,
+    });
     return res.status(500).json({
       error: "Internal Server Error",
       message: "Something went wrong",

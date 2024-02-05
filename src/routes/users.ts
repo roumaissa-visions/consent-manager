@@ -3,7 +3,8 @@ import {
   registerUserIdentifier,
   signup,
   login,
-  getUserById, registerUserIdentifiers,
+  getUserById,
+  registerUserIdentifiers,
 } from "../controllers/usersController";
 import { verifyParticipantJWT } from "../middleware/auth";
 const r: Router = Router();
