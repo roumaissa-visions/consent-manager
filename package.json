@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "start": "node dist/src/index.js",
-    "dev": "pnpx nodemon",
+    "dev": "pnpm nodemon",
     "build": "rimraf ./dist && tsc",
     "test": "ts-mocha -p tsconfig.json tests/**/*.spec.ts --timeout 4000 --exit",
     "prettier": "prettier --write ./src/",

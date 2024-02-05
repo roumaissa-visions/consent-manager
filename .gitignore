@@ -7,3 +7,4 @@ src/config/keys/*
 .env
 !.env.sample
 .idea
+*/**/logs

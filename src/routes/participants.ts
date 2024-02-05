@@ -8,6 +8,7 @@ import {
   exportPublicKeyToParticipants,
   getAllParticipants,
   getMyParticipant,
+  getParticipantByClientId,
   getParticipantById,
   getPublicKey,
   loginParticipant,
@@ -18,6 +19,7 @@ const r: Router = Router();
 
 r.get("/", getAllParticipants);
 r.get("/me", verifyParticipantJWT, getMyParticipant);
+r.get("/clientId/:clientId", getParticipantByClientId);
 r.get("/consent-signature",verifyParticipantJWT, getPublicKey);
 r.get("/:id", getParticipantById);
 
