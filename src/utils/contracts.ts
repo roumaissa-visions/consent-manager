@@ -125,32 +125,36 @@ export const getDataFromPoliciesInEcosystemContract = (
           .map((so) => so.policies)
       : contract.serviceOfferings?.map((so) => so.policies);
 
-  const combinedPolicies = [...policies].reduce((acc, curr) =>
-      acc.concat(curr)
-  );
+  if(policies.length > 0){
+    const combinedPolicies = [...policies].reduce((acc, curr) =>
+        acc.concat(curr)
+    );
 
-  const filteredPolicies = combinedPolicies.filter(
-      (policy) =>
-          policy.permission.find((p) => p.target !== null) ||
-          policy.prohibition.find((p) => p.target !== null)
-  );
+    const filteredPolicies = combinedPolicies.filter(
+        (policy) =>
+            policy.permission.find((p) => p.target !== null) ||
+            policy.prohibition.find((p) => p.target !== null)
+    );
 
-  const dataFromPermissions = filteredPolicies.map((policy) => {
-    const result = policy.permission.map((permission) => permission.target);
-    return result;
-  });
+    const dataFromPermissions = filteredPolicies.map((policy) => {
+      const result = policy.permission.map((permission) => permission.target);
+      return result;
+    });
 
-  const dataFromProhibitions = filteredPolicies.map((policy) => {
-    const result = policy.prohibition.map((prohibition) => prohibition.target);
-    return result;
-  });
+    const dataFromProhibitions = filteredPolicies.map((policy) => {
+      const result = policy.prohibition.map((prohibition) => prohibition.target);
+      return result;
+    });
 
-  const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
-      (acc, curr) => acc.concat(curr),
-      []
-  );
+    const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
+        (acc, curr) => acc.concat(curr),
+        []
+    );
+    return combinedData;
+  } else {
+    return [];
+  }
 
-  return combinedData;
 };
 
 export const getParticipantIdentifier = (participant: IParticipant) => {
