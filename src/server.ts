@@ -29,7 +29,7 @@ export const startServer = (testPort?: number) => {
   // Start the server
   const server = app.listen(port, () => {
     //eslint-disable-next-line
-    console.log(`Catalog-Registry running on: http://localhost:${port}`);
+    console.log(`Consent manager running on: http://localhost:${port}`);
   });
 
   return { server, app }; // For tests

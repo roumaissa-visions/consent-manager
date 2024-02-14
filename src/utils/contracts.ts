@@ -120,10 +120,10 @@ export const getDataFromPoliciesInEcosystemContract = (
   dataProvider?: string
 ) => {
   const policies = dataProvider
-      ? contract.serviceOfferings
-          ?.filter((so) => so.participant === dataProvider)
-          .map((so) => so.policies)
-      : contract.serviceOfferings?.map((so) => so.policies);
+    ? contract.serviceOfferings
+        ?.filter((so) => so.participant === dataProvider)
+        .map((so) => so.policies)
+    : contract.serviceOfferings?.map((so) => so.policies);
 
   if(policies.length > 0){
     const combinedPolicies = [...policies].reduce((acc, curr) =>

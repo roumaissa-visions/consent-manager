@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Participant from "../models/Participant/Participant.model";
 import { NotFoundError } from "../errors/NotFoundError";
-import crypto from "crypto";
 import { PARTICIPANT_SELECTION } from "../utils/schemaSelection";
 import { issueJwt } from "../libs/jwt";
 import axios from "axios";
@@ -24,6 +23,29 @@ export const getParticipantById = async (
 
     if (!participant) throw new NotFoundError("Participant not found");
     res.json(participant);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Finds a participant using its service key (clientID)
+ */
+export const getParticipantByClientId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { clientId } = req.params;
+
+    const participant = await Participant.findOne({
+      clientID: clientId,
+    }).select(PARTICIPANT_SELECTION);
+    if (!participant)
+      return res.status(404).json({ error: "participant not found" });
+
+    return res.status(200).json(participant);
   } catch (err) {
     next(err);
   }
@@ -64,20 +86,20 @@ export const registerParticipant = async (
     newParticipant.clientID = participantData.clientID;
     newParticipant.clientSecret = participantData.clientSecret;
 
-    if(participantData.dataspaceEndpoint){
+    if (participantData.dataspaceEndpoint) {
       const sdData = await axios.get(participantData.dataspaceEndpoint);
 
       const base64Key = fs.readFileSync(
-          path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
-          { encoding: "base64" }
+        path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
+        { encoding: "base64" }
       );
 
       await axios.put(sdData.data.content._links.consentConfiguration.href, {
         publicKey: base64Key,
         uri:
-            process.env.NODE_ENV === "development"
-                ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
-                : `${process.env.URL}${process.env.API_PREFIX}/`,
+          process.env.NODE_ENV === "development"
+            ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+            : `${process.env.URL}${process.env.API_PREFIX}/`,
       });
     }
 
@@ -206,24 +228,30 @@ export const exportPublicKeyToParticipants = async (
     for (const participant of participants) {
       const sd = await axios.get(participant.selfDescriptionURL);
       const sdData = await axios.get(sd.data.dataspaceEndpoint);
-      const participantLogin = await axios.post(sdData.data.content._links.login.href, {
-        serviceKey: participant.clientID,
-        secretKey: participant.clientSecret
-      });
+      const participantLogin = await axios.post(
+        sdData.data.content._links.login.href,
+        {
+          serviceKey: participant.clientID,
+          secretKey: participant.clientSecret,
+        }
+      );
 
-      await axios.put(sdData.data.content._links.consentConfiguration.href, {
-        publicKey: base64Key,
-        uri:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
-            : `${process.env.URL}${process.env.API_PREFIX}/`,
-      },
-          {
-            headers: {
-              //TODO CHANGE
-              Authorization: `Bearer ${participantLogin.data.data.token.token}`
-            }
-          });
+      await axios.put(
+        sdData.data.content._links.consentConfiguration.href,
+        {
+          publicKey: base64Key,
+          uri:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+              : `${process.env.URL}${process.env.API_PREFIX}/`,
+        },
+        {
+          headers: {
+            //TODO CHANGE
+            Authorization: `Bearer ${participantLogin.data.data.token.token}`,
+          },
+        }
+      );
     }
 
     res.json(participants);
@@ -236,17 +264,17 @@ export const exportPublicKeyToParticipants = async (
   Allow to post to all participants the public key
  */
 export const getPublicKey = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const base64Key = fs.readFileSync(
-        path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
-        { encoding: "base64" }
+      path.join(__dirname, "..", "./config/keys/consentSignaturePublic.pem"),
+      { encoding: "base64" }
     );
 
-    res.json({key: base64Key});
+    res.json({ key: base64Key });
   } catch (err) {
     next(err);
   }
