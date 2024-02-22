@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Participant from "../models/Participant/Participant.model";
+import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
+import User from "../models/User/User.model";
 
 type DecodedServiceJWT = {
   serviceKey: string;
@@ -87,7 +89,7 @@ export const verifyParticipantJWT = async (
   }
 };
 
-export const verifyUserJWT = (
+export const verifyUserJWT = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -99,28 +101,70 @@ export const verifyUserJWT = (
     return next();
   }
 
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res
-      .status(401)
-      .json({ message: "Authorization header missing or invalid" });
-  }
+  if(req.headers["x-user-key"]){
 
-  const token = authHeader.slice(7);
+    const userIdentifier = await UserIdentifier.findById(req.headers["x-user-key"]).lean();
 
-  try {
-    const decodedToken = jwt.verify(
-      token,
-      process.env.OAUTH_SECRET_KEY
-    ) as JwtPayload;
+    if(!userIdentifier){
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
 
-    req.decodedToken = decodedToken;
-    req.user = {
-      id: decodedToken.sub,
-    };
+    const userExisitingIdentifier = await User.findOne({
+      identifiers: {
+        "$in" : userIdentifier._id
+      }
+    })
 
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    if(userExisitingIdentifier){
+      req.user = {
+        id: userExisitingIdentifier._id,
+      };
+      next();
+    } else {
+      const userExisitingEmail = await User.findOne({
+        email: userIdentifier.email
+      })
+
+      if(!userExisitingEmail){
+        return res.status(401).json({ message: "User with email doesn't exist" });
+      }
+
+      userExisitingEmail.identifiers.push(userIdentifier._id)
+
+      await userExisitingEmail.save()
+
+      req.user = {
+        id: userExisitingEmail._id,
+      };
+
+      next();
+    }
+
+
+  } else {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+          .status(401)
+          .json({ message: "Authorization header missing or invalid" });
+    }
+
+    const token = authHeader.slice(7);
+
+    try {
+      const decodedToken = jwt.verify(
+          token,
+          process.env.OAUTH_SECRET_KEY
+      ) as JwtPayload;
+
+      req.decodedToken = decodedToken;
+      req.user = {
+        id: decodedToken.sub,
+      };
+
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
   }
 };

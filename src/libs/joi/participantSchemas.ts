@@ -5,6 +5,7 @@ export const participantCreationSchema = Joi.object({
   identifier: Joi.string().required(),
   did: Joi.string(),
   selfDescriptionURL: Joi.string(),
+  dataspaceEndpoint: Joi.string(),
   email: Joi.string().required(),
   endpoints: Joi.object({
     dataExport: Joi.string().optional(),
