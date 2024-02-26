@@ -902,6 +902,63 @@
         }
       }
     },
+    "/consents/exchanges/{as}": {
+      "get": {
+        "tags": ["consents"],
+        "summary": "Get available exchanges by participant",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "as",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "provider or consumer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "participant": {
+                    "selfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
+                    "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFiYjVkODUzZThlMDViMTMyMDU3"
+                  },
+                  "exchanges": [
+                    {
+                      "contract": "http://host.docker.internal:8888/bilaterals/65d86f96dd837db34716ab42",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    },
+                    {
+                      "contract": "http://host.docker.internal:8888/bilaterals/65d8d2af05af96b0289a75a0",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    },
+                    {
+                      "contract": "http://host.docker.internal:8888/contracts/65d87043dd837db34716ab61",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/consents": {
       "post": {
         "tags": ["consents"],

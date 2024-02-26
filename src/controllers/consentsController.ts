@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Consent from "../models/Consent/Consent.model";
-import { getPrivacyNoticesFromContractsBetweenParties } from "../utils/contracts";
+import {getAvailableExchangesForParticipant, getPrivacyNoticesFromContractsBetweenParties} from "../utils/contracts";
 import { NotFoundError } from "../errors/NotFoundError";
 import { BadRequestError } from "../errors/BadRequestError";
 import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
@@ -619,5 +619,46 @@ const encryptPayloadAndKey = (payload: object) => {
     };
   } catch (e) {
     Logger.error(e);
+  }
+};
+
+/**
+ * Returns all available exchanges for a participant
+ */
+export const getAvailableExchanges = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+  try {
+    const { userParticipant } = req.session;
+    const { as } = req.params;
+
+    const participant = await Participant.findById(userParticipant.id).lean();
+
+    if(!participant){
+      throw new Error('Participant not found')
+    }
+
+    if(!as){
+      throw new Error('Missing parameters')
+    }
+
+    const exchanges = await getAvailableExchangesForParticipant(
+        participant?.selfDescriptionURL,
+        as
+    );
+
+    return res
+        .status(200)
+        .json({
+          participant: {
+            selfDescription: participant.selfDescriptionURL,
+            base64SelfDescription: Buffer.from(participant.selfDescriptionURL).toString("base64")
+          },
+          exchanges
+        });
+  } catch (err) {
+    next(err);
   }
 };
