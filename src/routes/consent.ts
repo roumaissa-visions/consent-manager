@@ -23,22 +23,23 @@ r.get(
   getUserConsentById
 );
 
+r.get("/privacy-notices/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
+
 r.get(
-  "/:userId/",
+  "/participants/:userId/",
   verifyParticipantJWT,
   setUserIdForParticipant,
   getUserConsents
 );
 
 r.get(
-  "/:userId/:id",
+  "/participants/:userId/:id",
   verifyParticipantJWT,
   setUserIdForParticipant,
   getUserConsentById
 );
 
 r.get("/:userId/:providerId/:consumerId", verifyUserJWT, getPrivacyNotices);
-r.get("/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
 
 r.post(
   "/",

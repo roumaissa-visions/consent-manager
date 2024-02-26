@@ -94,13 +94,23 @@ export const registerParticipant = async (
         { encoding: "base64" }
       );
 
+      const login = await axios.post(sdData.data.content._links.login.href, {
+        serviceKey: participantData.clientID,
+        secretKey: participantData.clientSecret,
+      });
+
       await axios.put(sdData.data.content._links.consentConfiguration.href, {
         publicKey: base64Key,
         uri:
           process.env.NODE_ENV === "development"
             ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
             : `${process.env.URL}${process.env.API_PREFIX}/`,
-      });
+      },
+          {
+            headers: {
+              Authorization: `Bearer ${login.data.content.token}`
+            }
+          });
     }
 
     const createdParticipant = await newParticipant.save();

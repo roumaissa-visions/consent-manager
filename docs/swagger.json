@@ -6,9 +6,21 @@
   },
   "servers": [
     {
-      "url": "http://{{apiurl}}"
+      "url": "/v1"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "participantBearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "userBearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
   "tags": [
     {
       "name": "users"
@@ -323,10 +335,237 @@
         }
       }
     },
+    "/users/register": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Registers a new user identifier in the PDI",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "<string>",
+                  "identifier": "<string>"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1066"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"42a-ZJeCshBL22i+iLohn3grvfKMaGQ\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 15:00:31 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "attachedParticipant": "65b0e63e150461011a10a237",
+                  "email": "jane@doe.com",
+                  "identifier": "46549481513",
+                  "jsonld": "",
+                  "schema_version": "v0.1.0",
+                  "_id": "65ccc69ca7047f8e0b0e7357",
+                  "createdAt": "2024-02-14T13:56:44.943Z",
+                  "updatedAt": "2024-02-14T13:56:44.943Z",
+                  "__v": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/registers": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Registers new users identifier in the PDI",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": [
+                  {
+                    "attachedParticipant": "65b0e63e150461011a10a237",
+                    "email": "john2@doe.com",
+                    "jsonld": "",
+                    "schema_version": "v0.1.0",
+                    "_id": "65ccc6eca7047f8e0b0e7359",
+                    "createdAt": "2024-02-14T13:58:04.935Z",
+                    "updatedAt": "2024-02-14T13:58:04.935Z",
+                    "__v": 0
+                  },
+                  {
+                    "attachedParticipant": "65b0e63e150461011a10a237",
+                    "email": "john3@doe.com",
+                    "jsonld": "",
+                    "schema_version": "v0.1.0",
+                    "_id": "65ccc6eca7047f8e0b0e735b",
+                    "createdAt": "2024-02-14T13:58:04.939Z",
+                    "updatedAt": "2024-02-14T13:58:04.939Z",
+                    "__v": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1066"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"42a-ZJeCshBL22i+iLohn3grvfKMaGQ\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 15:00:31 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "user": {
+                    "firstName": "pblt8tki",
+                    "lastName": "RWFdeY0P",
+                    "email": "KmWIBNF7mf@example.com",
+                    "password": "$2b$10$myB63oF3jWU1JY6eUaKK2uVJ9NFCK9r22m.5P2d/wIrpGYx2obP9W",
+                    "identifiers": [],
+                    "oauth": {
+                      "scopes": ["Read user data", "Modify user data"],
+                      "refreshToken": "fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8"
+                    },
+                    "jsonld": "{\n  \"@context\": \"http://schema.org\",\n  \"@type\": \"Person\",\n  \"name\": \"pblt8tki RWFdeY0P\",\n  \"email\": \"KmWIBNF7mf@example.com\",\n  \"url\": \"undefined:3000/v1/users/64f1fc8fbd8a3583c76d62bc\"\n}",
+                    "schema_version": "v0.1.0",
+                    "_id": "64f1fc8fbd8a3583c76d62bc",
+                    "createdAt": "2023-09-01T15:00:31.044Z",
+                    "updatedAt": "2023-09-01T15:00:31.044Z",
+                    "__v": 0
+                  },
+                  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NGYxZmM4ZmJkOGEzNTgzYzc2ZDYyYmMiLCJlbWFpbCI6IkttV0lCTkY3bWZAZXhhbXBsZS5jb20iLCJzY29wZXMiOlsiUmVhZCB1c2VyIGRhdGEiLCJNb2RpZnkgdXNlciBkYXRhIl0sImlhdCI6MTY5MzU4MDQzMSwiZXhwIjoxNjkzNTg0MDMxfQ.PMl9WaTi-oMSUSk9ivMBcO4j5WLzpT1jjJRgQetUY4A",
+                  "refreshToken": "fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/consents/me": {
       "get": {
         "tags": ["consents"],
         "summary": "Get my consents",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -418,6 +657,11 @@
       "get": {
         "tags": ["consents"],
         "summary": "Get my consent by ID",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -511,10 +755,15 @@
         }
       }
     },
-    "/consents/{userId}": {
+    "/consents/participants/{userId}": {
       "get": {
         "tags": ["consents"],
         "summary": "Get user consents",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -536,10 +785,15 @@
         }
       }
     },
-    "/consents/{userId}/{id}": {
+    "/consents/participants/{userId}/{id}": {
       "get": {
         "tags": ["consents"],
         "summary": "Get user consent by ID",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -574,6 +828,11 @@
       "get": {
         "tags": ["consents"],
         "summary": "Get privacy notice",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -613,10 +872,15 @@
         }
       }
     },
-    "/consents/{privacyNoticeId}": {
+    "/consents/privacy-notices/{privacyNoticeId}": {
       "get": {
         "tags": ["consents"],
         "summary": "Get user consent by ID",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "privacyNoticeId",
@@ -638,156 +902,15 @@
         }
       }
     },
-    "/consents/review/{dataProviderId}/{dataConsumerId}": {
-      "get": {
-        "tags": ["consents"],
-        "summary": "Review",
-        "parameters": [
-          {
-            "name": "dataProviderId",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Data Provider Participant ID",
-            "example": "64f1df5db2face281e55d8fa"
-          },
-          {
-            "name": "dataConsumerId",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "Data Consumer Participant ID",
-            "example": "64f1df7452a3febe2b054b38"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "headers": {
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              },
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string",
-                  "example": "*"
-                }
-              },
-              "Content-Type": {
-                "schema": {
-                  "type": "string",
-                  "example": "application/json; charset=utf-8"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "integer",
-                  "example": "1178"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"49a-zp+vCBViDErdlBy5UNNJqTPAs3E\""
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Fri, 01 Sep 2023 13:06:26 GMT"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                },
-                "example": [
-                  {
-                    "version": "KI-CR-v1.1.O",
-                    "consentReceiptID": "58505ac5-8560-419b-b728-16d11b753dd8",
-                    "collectionMethod": "",
-                    "jurisdiction": "",
-                    "consentTimestamp": null,
-                    "publicKey": "",
-                    "language": "",
-                    "piiPrincipalId": "bkChXUYZ 4IxkToKO",
-                    "piiControllers": [
-                      {
-                        "id": "http://localhost:3000/",
-                        "name": "consentmanager-pdi"
-                      }
-                    ],
-                    "policyUrl": "http://example.com/policies/policy-abc",
-                    "data": [
-                      {
-                        "uid": "data-1",
-                        "type": "http://example.com/datatypes/personal-info",
-                        "purpose": "http://example.com/purposes/user-authentication"
-                      }
-                    ],
-                    "services": [
-                      [
-                        {
-                          "service": "Demo purpose",
-                          "purposes": [
-                            {
-                              "uid": "purpose-1",
-                              "purpose": "Demo purpose",
-                              "action": "http://example.com/actions/authenticate",
-                              "assigner": "http://localhost:3000/64ef1907b8dfb749e4565640",
-                              "assignee": "http://localhost:3000/64ef190bb8dfb749e4565644",
-                              "purposeCategory": ["2 - Contracted Service"],
-                              "consentType": "EXPLICIT",
-                              "piiCategory": [
-                                "1 - Biographical",
-                                "2 - Contact",
-                                "4 - Communications/Social"
-                              ],
-                              "primaryPurpose": true,
-                              "termination": "Subscription end date + 1 year",
-                              "thirdPartyDisclosure": true,
-                              "thirdPartyName": "The Ankh-morpork Deadbeat Debt Collectors Society"
-                            }
-                          ]
-                        }
-                      ]
-                    ],
-                    "sensitive": true,
-                    "spiCat": ["1 - Biographical", "7 - Financial"],
-                    "contract": "http://example.com/contract/666"
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
     "/consents": {
       "post": {
         "tags": ["consents"],
         "summary": "Give Consent",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -886,10 +1009,321 @@
     "/consents/{id}": {
       "delete": {
         "tags": ["consents"],
-        "summary": "Revoke consent",
+        "summary": "Revoke a Consent",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1768"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e8-uIaPs7U1Im/qFrL+a3jGjS7qNf0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:37 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": true,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "granted",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/token": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Verifies the provider generated token and attaches it to the consent",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/data-exchange": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Uses a given consent to trigger a data exchange",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/validate": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Verifies the token & consent validity",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
             "in": "path",
             "schema": {
               "type": "string"
@@ -1535,8 +1969,8 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "email": "<string>",
-                  "password": "<string>"
+                  "clientID": "<string>",
+                  "clientSecret": "<string>"
                 }
               }
             }
@@ -1602,7 +2036,8 @@
                 },
                 "example": {
                   "success": true,
-                  "message": "successfully logged in"
+                  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWIwZTYzZTE1MDQ2MTAxMWExMGEyMzciLCJwYXJ0aWNpcGFudF9uYW1lIjoicHJvdmlkZXIiLCJpYXQiOjE3MDc5MTg5NTUsImV4cCI6TcwNzkyMjU1NX0.EIIjStqr2tuOMWa65evii9F-BrS0okEfq3QSs9m4UQA",
+                  "message": "Successfully retrieved JWT for authenticating requests to the API"
                 }
               }
             }
@@ -1614,6 +2049,11 @@
       "get": {
         "tags": ["participants"],
         "summary": "Get my participant info",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1714,6 +2154,80 @@
                   "updatedAt": "2023-09-01T12:32:19.826Z",
                   "__v": 0
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/participants/consent-signature": {
+      "get": {
+        "tags": ["participants"],
+        "summary": "Get the public Key",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "2815"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"aff-TmX/j8MX1YRRKkxWTJv/MNzpeVs\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 12:33:00 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
               }
             }
           }
@@ -1849,6 +2363,11 @@
       "post": {
         "tags": ["data-exchange"],
         "summary": "User triggered data exchange",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1875,6 +2394,11 @@
       "post": {
         "tags": ["data-exchange"],
         "summary": "Provider triggered data exchange",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
