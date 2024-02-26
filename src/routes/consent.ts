@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   attachTokenToConsent,
+  getAvailableExchanges,
   getPrivacyNoticeById,
   getPrivacyNotices,
   getUserConsentById,
@@ -22,6 +23,8 @@ r.get(
   // checkIDFormatMiddleware,
   getUserConsentById
 );
+
+r.get("/exchanges/:as", verifyParticipantJWT, getAvailableExchanges);
 
 r.get("/privacy-notices/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
 

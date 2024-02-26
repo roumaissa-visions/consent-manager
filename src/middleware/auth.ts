@@ -74,6 +74,7 @@ export const verifyParticipantJWT = async (
     try {
       const decoded = jwt.verify(token, participant.clientSecret);
       if (decoded) {
+        req.session.userParticipant = { id: participant._id };
         return next();
       } else {
         return res.status(401).json({
