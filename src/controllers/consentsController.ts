@@ -177,9 +177,9 @@ const findMatchingUserIdentifier = async (
     attachedParticipant: participantId,
   });
 
-  if (!userIdentifier) {
-    throw new Error("User identifier not found");
-  }
+  // if (!userIdentifier) {
+  //   throw new Error("User identifier not found");
+  // }
 
   return userIdentifier;
 };
@@ -271,17 +271,19 @@ export const giveConsent = async (
         email: user.email,
       }).lean();
 
-      if (!userIdentifiers) {
-        return res
-          .status(400)
-          .json({ error: "User identifier does not exist in data Consumer" });
-      }
-      if (!user.identifiers.includes(userIdentifiers._id)) {
+      // if (!userIdentifiers && !email) {
+      //   console.log("User identifier does not exist in data Consumer")
+      //   return res
+      //     .status(400)
+      //     .json({ error: "User identifier does not exist in data Consumer" });
+      // }
+
+      if (userIdentifiers && !user.identifiers.includes(userIdentifiers?._id)) {
         user.identifiers.push(userIdentifiers._id);
         await user.save();
       }
 
-      consumerUserIdentifier = userIdentifiers._id;
+      if(userIdentifiers) consumerUserIdentifier = userIdentifiers._id;
     }
 
     // If user identifier in consumer was not found it is possible it exists
