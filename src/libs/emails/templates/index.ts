@@ -7,3 +7,7 @@ export const EmailTemplates = {
   verification: verificationTemplate,
   consentValidation: consentValidationTemplate,
 };
+
+export const EmailMailchimpTemplates = {
+
+};
