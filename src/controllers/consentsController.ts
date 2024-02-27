@@ -16,6 +16,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import crypto from "crypto";
 import _ from "lodash";
+import {MailchimpClient} from "../libs/emails/mailchimp/MailchimpClient";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -204,6 +205,8 @@ export const giveConsent = async (
     if (!user) return res.status(404).json({ error: "user not found" });
 
     const { privacyNoticeId, email, data } = req.body;
+    const { triggerDataExchange } = req.query;
+    console.log(triggerDataExchange)
     if (!privacyNoticeId)
       throw new BadRequestError("Missing privacyNoticeId", [
         { field: "privacyNoticeId", message: "Mandatory field" },
@@ -314,12 +317,26 @@ export const giveConsent = async (
           process.env.API_PREFIX
         }/consents/emailverification?privacyNotice=${
           privacyNotice.id
-        }&dataProvider=${dataProvider._id}&data=${JSON.stringify(data)}`;
+        }&user=${req.user?.id}&dataProvider=${dataProvider._id}&dataConsumer=${dataConsumer._id}&consumerUserIdentifier=${existingUserIdentifier._id}&providerUserIdentifier=${providerUserIdentifier}${triggerDataExchange ? `&triggerDataExchange=${triggerDataExchange}` : ''}&data=${JSON.stringify(data ?? privacyNotice.data)}`;
 
-        await NodemailerClient.sendMessageFromLocalTemplate(
-          { to: email, subject: "Consent validation" },
-          "consentValidation",
-          { url: encodeURIComponent(validationURL) }
+        await MailchimpClient.sendMessageFromLocalTemplate(
+            {
+              message: {
+                to: [
+                  {
+                    email: process.env.MANDRILL_ENABLED
+                        ? process.env.MANDRILL_FROM_EMAIL ?? email
+                        : process.env.MANDRILL_FROM_EMAIL,
+                  },
+                ],
+                from_email: process.env.MANDRILL_FROM_EMAIL,
+                from_name: process.env.MANDRILL_FROM_NAME
+              }
+            },
+            'consentValidation',
+            {
+              url: validationURL,
+            }
         );
 
         return res.status(200).json({
@@ -374,11 +391,26 @@ export const giveConsentOnEmailValidation = async (
   next: NextFunction
 ) => {
   try {
-    const { dataProvider, privacyNotice, data } = req.query;
+    const {
+      dataProvider,
+      dataConsumer,
+      privacyNotice,
+      data,
+      triggerDataExchange: triggerDataExchangeParams,
+      providerUserIdentifier,
+      consumerUserIdentifier,
+      user
+    } = req.query;
     const decodedDP = decodeURIComponent(dataProvider.toString());
+    const decodedDC = decodeURIComponent(dataConsumer.toString());
     const decodedPN = decodeURIComponent(privacyNotice.toString());
-    const decodedData = decodeURIComponent(data.toString());
-    const selectedData = JSON.parse(decodedData);
+    let decodedData;
+    let selectedData;
+
+    if(data !== undefined && data && data !== "undefined"){
+      decodedData = decodeURIComponent(data.toString());
+      selectedData = JSON.parse(decodedData);
+    }
 
     const pn = await PrivacyNotice.findById(decodedPN);
     if (!pn) return res.status(404).json({ error: "privacy notice not found" });
@@ -388,18 +420,98 @@ export const giveConsentOnEmailValidation = async (
       return res.status(404).json({ error: "data provider not found" });
     }
 
-    const consent = new Consent({
+    const verify = await Consent.findOne({
       privacyNotice: privacyNotice,
-      user: req.user?.id,
-
+      user: user,
       dataProvider: dataProvider,
+      dataConsumer: dataConsumer,
       recipients: pn.recipients,
       purposes: pn.purposes,
       data: selectedData,
       status: "granted",
       consented: true,
+      providerUserIdentifier: providerUserIdentifier,
+      consumerUserIdentifier: consumerUserIdentifier,
+      contract: pn.contract,
+    }).lean()
+
+    if(verify){
+      return res.status(200).json({
+        message: "Already granted consent. You may close this tab now",
+      });
+    }
+
+    const consent = new Consent({
+      privacyNotice: privacyNotice,
+      user: user,
+      dataProvider: dataProvider,
+      dataConsumer: dataConsumer,
+      recipients: pn.recipients,
+      purposes: pn.purposes,
+      data: selectedData,
+      status: "granted",
+      consented: true,
+      providerUserIdentifier: providerUserIdentifier,
+      consumerUserIdentifier: consumerUserIdentifier,
+      contract: pn.contract,
     });
-    await consent.save();
+
+    const userToUpdate = await User.findById(user);
+    const userIdentifierConsumer = await UserIdentifier.findById(consumerUserIdentifier).lean();
+
+    userToUpdate.identifiers.push(userIdentifierConsumer._id);
+
+    await Promise.all([
+      userToUpdate.save(),
+      consent.save()
+    ]);
+
+    if(triggerDataExchangeParams) {
+      try {
+        const consentDocument: any = await Consent.findById(consent._id)
+            .populate([{ path: "dataProvider" }])
+            .lean();
+        if (!consentDocument) return res.status(404).json({ error: "consent not found" });
+
+        if (consentDocument.status !== "granted") {
+          return res
+              .status(401)
+              .json({ error: "Consent has not been granted by user" });
+        }
+
+        const payload = {
+          ...consentDocument,
+        };
+
+        const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
+
+        try {
+          await axios.post(consentDocument.dataProvider.endpoints.consentExport, {
+            signedConsent,
+            encrypted,
+          });
+
+          return res.status(200).json({
+            message:
+                "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
+            consent,
+          });
+        } catch (err) {
+          Logger.error({
+            location: "consents.triggerDataExchange",
+            message: err.message,
+          });
+          return res.status(424).json({
+            error: "Failed to communicate with the data consumer connector",
+            message:
+                "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+          });
+        }
+      } catch (err) {
+        next(err);
+      }
+    }
+
     return res.status(200).json({
       message: "Successfully granted consent. You may close this tab now",
     });
