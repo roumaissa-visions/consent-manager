@@ -325,7 +325,7 @@ export const giveConsent = async (
                 to: [
                   {
                     email: process.env.MANDRILL_ENABLED
-                        ? process.env.MANDRILL_FROM_EMAIL ?? email
+                        ? email
                         : process.env.MANDRILL_FROM_EMAIL,
                   },
                 ],
