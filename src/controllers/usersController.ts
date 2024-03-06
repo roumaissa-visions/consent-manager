@@ -127,6 +127,12 @@ export const registerUserIdentifier = async (
         },
       ]);
 
+    const exists = await UserIdentifier.findOne({
+      attachedParticipant: req.userParticipant.id,
+      email,
+    });
+    if (exists) return res.status(409).json({ error: "User already exists" });
+
     const newId = new UserIdentifier({
       attachedParticipant: req.userParticipant.id,
       email,
