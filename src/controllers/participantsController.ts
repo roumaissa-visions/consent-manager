@@ -6,6 +6,7 @@ import { issueJwt } from "../libs/jwt";
 import axios from "axios";
 import * as fs from "fs";
 import path from "path";
+import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 
 /**
  * Retrieves a participant by id
@@ -63,6 +64,13 @@ export const registerParticipant = async (
 ) => {
   try {
     const participantData = req.body;
+
+    const exists = await Participant.findOne({
+      clientID: participantData.clientID,
+    }).lean();
+
+    if (exists) return res.status(409).json({ error: "Participant already exists" });
+
     const newParticipant = new Participant(participantData);
 
     // TODO

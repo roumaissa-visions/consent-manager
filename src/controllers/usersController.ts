@@ -160,6 +160,12 @@ export const registerUserIdentifiers = async (
     const usersResponse = [];
 
     for (const user of users) {
+
+      const exists = await UserIdentifier.findOne({
+        attachedParticipant: req.userParticipant.id,
+        email: user.email
+      }).lean();
+
       if (!user.email && !user.identifier)
         throw new BadRequestError("Missing or invalid fields", [
           {
@@ -172,15 +178,17 @@ export const registerUserIdentifiers = async (
           },
         ]);
 
-      const newId = new UserIdentifier({
-        attachedParticipant: req.userParticipant.id,
-        email: user.email,
-        identifier: user.internalID,
-      });
+      if(!exists){
+        const newId = new UserIdentifier({
+          attachedParticipant: req.userParticipant.id,
+          email: user.email,
+          identifier: user.internalID,
+        });
 
-      await newId.save();
+        await newId.save();
 
-      usersResponse.push(newId);
+        usersResponse.push(newId);
+      }
     }
 
     return res.json(usersResponse);

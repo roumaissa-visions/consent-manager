@@ -130,7 +130,9 @@ export const verifyUserJWT = async (
         return res.status(401).json({ message: "User with email doesn't exist" });
       }
 
-      userExisitingEmail.identifiers.push(userIdentifier._id)
+      if (userExisitingEmail && !userExisitingEmail.identifiers.includes(userIdentifier?._id)) {
+        userExisitingEmail.identifiers.push(userIdentifier?._id);
+      }
 
       await userExisitingEmail.save()
 
