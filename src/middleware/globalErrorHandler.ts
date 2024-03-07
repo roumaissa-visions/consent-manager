@@ -8,13 +8,13 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  Logger.error({
+    message: err.message,
+    location: err.stack,
+  });
   if (err instanceof BadRequestError) {
     return res.status(400).json(err.jsonResponse());
   } else {
-    Logger.error({
-      message: err.message,
-      location: err.stack,
-    });
     return res.status(500).json({
       error: "Internal Server Error",
       message: "Something went wrong",
