@@ -10,15 +10,13 @@ const schema = new Schema<IUserIdentifier>(
     },
     email: { type: String, required: true },
     identifier: { type: String },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
     jsonld: {
       type: String,
-      required: true,
       default: "",
     },
     schema_version: {
       type: String,
-      required: true,
       default: "v0.1.0",
     },
   },

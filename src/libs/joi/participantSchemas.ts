@@ -1,75 +1,31 @@
 import Joi from "joi";
 
 export const participantCreationSchema = Joi.object({
-  hasLegallyBindingName: Joi.string().required(),
+  legalName: Joi.string().required(),
   identifier: Joi.string().required(),
-  address: Joi.object({
-    addressLocality: Joi.string(),
-    addressRegion: Joi.string(),
-    postalCode: Joi.string(),
-    streetAddress: Joi.string(),
-  }),
-  url: Joi.string(),
-  description: Joi.string().required(),
-  hasBusinessIdentifier: Joi.string(),
-  hasMemberParticipant: Joi.array().items(Joi.string()).default([]),
-  hasLogo: Joi.string(),
-  contactPoint: Joi.array().items(
-    Joi.object({
-      email: Joi.string().required(),
-      telephone: Joi.string().required(),
-      contactType: Joi.string().required(),
-    })
-  ),
-  hasCompanyType: Joi.string(),
-  hasPhoneNumber: Joi.string().required(),
-  hasMemberPerson: Joi.array().items(
-    Joi.object({
-      name: Joi.string().required(),
-      email: Joi.string().required(),
-    })
-  ),
+  did: Joi.string(),
+  selfDescriptionURL: Joi.string(),
+  dataspaceEndpoint: Joi.string(),
   email: Joi.string().required(),
-  password: Joi.string().required(),
   endpoints: Joi.object({
-    dataExport: Joi.string(),
-    dataImport: Joi.string(),
+    dataExport: Joi.string().optional(),
+    dataImport: Joi.string().optional(),
+    consentExport: Joi.string().optional(),
+    consentImport: Joi.string().optional(),
   }),
+  clientID: Joi.string().required(),
+  clientSecret: Joi.string().required(),
 });
 
 export const participantUpdateSchema = Joi.object({
-  hasLegallyBindingName: Joi.string(),
-  identifier: Joi.string(),
-  address: Joi.object({
-    addressLocality: Joi.string(),
-    addressRegion: Joi.string(),
-    postalCode: Joi.string(),
-    streetAddress: Joi.string(),
-  }),
-  url: Joi.string(),
-  description: Joi.string(),
-  hasBusinessIdentifier: Joi.string(),
-  hasMemberParticipant: Joi.array().items(Joi.string()),
-  hasLogo: Joi.string(),
-  contactPoint: Joi.array().items(
-    Joi.object({
-      email: Joi.string().required(),
-      telephone: Joi.string().required(),
-      contactType: Joi.string().required(),
-    })
-  ),
-  hasCompanyType: Joi.string(),
-  hasPhoneNumber: Joi.string(),
-  hasMemberPerson: Joi.array().items(
-    Joi.object({
-      name: Joi.string().required(),
-      email: Joi.string().required(),
-    })
-  ),
-  email: Joi.string(),
-  password: Joi.string(),
+  legalName: Joi.string().optional(),
+  identifier: Joi.string().optional(),
+  selfDescriptionURL: Joi.string().optional(),
+  email: Joi.string().optional(),
   endpoints: Joi.object({
-    dataExport: Joi.string(),
-    dataImport: Joi.string(),
+    dataExport: Joi.string().optional(),
+    dataImport: Joi.string().optional(),
+    consentExport: Joi.string().optional(),
+    consentImport: Joi.string().optional(),
   }),
 });

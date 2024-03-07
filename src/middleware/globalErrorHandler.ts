@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors/BadRequestError";
+import { Logger } from "../libs/loggers";
 
 export const globalErrorHandler = (
   err: Error,
@@ -7,6 +8,10 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  Logger.error({
+    message: err.message,
+    location: err.stack,
+  });
   if (err instanceof BadRequestError) {
     return res.status(400).json(err.jsonResponse());
   } else {

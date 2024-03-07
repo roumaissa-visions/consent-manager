@@ -20,7 +20,9 @@ export const setUserIdForParticipant = async (
     const user = await User.findOne({ identifiers: userIdentifier });
     if (!user) throw new NotFoundError("User not found");
 
-    req.user.id = user.id;
+    req.user = {
+      id: user._id,
+    };
     next();
   } catch (err) {
     next(err);

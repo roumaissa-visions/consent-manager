@@ -6,9 +6,21 @@
   },
   "servers": [
     {
-      "url": "http://{{apiurl}}"
+      "url": "/v1"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "participantBearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "userBearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
   "tags": [
     {
       "name": "users"
@@ -323,10 +335,237 @@
         }
       }
     },
+    "/users/register": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Registers a new user identifier in the PDI",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "<string>",
+                  "identifier": "<string>"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1066"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"42a-ZJeCshBL22i+iLohn3grvfKMaGQ\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 15:00:31 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "attachedParticipant": "65b0e63e150461011a10a237",
+                  "email": "jane@doe.com",
+                  "identifier": "46549481513",
+                  "jsonld": "",
+                  "schema_version": "v0.1.0",
+                  "_id": "65ccc69ca7047f8e0b0e7357",
+                  "createdAt": "2024-02-14T13:56:44.943Z",
+                  "updatedAt": "2024-02-14T13:56:44.943Z",
+                  "__v": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/registers": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Registers new users identifier in the PDI",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": [
+                  {
+                    "attachedParticipant": "65b0e63e150461011a10a237",
+                    "email": "john2@doe.com",
+                    "jsonld": "",
+                    "schema_version": "v0.1.0",
+                    "_id": "65ccc6eca7047f8e0b0e7359",
+                    "createdAt": "2024-02-14T13:58:04.935Z",
+                    "updatedAt": "2024-02-14T13:58:04.935Z",
+                    "__v": 0
+                  },
+                  {
+                    "attachedParticipant": "65b0e63e150461011a10a237",
+                    "email": "john3@doe.com",
+                    "jsonld": "",
+                    "schema_version": "v0.1.0",
+                    "_id": "65ccc6eca7047f8e0b0e735b",
+                    "createdAt": "2024-02-14T13:58:04.939Z",
+                    "updatedAt": "2024-02-14T13:58:04.939Z",
+                    "__v": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1066"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"42a-ZJeCshBL22i+iLohn3grvfKMaGQ\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 15:00:31 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "user": {
+                    "firstName": "pblt8tki",
+                    "lastName": "RWFdeY0P",
+                    "email": "KmWIBNF7mf@example.com",
+                    "password": "$2b$10$myB63oF3jWU1JY6eUaKK2uVJ9NFCK9r22m.5P2d/wIrpGYx2obP9W",
+                    "identifiers": [],
+                    "oauth": {
+                      "scopes": ["Read user data", "Modify user data"],
+                      "refreshToken": "fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8"
+                    },
+                    "jsonld": "{\n  \"@context\": \"http://schema.org\",\n  \"@type\": \"Person\",\n  \"name\": \"pblt8tki RWFdeY0P\",\n  \"email\": \"KmWIBNF7mf@example.com\",\n  \"url\": \"undefined:3000/v1/users/64f1fc8fbd8a3583c76d62bc\"\n}",
+                    "schema_version": "v0.1.0",
+                    "_id": "64f1fc8fbd8a3583c76d62bc",
+                    "createdAt": "2023-09-01T15:00:31.044Z",
+                    "updatedAt": "2023-09-01T15:00:31.044Z",
+                    "__v": 0
+                  },
+                  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NGYxZmM4ZmJkOGEzNTgzYzc2ZDYyYmMiLCJlbWFpbCI6IkttV0lCTkY3bWZAZXhhbXBsZS5jb20iLCJzY29wZXMiOlsiUmVhZCB1c2VyIGRhdGEiLCJNb2RpZnkgdXNlciBkYXRhIl0sImlhdCI6MTY5MzU4MDQzMSwiZXhwIjoxNjkzNTg0MDMxfQ.PMl9WaTi-oMSUSk9ivMBcO4j5WLzpT1jjJRgQetUY4A",
+                  "refreshToken": "fe0c731b6a7fa349d825ed19b36870085f2c15c9ccb569f864b4b6696392d3b8"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/consents/me": {
       "get": {
         "tags": ["consents"],
         "summary": "Get my consents",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -418,6 +657,11 @@
       "get": {
         "tags": ["consents"],
         "summary": "Get my consent by ID",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -511,10 +755,15 @@
         }
       }
     },
-    "/consents/{userId}": {
+    "/consents/participants/{userId}": {
       "get": {
         "tags": ["consents"],
         "summary": "Get user consents",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -536,10 +785,15 @@
         }
       }
     },
-    "/consents/{userId}/{id}": {
+    "/consents/participants/{userId}/{id}": {
       "get": {
         "tags": ["consents"],
         "summary": "Get user consent by ID",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -570,146 +824,135 @@
         }
       }
     },
-    "/consents/review/{dataProviderId}/{dataConsumerId}": {
+    "/consents/{userId}/{providerId}/{consumerId}": {
       "get": {
         "tags": ["consents"],
-        "summary": "Review",
+        "summary": "Get privacy notice",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "dataProviderId",
+            "name": "userId",
             "in": "path",
             "schema": {
               "type": "string"
             },
             "required": true,
-            "description": "Data Provider Participant ID",
-            "example": "64f1df5db2face281e55d8fa"
+            "description": "User Identifier"
           },
           {
-            "name": "dataConsumerId",
+            "name": "providerId",
             "in": "path",
             "schema": {
               "type": "string"
             },
             "required": true,
-            "description": "Data Consumer Participant ID",
-            "example": "64f1df7452a3febe2b054b38"
+            "description": "Provider ID"
+          },
+          {
+            "name": "consumerId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consumer ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "headers": {
-              "X-Powered-By": {
-                "schema": {
-                  "type": "string",
-                  "example": "Express"
-                }
-              },
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string",
-                  "example": "*"
-                }
-              },
-              "Content-Type": {
-                "schema": {
-                  "type": "string",
-                  "example": "application/json; charset=utf-8"
-                }
-              },
-              "Content-Length": {
-                "schema": {
-                  "type": "integer",
-                  "example": "1178"
-                }
-              },
-              "ETag": {
-                "schema": {
-                  "type": "string",
-                  "example": "W/\"49a-zp+vCBViDErdlBy5UNNJqTPAs3E\""
-                }
-              },
-              "Date": {
-                "schema": {
-                  "type": "string",
-                  "example": "Fri, 01 Sep 2023 13:06:26 GMT"
-                }
-              },
-              "Connection": {
-                "schema": {
-                  "type": "string",
-                  "example": "keep-alive"
-                }
-              },
-              "Keep-Alive": {
-                "schema": {
-                  "type": "string",
-                  "example": "timeout=5"
-                }
-              }
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/consents/privacy-notices/{privacyNoticeId}": {
+      "get": {
+        "tags": ["consents"],
+        "summary": "Get user consent by ID",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "privacyNoticeId",
+            "in": "path",
+            "schema": {
+              "type": "string"
             },
+            "required": true,
+            "description": "privacy notice id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/consents/exchanges/{as}": {
+      "get": {
+        "tags": ["consents"],
+        "summary": "Get available exchanges by participant",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "as",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "provider or consumer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object"
                 },
-                "example": [
-                  {
-                    "version": "KI-CR-v1.1.O",
-                    "consentReceiptID": "58505ac5-8560-419b-b728-16d11b753dd8",
-                    "collectionMethod": "",
-                    "jurisdiction": "",
-                    "consentTimestamp": null,
-                    "publicKey": "",
-                    "language": "",
-                    "piiPrincipalId": "bkChXUYZ 4IxkToKO",
-                    "piiControllers": [
-                      {
-                        "id": "http://localhost:3000/",
-                        "name": "consentmanager-pdi"
-                      }
-                    ],
-                    "policyUrl": "http://example.com/policies/policy-abc",
-                    "data": [
-                      {
-                        "uid": "data-1",
-                        "type": "http://example.com/datatypes/personal-info",
-                        "purpose": "http://example.com/purposes/user-authentication"
-                      }
-                    ],
-                    "services": [
-                      [
-                        {
-                          "service": "Demo purpose",
-                          "purposes": [
-                            {
-                              "uid": "purpose-1",
-                              "purpose": "Demo purpose",
-                              "action": "http://example.com/actions/authenticate",
-                              "assigner": "http://localhost:3000/64ef1907b8dfb749e4565640",
-                              "assignee": "http://localhost:3000/64ef190bb8dfb749e4565644",
-                              "purposeCategory": ["2 - Contracted Service"],
-                              "consentType": "EXPLICIT",
-                              "piiCategory": [
-                                "1 - Biographical",
-                                "2 - Contact",
-                                "4 - Communications/Social"
-                              ],
-                              "primaryPurpose": true,
-                              "termination": "Subscription end date + 1 year",
-                              "thirdPartyDisclosure": true,
-                              "thirdPartyName": "The Ankh-morpork Deadbeat Debt Collectors Society"
-                            }
-                          ]
-                        }
-                      ]
-                    ],
-                    "sensitive": true,
-                    "spiCat": ["1 - Biographical", "7 - Financial"],
-                    "contract": "http://example.com/contract/666"
-                  }
-                ]
+                "example": {
+                  "participant": {
+                    "selfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
+                    "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFiYjVkODUzZThlMDViMTMyMDU3"
+                  },
+                  "exchanges": [
+                    {
+                      "contract": "http://host.docker.internal:8888/bilaterals/65d86f96dd837db34716ab42",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    },
+                    {
+                      "contract": "http://host.docker.internal:8888/bilaterals/65d8d2af05af96b0289a75a0",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    },
+                    {
+                      "contract": "http://host.docker.internal:8888/contracts/65d87043dd837db34716ab61",
+                      "participantSelfDescription": "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "base64SelfDescription": "aHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjQwNDAvdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2NGFhZWJkODUzZThlMDViMTMxN2Mx"
+                    }
+                  ]
+                }
               }
             }
           }
@@ -720,13 +963,20 @@
       "post": {
         "tags": ["consents"],
         "summary": "Give Consent",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "example": {
-                  "consentId": "<string>"
+                  "privacyNoticeId": "<string>",
+                  "email": "<string>",
+                  "data": "<string>"
                 }
               }
             }
@@ -816,10 +1066,321 @@
     "/consents/{id}": {
       "delete": {
         "tags": ["consents"],
-        "summary": "Revoke consent",
+        "summary": "Revoke a Consent",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1768"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e8-uIaPs7U1Im/qFrL+a3jGjS7qNf0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:37 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": true,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "granted",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/token": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Verifies the provider generated token and attaches it to the consent",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/data-exchange": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Uses a given consent to trigger a data exchange",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/validate": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Verifies the token & consent validity",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
             "in": "path",
             "schema": {
               "type": "string"
@@ -920,40 +1481,21 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "hasLegallyBindingName": "<string>",
+                  "legalName": "<string>",
                   "identifier": "<string:DID>",
-                  "address": {
-                    "addressLocality": "<string>",
-                    "addressRegion": "<string>",
-                    "postalCode": "<string>",
-                    "streetAddress": "<string>"
-                  },
-                  "url": "<string>",
-                  "description": "<string>",
-                  "hasBusinessIdentifier": "<string>",
-                  "hasMemberParticipant": [],
-                  "hasLogo": "<string>",
-                  "contactPoint": [
-                    {
-                      "email": "<string>",
-                      "telephone": "<string>",
-                      "contactType": "<string>"
-                    }
-                  ],
-                  "hasCompanyType": "<string>",
-                  "hasPhoneNumber": "<string>",
-                  "hasMemberPerson": [
-                    {
-                      "name": "<string>",
-                      "email": "<string>"
-                    }
-                  ],
+                  "selfDescriptionURL": "<string>",
                   "email": "<string>",
-                  "password": "<string>",
+                  "dataspaceEndpoint": "<string>",
                   "endpoints": {
                     "dataExport": "https://example.com/export",
-                    "dataImport": "https://example.com/import"
-                  }
+                    "dataImport": "https://example.com/import",
+                    "consentImport": "https://example.com/import",
+                    "consentExport": "https://example.com/import"
+                  },
+                  "clientID": "<string>",
+                  "clientSecret": "<string>",
+                  "jsonld": "<string>",
+                  "schema_version": "<string>"
                 }
               }
             }
@@ -1018,7 +1560,7 @@
                   "type": "object"
                 },
                 "example": {
-                  "hasLegallyBindingName": "<string>",
+                  "legalName": "<string>",
                   "identifier": "<string:DID>",
                   "address": {
                     "addressLocality": "<string>",
@@ -1054,7 +1596,7 @@
                     "dataExport": "https://example.com/export",
                     "dataImport": "https://example.com/import"
                   },
-                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
+                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
                   "schema_version": "v0.0.1",
                   "_id": "64f1fce5bd8a3583c76d62c4",
                   "clientID": "842b0932afe0e82d60fa03f8eb34c8fe",
@@ -1161,7 +1703,7 @@
                         "dataImport": ""
                       },
                       "_id": "64f1d9d399858e42532bdfbf",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1186,7 +1728,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d399858e42532bdfbf\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d399858e42532bdfbf\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d399858e42532bdfbf\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d399858e42532bdfbf\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "f35ae697a4e8192a9199cfb2eb49d602",
                       "clientSecret": "8e397bcd9768bc3ff52dca99bf2cb6cd26f4cfaa7ab08284b49125a1f113a943",
@@ -1206,7 +1748,7 @@
                         "dataImport": ""
                       },
                       "_id": "64f1d9d999858e42532bdfc3",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1231,7 +1773,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d999858e42532bdfc3\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d999858e42532bdfc3\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d999858e42532bdfc3\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d999858e42532bdfc3\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "cd303614379927a5407590b3ab5822ef",
                       "clientSecret": "3429437bfd6ed9a1ec7af0ce20eebf523f930ebe0a37ddfe7be2c3f19a6fbe90",
@@ -1251,7 +1793,7 @@
                         "dataImport": ""
                       },
                       "_id": "64f1da5e99858e42532bdfd7",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1276,7 +1818,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1da5e99858e42532bdfd7\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1da5e99858e42532bdfd7\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1da5e99858e42532bdfd7\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1da5e99858e42532bdfd7\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "2da4df71fc576d9667970099802cdfb1",
                       "clientSecret": "2c5a48f6c57109a3a5fd34bcdabc9a2c97a1b73a24497769f98ad77858be1700",
@@ -1296,7 +1838,7 @@
                         "dataImport": ""
                       },
                       "_id": "64f1df5db2face281e55d8fa",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1321,7 +1863,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df5db2face281e55d8fa\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df5db2face281e55d8fa\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"\",\n    \"dataImport\": \"\"\n  }\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df5db2face281e55d8fa\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df5db2face281e55d8fa\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"\",\n    \"dataImport\": \"\"\n  }\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "0e89e69ff0e895a7c0b1219addc367f7",
                       "clientSecret": "b63f69cc5c66d4dbb43fd294b1ce5d1b53ba95f5f152f7e2b16515b3c0f6e28b",
@@ -1341,7 +1883,7 @@
                         "dataImport": ""
                       },
                       "_id": "64f1df7452a3febe2b054b38",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1366,7 +1908,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df7452a3febe2b054b38\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df7452a3febe2b054b38\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"\",\n    \"dataImport\": \"\"\n  }\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df7452a3febe2b054b38\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df7452a3febe2b054b38\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"\",\n    \"dataImport\": \"\"\n  }\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "f9d1f8cd03d9a0c1a7eda16e0769b8fb",
                       "clientSecret": "14e1c7ef5271670a07af8e6a1ea26062fe38362184c11d5301f702bfe36fd443",
@@ -1386,7 +1928,7 @@
                         "dataImport": "https://example.com/import"
                       },
                       "_id": "64f1df921ddff0e8f2f82f3d",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1411,7 +1953,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df921ddff0e8f2f82f3d\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df921ddff0e8f2f82f3d\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1df921ddff0e8f2f82f3d\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1df921ddff0e8f2f82f3d\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "f12f3e2575f4303371125fddd907998c",
                       "clientSecret": "c56af16928e7b7fe0d692d5d068c16d91e1175be9039c10d3d266a75687c9019",
@@ -1431,7 +1973,7 @@
                         "dataImport": "https://example.com/import"
                       },
                       "_id": "64f1fce5bd8a3583c76d62c4",
-                      "hasLegallyBindingName": "<string>",
+                      "legalName": "<string>",
                       "identifier": "<string:DID>",
                       "url": "<string>",
                       "description": "<string>",
@@ -1456,7 +1998,7 @@
                         }
                       ],
                       "email": "<string>",
-                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
+                      "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
                       "schema_version": "v0.0.1",
                       "clientID": "842b0932afe0e82d60fa03f8eb34c8fe",
                       "clientSecret": "1230a49c81d95884328849127f3596672b50362d0116d4e6acf04eec8bb54dc7",
@@ -1484,8 +2026,8 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "email": "<string>",
-                  "password": "<string>"
+                  "clientID": "<string>",
+                  "clientSecret": "<string>"
                 }
               }
             }
@@ -1551,7 +2093,8 @@
                 },
                 "example": {
                   "success": true,
-                  "message": "successfully logged in"
+                  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NWIwZTYzZTE1MDQ2MTAxMWExMGEyMzciLCJwYXJ0aWNpcGFudF9uYW1lIjoicHJvdmlkZXIiLCJpYXQiOjE3MDc5MTg5NTUsImV4cCI6TcwNzkyMjU1NX0.EIIjStqr2tuOMWa65evii9F-BrS0okEfq3QSs9m4UQA",
+                  "message": "Successfully retrieved JWT for authenticating requests to the API"
                 }
               }
             }
@@ -1563,6 +2106,11 @@
       "get": {
         "tags": ["participants"],
         "summary": "Get my participant info",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1629,7 +2177,7 @@
                     "streetAddress": "<string>"
                   },
                   "_id": "64f1d9d399858e42532bdfbf",
-                  "hasLegallyBindingName": "<string>",
+                  "legalName": "<string>",
                   "identifier": "<string:DID>",
                   "url": "<string>",
                   "description": "<string>",
@@ -1655,7 +2203,7 @@
                   ],
                   "email": "<string>",
                   "password": "$2b$10$DZlJ4/Prlz8AOJVxPqf8eev0Crwi99opV4rdM.opThGCt.gvL3faq",
-                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d399858e42532bdfbf\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d399858e42532bdfbf\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
+                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1d9d399858e42532bdfbf\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1d9d399858e42532bdfbf\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\"\n}",
                   "schema_version": "v0.0.1",
                   "clientID": "f35ae697a4e8192a9199cfb2eb49d602",
                   "clientSecret": "8e397bcd9768bc3ff52dca99bf2cb6cd26f4cfaa7ab08284b49125a1f113a943",
@@ -1663,6 +2211,80 @@
                   "updatedAt": "2023-09-01T12:32:19.826Z",
                   "__v": 0
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/participants/consent-signature": {
+      "get": {
+        "tags": ["participants"],
+        "summary": "Get the public Key",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "2815"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"aff-TmX/j8MX1YRRKkxWTJv/MNzpeVs\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 12:33:00 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
               }
             }
           }
@@ -1755,7 +2377,7 @@
                     "dataImport": "https://example.com/import"
                   },
                   "_id": "64f1fce5bd8a3583c76d62c4",
-                  "hasLegallyBindingName": "<string>",
+                  "legalName": "<string>",
                   "identifier": "<string:DID>",
                   "url": "<string>",
                   "description": "<string>",
@@ -1780,7 +2402,7 @@
                     }
                   ],
                   "email": "<string>",
-                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:hasLegallyBindingName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
+                  "jsonld": "{\n  \"@context\": {\n    \"sh\": \"http://www.w3.org/ns/shacl#\",\n    \"schema\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"xsd\": \"http://www.w3.org/2001/XMLSchema#\",\n    \"gax-core\": \"http://w3id.org/gaia-x/core#\",\n    \"gax-participant\": \"http://w3id.org/gaia-x/participant#\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dcterms\": \"http://purl.org/dc/terms/\",\n    \"did\": \"https://www.w3.org/TR/did-core/#\"\n  },\n  \"@id\": \"64f1fce5bd8a3583c76d62c4\",\n  \"@type\": \"Participant\",\n  \"did:identifier\": \"<string:DID>\",\n  \"consentManager\": {\n    \"solution\": \"http://localhost:3000/\",\n    \"idInSolution\": \"64f1fce5bd8a3583c76d62c4\"\n  },\n  \"gax-participant:legalName\": \"<string>\",\n  \"address\": {\n    \"@type\": \"schema:PostalAddress\",\n    \"schema:addressLocality\": \"<string>\",\n    \"schema:addressRegion\": \"<string>\",\n    \"schema:postalCode\": \"<string>\",\n    \"schema:streetAddress\": \"<string>\"\n  },\n  \"url\": {\n    \"@type\": \"xsd:anyURI\",\n    \"@value\": \"<string>\"\n  },\n  \"description\": {\n    \"@type\": \"xsd:string\",\n    \"@value\": \"<string>\"\n  },\n  \"gax-participant:hasBusinessIdentifier\": \"<string>\",\n  \"gax-participant:hasLogo\": {\n    \"@value\": \"<string>\",\n    \"@type\": \"xsd:anyURI\"\n  },\n  \"gax-participant:hasMemberParticipant\": [],\n  \"contactPoint\": [\n    {\n      \"@type\": \"schema:ContactPoint\",\n      \"schema:email\": \"<string>\",\n      \"schema:telephone\": \"<string>\",\n      \"schema:contactType\": \"<string>\"\n    }\n  ],\n  \"gax-participant:hasCompanyType\": \"<string>\",\n  \"gax-participant:hasPhoneNumber\": \"<string>\",\n  \"gax-participant:hasMemberPerson\": [\n    {\n      \"@type\": \"schema:Person\",\n      \"schema:name\": \"<string>\"\n    }\n  ],\n  \"email\": \"<string>\",\n  \"endpoints\": {\n    \"dataExport\": \"https://example.com/export\",\n    \"dataImport\": \"https://example.com/import\"\n  }\n}",
                   "schema_version": "v0.0.1",
                   "clientID": "842b0932afe0e82d60fa03f8eb34c8fe",
                   "clientSecret": "1230a49c81d95884328849127f3596672b50362d0116d4e6acf04eec8bb54dc7",
@@ -1798,6 +2420,11 @@
       "post": {
         "tags": ["data-exchange"],
         "summary": "User triggered data exchange",
+        "security": [
+          {
+            "userBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1824,6 +2451,11 @@
       "post": {
         "tags": ["data-exchange"],
         "summary": "Provider triggered data exchange",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {

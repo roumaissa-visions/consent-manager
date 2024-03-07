@@ -1,16 +1,23 @@
 import { Router } from "express";
 import {
-  getConsentReview,
+  attachTokenToConsent,
+  getAvailableExchanges,
+  getPrivacyNoticeById,
+  getPrivacyNotices,
   getUserConsentById,
   getUserConsents,
   giveConsent,
+  giveConsentOnEmailValidation,
   revokeConsent,
+  triggerDataExchange,
+  verifyToken,
 } from "../controllers/consentsController";
 import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
 // import { checkIDFormatMiddleware } from "../middleware/objectIdFormatCheck";
 import { setUserIdForParticipant } from "../middleware/participantsMiddleware";
 const r: Router = Router();
 
+r.get("/emailverification", giveConsentOnEmailValidation);
 r.get("/me", verifyUserJWT, getUserConsents);
 r.get(
   "/me/:id",
@@ -19,24 +26,25 @@ r.get(
   getUserConsentById
 );
 
+r.get("/exchanges/:as", verifyParticipantJWT, getAvailableExchanges);
+
+r.get("/privacy-notices/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
+
 r.get(
-  "/:userId/",
+  "/participants/:userId/",
   verifyParticipantJWT,
   setUserIdForParticipant,
   getUserConsents
 );
+
 r.get(
-  "/:userId/:id",
+  "/participants/:userId/:id",
   verifyParticipantJWT,
   setUserIdForParticipant,
   getUserConsentById
 );
 
-r.get(
-  "/review/:dataProviderId/:dataConsumerId",
-  verifyUserJWT,
-  getConsentReview
-);
+r.get("/:userId/:providerId/:consumerId", verifyUserJWT, getPrivacyNotices);
 
 r.post(
   "/",
@@ -46,5 +54,26 @@ r.post(
 );
 
 r.delete("/:id", verifyUserJWT, revokeConsent);
+
+r.post(
+  "/:consentId/data-exchange",
+  verifyUserJWT,
+  // verifyContract,
+  triggerDataExchange
+);
+
+r.post(
+  "/:consentId/token",
+  verifyParticipantJWT,
+  // verifyContract,
+  attachTokenToConsent
+);
+
+r.post(
+  "/:consentId/validate",
+  verifyParticipantJWT,
+  // verifyContract,
+  verifyToken
+);
 
 export default r;

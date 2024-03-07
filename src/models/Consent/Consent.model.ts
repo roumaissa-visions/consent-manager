@@ -4,15 +4,55 @@ import { NotFoundError } from "../../errors/NotFoundError";
 
 const schema = new Schema<IConsent>(
   {
+    identifier: { type: String },
+    contract: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    userIdentifiers: [{ type: Schema.Types.ObjectId, ref: "UserIdentifier" }],
-    identifier: { type: String, required: true },
+    providerUserIdentifier: {
+      type: Schema.Types.ObjectId,
+      ref: "UserIdentifier",
+      required: true,
+    },
+    consumerUserIdentifier: {
+      type: Schema.Types.ObjectId,
+      ref: "UserIdentifier",
+      required: true,
+    },
     consented: { type: Boolean, required: true },
-    purposes: [{ type: String }],
+    dataProvider: {
+      type: Schema.Types.ObjectId,
+      ref: "Participant",
+      required: true,
+    },
+    dataConsumer: {
+      type: Schema.Types.ObjectId,
+      ref: "Participant",
+      required: true,
+    },
+    recipients: [{ type: String, required: true }],
+    purposes: [
+      {
+        _id: String,
+        purpose: String,
+        legalBasis: String,
+      },
+    ],
     data: [{ type: String }],
-    status: { type: String, enum: ["pending", "granted", "revoked"] },
-    jsonld: { type: String, required: true },
-    schema_version: { type: String, default: "0.1.0" },
+    status: {
+      type: String,
+      enum: ["pending", "granted", "revoked", "expired"],
+    },
+    piiPrincipalRights: [String],
+    privacyNotice: { type: String, default: "" },
+    processingLocations: [String],
+    storageLocations: [String],
+    recipientThirdParties: [
+      { name: String, location: String, natureOfDataAccess: String },
+    ],
+    retentionPeriod: String,
+    withdrawalMethod: String,
+    token: { type: String, default: "" },
+    jsonld: { type: String },
+    schema_version: { type: String, default: "0.2.0" },
   },
   { timestamps: true }
 );

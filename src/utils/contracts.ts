@@ -1,15 +1,174 @@
 import axios from "axios";
 import { randomUUID } from "crypto";
-import { IConsent, IParticipant, IUser } from "../types/models";
+import { IConsent, IParticipant, IPrivacyNotice, IUser } from "../types/models";
 import Consent from "../models/Consent/Consent.model";
 import { NotFoundError } from "../errors/NotFoundError";
+import { Purpose } from "../types";
+import {
+  bilateralContractToPrivacyNotice,
+  ecosystemContractToPrivacyNotice,
+} from "./privacyNotices";
+import {
+  contractEcosystemToExchange,
+  contractToExchange,
+  IExchange,
+} from "./exchanges";
+
+type Permission = {
+  action: string;
+  target: string;
+  constraing: any[];
+};
+
+type Member = {
+  participant: string;
+  role: string;
+  signature: string;
+  date: Date;
+};
+
+type Policy = {
+  uid: string;
+  description: string;
+  permission: Permission[];
+  prohibition: Permission[];
+};
+
+export type BilateralContract = {
+  _id: string;
+  uid: string;
+  dataProvider: string;
+  dataConsumer: string;
+  serviceOffering: string;
+  profile: string;
+  policy: Policy[];
+  purpose: any[];
+  signatures: any[];
+  revokedSignatures: any[];
+  negotiators: { did: string }[];
+  status: "signed" | "revoked" | "under_negotiation" | "pending";
+  terminationAndValidity: {
+    effectiveDate: Date;
+    terminationPeriod: Date;
+  };
+  limitationOfLiability: Date;
+  termsAndConditions: string;
+  jsonLD: string;
+};
+
+export type EcosystemContract = {
+  _id: string;
+  uid: string;
+  profile: string;
+  ecosystem: string;
+  orchestrator: string;
+  serviceOfferings: {
+    participant: string;
+    serviceOffering: string;
+    policies: Policy[];
+  }[];
+  rolesAndObligations: {
+    role: string;
+    policies: Policy[];
+  };
+  purpose: Purpose[];
+  members: Member[];
+  revokedMembers: Member[];
+  status: "signed" | "revoked" | "pending";
+  jsonLD: string;
+};
+
+export const getDataFromPoliciesInBilateralContract = (
+  contract: BilateralContract
+) => {
+  const policiesMatchingServiceOffering = contract.policy.filter(
+    (policy) =>
+      policy.permission.find((p) =>
+        (contract as BilateralContract)?.serviceOffering.includes(p.target)
+      ) ||
+      policy.prohibition.find((p) =>
+        (contract as BilateralContract)?.serviceOffering.includes(p.target)
+      )
+  );
+
+  //TODO: target to self-description ?
+  const dataFromPermissions = policiesMatchingServiceOffering.map((policy) => {
+    const result = policy.permission.map(
+      () => (contract as BilateralContract)?.serviceOffering
+    );
+    return result;
+  });
+
+  const dataFromProhibitions = policiesMatchingServiceOffering.map((policy) => {
+    const result = policy.prohibition.map(
+      () => (contract as BilateralContract)?.serviceOffering
+    );
+    return result;
+  });
+
+  const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
+    (acc, curr) => acc.concat(curr),
+    []
+  );
+
+  return combinedData;
+};
+
+/**
+ * Looks for all of the targets from the service offerings inside of the ecosystem contract
+ * If options is specified, will filter only the service offerings based on the specified participants
+ *
+ * Does not check for if the target is based off a data resource or software resource
+ */
+export const getDataFromPoliciesInEcosystemContract = (
+  contract: EcosystemContract,
+  dataProvider?: string
+) => {
+  const policies = dataProvider
+    ? contract.serviceOfferings
+        ?.filter((so) => so.participant === dataProvider)
+        .map((so) => so.policies)
+    : contract.serviceOfferings?.map((so) => so.policies);
+
+  if (policies.length > 0) {
+    const combinedPolicies = [...policies].reduce((acc, curr) =>
+      acc.concat(curr)
+    );
+
+    const filteredPolicies = combinedPolicies.filter(
+      (policy) =>
+        policy.permission.find((p) => p.target !== null) ||
+        policy.prohibition.find((p) => p.target !== null)
+    );
+
+    const dataFromPermissions = filteredPolicies.map((policy) => {
+      const result = policy.permission.map((permission) => permission.target);
+      return result;
+    });
+
+    const dataFromProhibitions = filteredPolicies.map((policy) => {
+      const result = policy.prohibition.map(
+        (prohibition) => prohibition.target
+      );
+      return result;
+    });
+
+    const combinedData = [
+      ...dataFromPermissions,
+      ...dataFromProhibitions,
+    ].reduce((acc, curr) => acc.concat(curr), []);
+    return combinedData;
+  } else {
+    return [];
+  }
+};
 
 export const getParticipantIdentifier = (participant: IParticipant) => {
   if (!participant) throw new NotFoundError("Participant not found");
   const consentManager = JSON.parse(participant.jsonld)?.consentManager;
   if (!consentManager)
     throw new NotFoundError(
-      `Participant ${participant.hasLegallyBindingName} has no consentManager information`
+      `Participant ${participant.legalName} has no consentManager information`
     );
 
   return encodeURIComponent(
@@ -17,15 +176,112 @@ export const getParticipantIdentifier = (participant: IParticipant) => {
   );
 };
 
-export const getContractsBetweenParties = async (
+export const getPrivacyNoticesFromContractsBetweenParties = async (
   dataProviderID: string,
   dataConsumerID: string
-) => {
-  const contractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/${dataProviderID}/${dataConsumerID}`;
-  const res = await axios.get(contractURL, {
-    headers: { "Content-Type": "application/json" },
-  });
-  return res;
+): Promise<IPrivacyNotice[]> => {
+  const bilateralContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${dataProviderID}?hasSigned=true`;
+  const ecosystemContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${dataProviderID}?hasSigned=true`;
+
+  dataConsumerID = Buffer.from(dataConsumerID, "base64").toString();
+  dataProviderID = Buffer.from(dataProviderID, "base64").toString();
+
+  const [
+    bilateralContractsRes,
+    ecosystemContractsRes,
+    dataProviderSDResponse,
+    dataConsumerSDResponse,
+  ] = await Promise.all([
+    axios.get(bilateralContractURL, {
+      headers: { "Content-Type": "application/json" },
+    }),
+    axios.get(ecosystemContractURL, {
+      headers: { "Content-Type": "application/json" },
+    }),
+    dataProviderID.startsWith("http")
+      ? axios.get(dataProviderID)
+      : dataProviderID,
+    dataConsumerID.startsWith("http")
+      ? axios.get(dataConsumerID)
+      : dataConsumerID,
+  ]);
+
+  const dataProviderSD =
+    typeof dataProviderSDResponse !== "string"
+      ? dataProviderSDResponse.data
+      : dataProviderID;
+  const dataConsumerSD =
+    typeof dataConsumerSDResponse !== "string"
+      ? dataConsumerSDResponse.data
+      : dataConsumerID;
+
+  let bilateralPrivacyNotices = [];
+  if (
+    bilateralContractsRes?.data.contracts &&
+    bilateralContractsRes?.data.contracts.length > 0
+  ) {
+    bilateralPrivacyNotices = bilateralContractsRes?.data.contracts.map(
+      (contract: BilateralContract) =>
+        bilateralContractToPrivacyNotice(contract)
+    );
+  }
+  let ecosystemPrivacyNotices = [];
+  if (
+    ecosystemContractsRes.data.contracts &&
+    ecosystemContractsRes.data.contracts.length > 0
+  ) {
+    ecosystemPrivacyNotices = await Promise.all(
+      ecosystemContractsRes.data.contracts.map(
+        async (contract: EcosystemContract) => {
+          // Populate the Privacy Notice
+          const pn = ecosystemContractToPrivacyNotice(contract);
+          const consumerServiceOfferings = contract.serviceOfferings.filter(
+            (so) => so.participant === dataConsumerID
+          );
+
+          const consumerSOsThatArePurposes = await Promise.all(
+            consumerServiceOfferings.map(async (so) => {
+              if (so.serviceOffering.startsWith("http")) {
+                const soSelfDescription = await axios.get(so.serviceOffering);
+                if (soSelfDescription.data?.softwareResources?.length > 0)
+                  return so;
+              }
+              return null;
+            })
+          );
+
+          const filteredConsumerSOs = consumerSOsThatArePurposes.filter(
+            (so) => so !== null
+          );
+
+          pn.dataProvider = dataProviderID;
+
+          pn.controllerDetails.name =
+            typeof dataProviderSD === "string"
+              ? dataProviderSD
+              : dataProviderID;
+
+          pn.data = getDataFromPoliciesInEcosystemContract(
+            contract,
+            dataProviderID
+          );
+
+          pn.purposes = filteredConsumerSOs.map((so) => ({
+            purpose: so.serviceOffering,
+            legalBasis: "",
+          }));
+
+          pn.recipients.push(
+            typeof dataConsumerSD === "string" ? dataConsumerSD : dataConsumerID
+          );
+
+          return pn;
+        }
+      )
+    );
+  }
+
+  return [...bilateralPrivacyNotices, ...ecosystemPrivacyNotices];
 };
 
 export const validate = async (
@@ -88,7 +344,6 @@ export const buildConsentsFromContracts = async (
     const savedConsent = new Consent();
     savedConsent.user = user.id;
     savedConsent.identifier = consentId;
-    savedConsent.userIdentifiers = user.identifiers;
     savedConsent.consented = false;
     const purposes: string[] = [];
     consent.services.forEach((s: any) => {
@@ -96,7 +351,10 @@ export const buildConsentsFromContracts = async (
         purposes.push(...s.purposes.map((p: any) => p.purpose));
       }
     });
-    savedConsent.purposes = purposes;
+    savedConsent.purposes = purposes.map((purpose) => ({
+      legalBasis: "",
+      purpose: purpose,
+    }));
     savedConsent.data = consent.data.map((data: any) => JSON.stringify(data));
     savedConsent.jsonld = JSON.stringify(consent);
     savedConsent.status = "pending";
@@ -114,4 +372,58 @@ export const sendConsent = async (consentSD: any) => {
     success: true,
     consent: consentSD,
   };
+};
+
+export const getAvailableExchangesForParticipant = async (
+  participantSD: string,
+  as: string
+): Promise<IExchange[]> => {
+  const participantSD64 = Buffer.from(participantSD).toString("base64");
+
+  const bilateralContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${participantSD64}?hasSigned=true`;
+  const ecosystemContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${participantSD64}?hasSigned=true`;
+
+  const [bilateralContractsRes, ecosystemContractsRes] = await Promise.all([
+    axios.get(bilateralContractURL, {
+      headers: { "Content-Type": "application/json" },
+    }),
+    axios.get(ecosystemContractURL, {
+      headers: { "Content-Type": "application/json" },
+    }),
+  ]);
+
+  const bilateralExchanges = <IExchange[]>[];
+  if (
+    bilateralContractsRes?.data.contracts &&
+    bilateralContractsRes?.data.contracts.length > 0
+  ) {
+    bilateralContractsRes?.data.contracts.map((contract: BilateralContract) => {
+      if (as === "provider" && contract.dataProvider === participantSD) {
+        bilateralExchanges.push(
+          contractToExchange(contract, contract.dataConsumer)
+        );
+      } else if (as === "consumer" && contract.dataConsumer === participantSD) {
+        bilateralExchanges.push(
+          contractToExchange(contract, contract.dataProvider)
+        );
+      }
+    });
+  }
+  const ecosystemExchanges = <IExchange[]>[];
+  if (
+    ecosystemContractsRes.data.contracts &&
+    ecosystemContractsRes.data.contracts.length > 0
+  ) {
+    ecosystemContractsRes.data.contracts.map((contract: EcosystemContract) => {
+      return contract.serviceOfferings.map((serviceOffering) => {
+        if (serviceOffering.participant !== participantSD) {
+          ecosystemExchanges.push(
+            contractEcosystemToExchange(contract, serviceOffering.participant)
+          );
+        }
+      });
+    });
+  }
+
+  return [...bilateralExchanges, ...ecosystemExchanges];
 };

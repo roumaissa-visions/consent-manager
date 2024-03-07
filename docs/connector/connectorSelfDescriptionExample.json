@@ -1,0 +1,129 @@
+{
+  "timestamp": 1705673688934,
+  "code": 200,
+  "content": {
+    "@context": {
+      "ptx": "https://w3id.org/ptxa/core/",
+      "ptxc": "https://w3id.org/ptxa/code/"
+    },
+    "@type": "ptx:BaseConnector",
+    "@id": "https://w3id.org/ptx/",
+    "ptx:version": "0.1.0",
+    "ptx:description": [
+      {
+        "@value": "Prometheus Connector reference implementation",
+        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "ptx:serviceKey": {
+      "@type": "ptx:ServiceKey",
+      "@id": "https://w3id.org/ptx/",
+      "ptx:keyType": {
+        "@id": "https://w3id.org/ptxa/code/RSA"
+      },
+      "ptx:keyValue": "1tATiK7E3A1H3d_wIiUXOtLCKkWZZKA_p2X0gwkDmFxpfCF4I3IslrdmkPD_38aTTrAzIQULixUWcBIlBFyBcyU8sxDRUZMX_OTc"
+    },
+    "ptx:title": [
+      {
+        "@value": "Dataspace Connector",
+        "@type": "http://www.w3.org/"
+      }
+    ],
+    "ptx:appKey": {
+      "@type": "ptx:AppKey",
+      "@id": "https://w3id.org/ptx/",
+      "ptx:keyType": {
+        "@id": "https://w3id.org/ptxa/code/RSA"
+      },
+      "ptx:keyValue": "ad65fa4d1516f316e51be8cad98fccc8ad245aaa768b58cbbebb12624f457f67e8804b65575c4f8e3fa915f2c67975e08c0e374d534e699d6fd21681c02b2d82"
+    },
+    "ptx:hasDefaultEndpoint": {
+      "@type": "ptx:ConnectorEndpoint",
+      "@id": "https://w3id.org/ptx/",
+      "ptx:accessURL": {
+        "@id": "http://consumer-dsc:3000/"
+      }
+    },
+    "ptx:catalog": [
+      {
+        "@type": "ptx:serviceofferings",
+        "@id": "http://host.docker.internal:4040/v1/catalog/serviceofferings/6564ac01d853e8e05b1322a7"
+      },
+      {
+        "@type": "ptx:serviceofferings",
+        "@id": "http://host.docker.internal:4040/v1/catalog/serviceofferings/65718b72b868a3f7099a18af"
+      },
+      {
+        "@type": "ptx:serviceofferings",
+        "@id": "http://host.docker.internal:4040/v1/catalog/serviceofferings/65a163bd03b265f418eb4fc4"
+      },
+      {
+        "@type": "ptx:serviceofferings",
+        "@id": "http://host.docker.internal:4040/v1/catalog/serviceofferings/65a167ad4b2a7a514fd5ce00"
+      },
+      {
+        "@type": "ptx:serviceofferings",
+        "@id": "http://host.docker.internal:4040/v1/catalog/serviceofferings/65a4fa3f8be4c648b9ea25fc"
+      },
+      {
+        "@type": "ptx:softwareresources",
+        "@id": "http://host.docker.internal:4040/v1/catalog/softwareresources/659ff466c1b6f7b6b60ca9e8"
+      },
+      {
+        "@type": "ptx:softwareresources",
+        "@id": "http://host.docker.internal:4040/v1/catalog/softwareresources/65a1628203b265f418eb48a8"
+      },
+      {
+        "@type": "ptx:softwareresources",
+        "@id": "http://host.docker.internal:4040/v1/catalog/softwareresources/65a167464b2a7a514fd5cc84"
+      },
+      {
+        "@type": "ptx:softwareresources",
+        "@id": "http://host.docker.internal:4040/v1/catalog/softwareresources/65a1677e4b2a7a514fd5cdbd"
+      },
+      {
+        "@type": "ptx:dataresources",
+        "@id": "http://host.docker.internal:4040/v1/catalog/dataresources/6564abe6d853e8e05b13228b"
+      }
+    ],
+    "ptx:securityProfile": {
+      "@id": "https://w3id.org/ptx/"
+    },
+    "ptx:maintainer": {
+      "@id": "https://visionspol.eu"
+    },
+    "ptx:curator": {
+      "@id": "https://visionspol.eu"
+    },
+    "_links": {
+      "self": {
+        "href": "http://consumer-dsc:3000/"
+      },
+      "consentConfiguration": {
+        "href": "http://consumer-dsc:3000/private/configuration/consent"
+      },
+      "dataImport": {
+        "href": "http://consumer-dsc:3000/data/import"
+      },
+      "dataExport": {
+        "href": "http://consumer-dsc:3000/data/export"
+      },
+      "consentImport": {
+        "href": "http://consumer-dsc:3000/consent/import"
+      },
+      "consentExport": {
+        "href": "http://consumer-dsc:3000/consent/export"
+      },
+      "providerExport": {
+        "href": "http://consumer-dsc:3000/provider/export"
+      },
+      "consumerExchange": {
+        "href": "http://consumer-dsc:3000/consumer/exchange"
+      },
+      "consumerImport": {
+        "href": "http://consumer-dsc:3000/consumer/import"
+      }
+    },
+    "ptx:ModelVersion": "2.6.0"
+  }
+}
