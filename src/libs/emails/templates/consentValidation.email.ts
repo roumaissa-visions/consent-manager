@@ -45,10 +45,11 @@ const template = (vars: { [key: string]: string }) => `<!DOCTYPE html>
             <br/>
 
             If it was you, click the button below to confirm the consent grant. or copy the following url and paste in in your browser: <br/>
-            ${vars.url}</p>
+            <a href='${vars.url}'>${vars.url}</a>
+            </p>
 
             <button>
-                <a href="${vars.url}" style="text-decoration: none; color: inherit;">Confirm Consent</a>
+                <a href='${vars.url}' style="text-decoration: none; color: inherit;">Confirm Consent</a>
             </button>
         </div>
     </body>

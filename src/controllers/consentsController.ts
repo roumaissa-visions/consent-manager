@@ -206,7 +206,6 @@ export const giveConsent = async (
 
     const { privacyNoticeId, email, data } = req.body;
     const { triggerDataExchange } = req.query;
-    console.log(triggerDataExchange)
     if (!privacyNoticeId)
       throw new BadRequestError("Missing privacyNoticeId", [
         { field: "privacyNoticeId", message: "Mandatory field" },
@@ -236,11 +235,11 @@ export const giveConsent = async (
 
     // Find user identifiers
     let providerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataProvider?._id
+      (id) => id.attachedParticipant?.toString() === dataProvider?._id.toString()
     );
 
     let consumerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataConsumer?._id
+      (id) => id.attachedParticipant?.toString() === dataConsumer?._id.toString()
     );
 
     if (!providerUserIdentifier) {
@@ -263,6 +262,8 @@ export const giveConsent = async (
       }
 
       providerUserIdentifier = userIdentifiers._id;
+    } else {
+      providerUserIdentifier = providerUserIdentifier._id;
     }
 
     if (!consumerUserIdentifier) {
@@ -313,11 +314,23 @@ export const giveConsent = async (
         // User identifier found but not attached to the main user, requires user validation
         // by email to re-trigger the consent grant
 
-        const validationURL = `${process.env.APP_ENDPOINT}/${
+        const validationURL = `${process.env.APP_ENDPOINT}${
           process.env.API_PREFIX
         }/consents/emailverification?privacyNotice=${
           privacyNotice.id
-        }&user=${req.user?.id}&dataProvider=${dataProvider._id}&dataConsumer=${dataConsumer._id}&consumerUserIdentifier=${existingUserIdentifier._id}&providerUserIdentifier=${providerUserIdentifier}${triggerDataExchange ? `&triggerDataExchange=${triggerDataExchange}` : ''}&data=${JSON.stringify(data ?? privacyNotice.data)}`;
+        }&user=${
+          req.user?.id
+        }&dataProvider=${
+          dataProvider._id
+        }&dataConsumer=${
+          dataConsumer._id
+        }&consumerUserIdentifier=${
+          existingUserIdentifier?._id
+        }&providerUserIdentifier=${
+          providerUserIdentifier
+        }${triggerDataExchange ? `&triggerDataExchange=${triggerDataExchange}` : ''}&data=${
+          JSON.stringify(data ?? privacyNotice.data)
+        }`;
 
         await MailchimpClient.sendMessageFromLocalTemplate(
             {
@@ -330,7 +343,8 @@ export const giveConsent = async (
                   },
                 ],
                 from_email: process.env.MANDRILL_FROM_EMAIL,
-                from_name: process.env.MANDRILL_FROM_NAME
+                from_name: process.env.MANDRILL_FROM_NAME,
+                subject: 'Verify your consent request'
               }
             },
             'consentValidation',
@@ -459,7 +473,9 @@ export const giveConsentOnEmailValidation = async (
     const userToUpdate = await User.findById(user);
     const userIdentifierConsumer = await UserIdentifier.findById(consumerUserIdentifier).lean();
 
-    userToUpdate.identifiers.push(userIdentifierConsumer._id);
+    if (userToUpdate && !userToUpdate.identifiers.includes(userIdentifierConsumer?._id)) {
+      userToUpdate.identifiers.push(userIdentifierConsumer?._id);
+    }
 
     await Promise.all([
       userToUpdate.save(),
