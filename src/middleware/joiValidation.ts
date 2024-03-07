@@ -4,7 +4,7 @@ import {
   participantUpdateSchema,
 } from "../libs/joi/participantSchemas";
 import { ValidationError } from "joi";
-import {Logger} from "../libs/loggers";
+import { Logger } from "../libs/loggers";
 
 /**
  * Sets the Joi schema to use as validation
@@ -51,7 +51,7 @@ export const validatePayload = async (
 
     if (error) {
       Logger.error({
-        message: "Validation error",
+        message: error.message,
         location: "validatePayload",
       });
       return res.status(400).json({ error: error.details });
