@@ -8,3 +8,5 @@ src/config/keys/*
 !.env.sample
 .idea
 */**/logs
+local
+tarballs

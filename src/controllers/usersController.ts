@@ -160,10 +160,9 @@ export const registerUserIdentifiers = async (
     const usersResponse = [];
 
     for (const user of users) {
-
       const exists = await UserIdentifier.findOne({
         attachedParticipant: req.userParticipant.id,
-        email: user.email
+        email: user.email,
       }).lean();
 
       if (!user.email && !user.identifier)
@@ -178,7 +177,7 @@ export const registerUserIdentifiers = async (
           },
         ]);
 
-      if(!exists){
+      if (!exists) {
         const newId = new UserIdentifier({
           attachedParticipant: req.userParticipant.id,
           email: user.email,

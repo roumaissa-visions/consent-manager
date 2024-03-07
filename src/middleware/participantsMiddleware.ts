@@ -21,7 +21,7 @@ export const setUserIdForParticipant = async (
     if (!user) throw new NotFoundError("User not found");
 
     req.user = {
-      id: user._id
+      id: user._id,
     };
     next();
   } catch (err) {

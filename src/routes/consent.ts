@@ -6,7 +6,8 @@ import {
   getPrivacyNotices,
   getUserConsentById,
   getUserConsents,
-  giveConsent, giveConsentOnEmailValidation,
+  giveConsent,
+  giveConsentOnEmailValidation,
   revokeConsent,
   triggerDataExchange,
   verifyToken,
@@ -16,10 +17,7 @@ import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
 import { setUserIdForParticipant } from "../middleware/participantsMiddleware";
 const r: Router = Router();
 
-r.get(
-    "/emailverification",
-    giveConsentOnEmailValidation
-);
+r.get("/emailverification", giveConsentOnEmailValidation);
 r.get("/me", verifyUserJWT, getUserConsents);
 r.get(
   "/me/:id",
@@ -77,6 +75,5 @@ r.post(
   // verifyContract,
   verifyToken
 );
-
 
 export default r;

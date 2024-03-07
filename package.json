@@ -12,6 +12,7 @@
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
     "format": "npm run prettier && npm run lint:fix",
+    "postinstall": "git config core.hooksPath ./.git-hooks",
     "generatePrivateKey": "openssl genrsa -out src/config/keys/consentSignature.pem 2048",
     "generateAES": "openssl rand -out src/config/keys/AESKey.pem -hex 16",
     "generatePublicKey": "openssl rsa -in src/config/keys/consentSignature.pem -outform PEM -pubout -out src/config/keys/consentSignaturePublic.pem"

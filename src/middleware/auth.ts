@@ -102,39 +102,45 @@ export const verifyUserJWT = async (
     return next();
   }
 
-  if(req.headers["x-user-key"]){
+  if (req.headers["x-user-key"]) {
+    const userIdentifier = await UserIdentifier.findById(
+      req.headers["x-user-key"]
+    ).lean();
 
-    const userIdentifier = await UserIdentifier.findById(req.headers["x-user-key"]).lean();
-
-    if(!userIdentifier){
+    if (!userIdentifier) {
       return res.status(401).json({ message: "Invalid or expired token" });
     }
 
     const userExisitingIdentifier = await User.findOne({
       identifiers: {
-        "$in" : userIdentifier._id
-      }
-    })
+        $in: userIdentifier._id,
+      },
+    });
 
-    if(userExisitingIdentifier){
+    if (userExisitingIdentifier) {
       req.user = {
         id: userExisitingIdentifier._id,
       };
       next();
     } else {
       const userExisitingEmail = await User.findOne({
-        email: userIdentifier.email
-      })
+        email: userIdentifier.email,
+      });
 
-      if(!userExisitingEmail){
-        return res.status(401).json({ message: "User with email doesn't exist" });
+      if (!userExisitingEmail) {
+        return res
+          .status(401)
+          .json({ message: "User with email doesn't exist" });
       }
 
-      if (userExisitingEmail && !userExisitingEmail.identifiers.includes(userIdentifier?._id)) {
+      if (
+        userExisitingEmail &&
+        !userExisitingEmail.identifiers.includes(userIdentifier?._id)
+      ) {
         userExisitingEmail.identifiers.push(userIdentifier?._id);
       }
 
-      await userExisitingEmail.save()
+      await userExisitingEmail.save();
 
       req.user = {
         id: userExisitingEmail._id,
@@ -142,22 +148,20 @@ export const verifyUserJWT = async (
 
       next();
     }
-
-
   } else {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
-          .status(401)
-          .json({ message: "Authorization header missing or invalid" });
+        .status(401)
+        .json({ message: "Authorization header missing or invalid" });
     }
 
     const token = authHeader.slice(7);
 
     try {
       const decodedToken = jwt.verify(
-          token,
-          process.env.OAUTH_SECRET_KEY
+        token,
+        process.env.OAUTH_SECRET_KEY
       ) as JwtPayload;
 
       req.decodedToken = decodedToken;

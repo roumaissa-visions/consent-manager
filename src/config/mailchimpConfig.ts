@@ -1,4 +1,4 @@
-import { setupEnvironment } from './env';
+import { setupEnvironment } from "./env";
 
 setupEnvironment();
 

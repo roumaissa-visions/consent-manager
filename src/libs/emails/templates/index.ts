@@ -8,6 +8,4 @@ export const EmailTemplates = {
   consentValidation: consentValidationTemplate,
 };
 
-export const EmailMailchimpTemplates = {
-
-};
+export const EmailMailchimpTemplates = {};

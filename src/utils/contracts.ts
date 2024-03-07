@@ -1,11 +1,18 @@
 import axios from "axios";
-import {randomUUID} from "crypto";
-import {IConsent, IParticipant, IPrivacyNotice, IUser} from "../types/models";
+import { randomUUID } from "crypto";
+import { IConsent, IParticipant, IPrivacyNotice, IUser } from "../types/models";
 import Consent from "../models/Consent/Consent.model";
-import {NotFoundError} from "../errors/NotFoundError";
-import {Purpose} from "../types";
-import {bilateralContractToPrivacyNotice, ecosystemContractToPrivacyNotice,} from "./privacyNotices";
-import {contractEcosystemToExchange, contractToExchange, IExchange} from "./exchanges";
+import { NotFoundError } from "../errors/NotFoundError";
+import { Purpose } from "../types";
+import {
+  bilateralContractToPrivacyNotice,
+  ecosystemContractToPrivacyNotice,
+} from "./privacyNotices";
+import {
+  contractEcosystemToExchange,
+  contractToExchange,
+  IExchange,
+} from "./exchanges";
 
 type Permission = {
   action: string;
@@ -123,15 +130,15 @@ export const getDataFromPoliciesInEcosystemContract = (
         .map((so) => so.policies)
     : contract.serviceOfferings?.map((so) => so.policies);
 
-  if(policies.length > 0){
+  if (policies.length > 0) {
     const combinedPolicies = [...policies].reduce((acc, curr) =>
-        acc.concat(curr)
+      acc.concat(curr)
     );
 
     const filteredPolicies = combinedPolicies.filter(
-        (policy) =>
-            policy.permission.find((p) => p.target !== null) ||
-            policy.prohibition.find((p) => p.target !== null)
+      (policy) =>
+        policy.permission.find((p) => p.target !== null) ||
+        policy.prohibition.find((p) => p.target !== null)
     );
 
     const dataFromPermissions = filteredPolicies.map((policy) => {
@@ -140,19 +147,20 @@ export const getDataFromPoliciesInEcosystemContract = (
     });
 
     const dataFromProhibitions = filteredPolicies.map((policy) => {
-      const result = policy.prohibition.map((prohibition) => prohibition.target);
+      const result = policy.prohibition.map(
+        (prohibition) => prohibition.target
+      );
       return result;
     });
 
-    const combinedData = [...dataFromPermissions, ...dataFromProhibitions].reduce(
-        (acc, curr) => acc.concat(curr),
-        []
-    );
+    const combinedData = [
+      ...dataFromPermissions,
+      ...dataFromProhibitions,
+    ].reduce((acc, curr) => acc.concat(curr), []);
     return combinedData;
   } else {
     return [];
   }
-
 };
 
 export const getParticipantIdentifier = (participant: IParticipant) => {
@@ -366,21 +374,16 @@ export const sendConsent = async (consentSD: any) => {
   };
 };
 
-
 export const getAvailableExchangesForParticipant = async (
-    participantSD: string,
-    as: string
+  participantSD: string,
+  as: string
 ): Promise<IExchange[]> => {
-
   const participantSD64 = Buffer.from(participantSD).toString("base64");
 
   const bilateralContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${participantSD64}?hasSigned=true`;
   const ecosystemContractURL = `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${participantSD64}?hasSigned=true`;
 
-  const [
-    bilateralContractsRes,
-    ecosystemContractsRes,
-  ] = await Promise.all([
+  const [bilateralContractsRes, ecosystemContractsRes] = await Promise.all([
     axios.get(bilateralContractURL, {
       headers: { "Content-Type": "application/json" },
     }),
@@ -389,40 +392,38 @@ export const getAvailableExchangesForParticipant = async (
     }),
   ]);
 
-  let bilateralExchanges = <IExchange[]>[];
+  const bilateralExchanges = <IExchange[]>[];
   if (
-      bilateralContractsRes?.data.contracts &&
-      bilateralContractsRes?.data.contracts.length > 0
+    bilateralContractsRes?.data.contracts &&
+    bilateralContractsRes?.data.contracts.length > 0
   ) {
-    bilateralContractsRes?.data.contracts.map(
-        (contract: BilateralContract) => {
-          if(as === "provider" && contract.dataProvider === participantSD) {
-            bilateralExchanges.push(contractToExchange(contract, contract.dataConsumer));
-          } else if(as === "consumer" && contract.dataConsumer === participantSD){
-            bilateralExchanges.push(contractToExchange(contract, contract.dataProvider));
-          }
-        }
-
-    );
+    bilateralContractsRes?.data.contracts.map((contract: BilateralContract) => {
+      if (as === "provider" && contract.dataProvider === participantSD) {
+        bilateralExchanges.push(
+          contractToExchange(contract, contract.dataConsumer)
+        );
+      } else if (as === "consumer" && contract.dataConsumer === participantSD) {
+        bilateralExchanges.push(
+          contractToExchange(contract, contract.dataProvider)
+        );
+      }
+    });
   }
-  let ecosystemExchanges = <IExchange[]>[];
+  const ecosystemExchanges = <IExchange[]>[];
   if (
-      ecosystemContractsRes.data.contracts &&
-      ecosystemContractsRes.data.contracts.length > 0
+    ecosystemContractsRes.data.contracts &&
+    ecosystemContractsRes.data.contracts.length > 0
   ) {
-    ecosystemContractsRes.data.contracts.map(
-        (contract: EcosystemContract) => {
-          return contract.serviceOfferings.map(serviceOffering => {
-            if(serviceOffering.participant !== participantSD){
-              ecosystemExchanges.push(contractEcosystemToExchange(contract, serviceOffering.participant))
-            }
-          })
+    ecosystemContractsRes.data.contracts.map((contract: EcosystemContract) => {
+      return contract.serviceOfferings.map((serviceOffering) => {
+        if (serviceOffering.participant !== participantSD) {
+          ecosystemExchanges.push(
+            contractEcosystemToExchange(contract, serviceOffering.participant)
+          );
         }
-    )
+      });
+    });
   }
 
-  return [
-      ...bilateralExchanges,
-      ...ecosystemExchanges
-  ];
+  return [...bilateralExchanges, ...ecosystemExchanges];
 };

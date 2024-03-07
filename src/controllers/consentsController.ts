@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import Consent from "../models/Consent/Consent.model";
-import {getAvailableExchangesForParticipant, getPrivacyNoticesFromContractsBetweenParties} from "../utils/contracts";
+import {
+  getAvailableExchangesForParticipant,
+  getPrivacyNoticesFromContractsBetweenParties,
+} from "../utils/contracts";
 import { NotFoundError } from "../errors/NotFoundError";
 import { BadRequestError } from "../errors/BadRequestError";
 import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
@@ -16,7 +19,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import crypto from "crypto";
 import _ from "lodash";
-import {MailchimpClient} from "../libs/emails/mailchimp/MailchimpClient";
+import { MailchimpClient } from "../libs/emails/mailchimp/MailchimpClient";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -235,11 +238,13 @@ export const giveConsent = async (
 
     // Find user identifiers
     let providerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataProvider?._id.toString()
+      (id) =>
+        id.attachedParticipant?.toString() === dataProvider?._id.toString()
     );
 
     let consumerUserIdentifier = user.identifiers.find(
-      (id) => id.attachedParticipant?.toString() === dataConsumer?._id.toString()
+      (id) =>
+        id.attachedParticipant?.toString() === dataConsumer?._id.toString()
     );
 
     if (!providerUserIdentifier) {
@@ -287,7 +292,7 @@ export const giveConsent = async (
         await user.save();
       }
 
-      if(userIdentifiers) consumerUserIdentifier = userIdentifiers._id;
+      if (userIdentifiers) consumerUserIdentifier = userIdentifiers._id;
     }
 
     // If user identifier in consumer was not found it is possible it exists
@@ -316,41 +321,37 @@ export const giveConsent = async (
 
         const validationURL = `${process.env.APP_ENDPOINT}${
           process.env.API_PREFIX
-        }/consents/emailverification?privacyNotice=${
-          privacyNotice.id
-        }&user=${
+        }/consents/emailverification?privacyNotice=${privacyNotice.id}&user=${
           req.user?.id
-        }&dataProvider=${
-          dataProvider._id
-        }&dataConsumer=${
+        }&dataProvider=${dataProvider._id}&dataConsumer=${
           dataConsumer._id
         }&consumerUserIdentifier=${
           existingUserIdentifier?._id
-        }&providerUserIdentifier=${
-          providerUserIdentifier
-        }${triggerDataExchange ? `&triggerDataExchange=${triggerDataExchange}` : ''}&data=${
-          JSON.stringify(data ?? privacyNotice.data)
-        }`;
+        }&providerUserIdentifier=${providerUserIdentifier}${
+          triggerDataExchange
+            ? `&triggerDataExchange=${triggerDataExchange}`
+            : ""
+        }&data=${JSON.stringify(data ?? privacyNotice.data)}`;
 
         await MailchimpClient.sendMessageFromLocalTemplate(
-            {
-              message: {
-                to: [
-                  {
-                    email: process.env.MANDRILL_ENABLED
-                        ? email
-                        : process.env.MANDRILL_FROM_EMAIL,
-                  },
-                ],
-                from_email: process.env.MANDRILL_FROM_EMAIL,
-                from_name: process.env.MANDRILL_FROM_NAME,
-                subject: 'Verify your consent request'
-              }
+          {
+            message: {
+              to: [
+                {
+                  email: process.env.MANDRILL_ENABLED
+                    ? email
+                    : process.env.MANDRILL_FROM_EMAIL,
+                },
+              ],
+              from_email: process.env.MANDRILL_FROM_EMAIL,
+              from_name: process.env.MANDRILL_FROM_NAME,
+              subject: "Verify your consent request",
             },
-            'consentValidation',
-            {
-              url: validationURL,
-            }
+          },
+          "consentValidation",
+          {
+            url: validationURL,
+          }
         );
 
         return res.status(200).json({
@@ -413,7 +414,7 @@ export const giveConsentOnEmailValidation = async (
       triggerDataExchange: triggerDataExchangeParams,
       providerUserIdentifier,
       consumerUserIdentifier,
-      user
+      user,
     } = req.query;
     const decodedDP = decodeURIComponent(dataProvider.toString());
     const decodedDC = decodeURIComponent(dataConsumer.toString());
@@ -421,7 +422,7 @@ export const giveConsentOnEmailValidation = async (
     let decodedData;
     let selectedData;
 
-    if(data !== undefined && data && data !== "undefined"){
+    if (data !== undefined && data && data !== "undefined") {
       decodedData = decodeURIComponent(data.toString());
       selectedData = JSON.parse(decodedData);
     }
@@ -447,9 +448,9 @@ export const giveConsentOnEmailValidation = async (
       providerUserIdentifier: providerUserIdentifier,
       consumerUserIdentifier: consumerUserIdentifier,
       contract: pn.contract,
-    }).lean()
+    }).lean();
 
-    if(verify){
+    if (verify) {
       return res.status(200).json({
         message: "Already granted consent. You may close this tab now",
       });
@@ -471,28 +472,31 @@ export const giveConsentOnEmailValidation = async (
     });
 
     const userToUpdate = await User.findById(user);
-    const userIdentifierConsumer = await UserIdentifier.findById(consumerUserIdentifier).lean();
+    const userIdentifierConsumer = await UserIdentifier.findById(
+      consumerUserIdentifier
+    ).lean();
 
-    if (userToUpdate && !userToUpdate.identifiers.includes(userIdentifierConsumer?._id)) {
+    if (
+      userToUpdate &&
+      !userToUpdate.identifiers.includes(userIdentifierConsumer?._id)
+    ) {
       userToUpdate.identifiers.push(userIdentifierConsumer?._id);
     }
 
-    await Promise.all([
-      userToUpdate.save(),
-      consent.save()
-    ]);
+    await Promise.all([userToUpdate.save(), consent.save()]);
 
-    if(triggerDataExchangeParams) {
+    if (triggerDataExchangeParams) {
       try {
         const consentDocument: any = await Consent.findById(consent._id)
-            .populate([{ path: "dataProvider" }])
-            .lean();
-        if (!consentDocument) return res.status(404).json({ error: "consent not found" });
+          .populate([{ path: "dataProvider" }])
+          .lean();
+        if (!consentDocument)
+          return res.status(404).json({ error: "consent not found" });
 
         if (consentDocument.status !== "granted") {
           return res
-              .status(401)
-              .json({ error: "Consent has not been granted by user" });
+            .status(401)
+            .json({ error: "Consent has not been granted by user" });
         }
 
         const payload = {
@@ -502,14 +506,17 @@ export const giveConsentOnEmailValidation = async (
         const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
         try {
-          await axios.post(consentDocument.dataProvider.endpoints.consentExport, {
-            signedConsent,
-            encrypted,
-          });
+          await axios.post(
+            consentDocument.dataProvider.endpoints.consentExport,
+            {
+              signedConsent,
+              encrypted,
+            }
+          );
 
           return res.status(200).json({
             message:
-                "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
+              "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
             consent,
           });
         } catch (err) {
@@ -520,7 +527,7 @@ export const giveConsentOnEmailValidation = async (
           return res.status(424).json({
             error: "Failed to communicate with the data consumer connector",
             message:
-                "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+              "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
           });
         }
       } catch (err) {
@@ -756,9 +763,9 @@ const encryptPayloadAndKey = (payload: object) => {
  * Returns all available exchanges for a participant
  */
 export const getAvailableExchanges = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { userParticipant } = req.session;
@@ -766,28 +773,28 @@ export const getAvailableExchanges = async (
 
     const participant = await Participant.findById(userParticipant.id).lean();
 
-    if(!participant){
-      throw new Error('Participant not found')
+    if (!participant) {
+      throw new Error("Participant not found");
     }
 
-    if(!as){
-      throw new Error('Missing parameters')
+    if (!as) {
+      throw new Error("Missing parameters");
     }
 
     const exchanges = await getAvailableExchangesForParticipant(
-        participant?.selfDescriptionURL,
-        as
+      participant?.selfDescriptionURL,
+      as
     );
 
-    return res
-        .status(200)
-        .json({
-          participant: {
-            selfDescription: participant.selfDescriptionURL,
-            base64SelfDescription: Buffer.from(participant.selfDescriptionURL).toString("base64")
-          },
-          exchanges
-        });
+    return res.status(200).json({
+      participant: {
+        selfDescription: participant.selfDescriptionURL,
+        base64SelfDescription: Buffer.from(
+          participant.selfDescriptionURL
+        ).toString("base64"),
+      },
+      exchanges,
+    });
   } catch (err) {
     next(err);
   }

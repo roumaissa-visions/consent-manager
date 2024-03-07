@@ -69,7 +69,8 @@ export const registerParticipant = async (
       clientID: participantData.clientID,
     }).lean();
 
-    if (exists) return res.status(409).json({ error: "Participant already exists" });
+    if (exists)
+      return res.status(409).json({ error: "Participant already exists" });
 
     const newParticipant = new Participant(participantData);
 
@@ -107,18 +108,21 @@ export const registerParticipant = async (
         secretKey: participantData.clientSecret,
       });
 
-      await axios.put(sdData.data.content._links.consentConfiguration.href, {
-        publicKey: base64Key,
-        uri:
-          process.env.NODE_ENV === "development"
-            ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
-            : `${process.env.URL}${process.env.API_PREFIX}/`,
-      },
-          {
-            headers: {
-              Authorization: `Bearer ${login.data.content.token}`
-            }
-          });
+      await axios.put(
+        sdData.data.content._links.consentConfiguration.href,
+        {
+          publicKey: base64Key,
+          uri:
+            process.env.NODE_ENV === "development"
+              ? `${process.env.URL}:${process.env.PORT}${process.env.API_PREFIX}/`
+              : `${process.env.URL}${process.env.API_PREFIX}/`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${login.data.content.token}`,
+          },
+        }
+      );
     }
 
     const createdParticipant = await newParticipant.save();
