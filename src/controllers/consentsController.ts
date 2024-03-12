@@ -581,7 +581,10 @@ export const triggerDataExchange = async (
   try {
     const { consentId } = req.params;
     const consent: any = await Consent.findById(consentId)
-      .populate([{ path: "dataProvider" }])
+      .populate([
+        { path: "dataConsumer", select: "-clientID -clientSecret" },
+        { path: "dataProvider", select: "-clientID -clientSecret" },
+      ])
       .lean();
     if (!consent) return res.status(404).json({ error: "consent not found" });
 
@@ -598,15 +601,19 @@ export const triggerDataExchange = async (
     const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
     try {
-      await axios.post(consent.dataProvider.endpoints.consentExport, {
-        signedConsent,
-        encrypted,
-      });
+      const consentExportResponse = await axios.post(
+        consent.dataProvider.endpoints.consentExport,
+        {
+          signedConsent,
+          encrypted,
+        }
+      );
 
       return res.status(200).json({
         message:
           "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
         consent,
+        dataExchangeId: consentExportResponse?.data?.dataExchangeId,
       });
     } catch (err) {
       Logger.error({
@@ -635,7 +642,7 @@ export const attachTokenToConsent = async (
 ) => {
   try {
     const { consentId } = req.params;
-    const { token } = req.body;
+    const { token, providerDataExchangeId } = req.body;
     const consent: any = await Consent.findById(consentId)
       .populate([
         { path: "dataConsumer", select: "-clientID -clientSecret" },
@@ -663,6 +670,7 @@ export const attachTokenToConsent = async (
 
     const payload = {
       ...updatedConsent,
+      providerDataExchangeId,
     };
 
     const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
