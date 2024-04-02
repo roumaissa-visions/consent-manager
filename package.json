@@ -7,7 +7,7 @@
     "start": "node dist/src/index.js",
     "dev": "pnpm nodemon",
     "build": "rimraf ./dist && tsc",
-    "test": "ts-mocha -p tsconfig.json src/tests/*.spec.ts --timeout 4000 --exit",
+    "test": "ts-mocha --reporter mochawesome -p tsconfig.json src/tests/*.spec.ts --timeout 4000 --exit",
     "prettier": "prettier --write ./src/",
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
@@ -16,7 +16,8 @@
     "generatePrivateKey": "openssl genrsa -out src/config/keys/consentSignature.pem 2048",
     "generateAES": "openssl rand -out src/config/keys/AESKey.pem -hex 16",
     "generatePublicKey": "openssl rsa -in src/config/keys/consentSignature.pem -outform PEM -pubout -out src/config/keys/consentSignaturePublic.pem",
-    "copyKeys": "copyfiles --up 1 src/config/keys/* ./dist/src"
+    "copyKeys": "copyfiles --up 1 src/config/keys/* ./dist/src",
+    "open:report": "open mochawesome-report/mochawesome.html"
   },
   "keywords": [
     "Prometheus-X",
@@ -71,6 +72,7 @@
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
     "mocha": "^10.2.0",
+    "mochawesome": "^7.1.3",
     "nodemon": "^2.0.20",
     "pnpm": "^8.6.6",
     "prettier": "^2.8.1",
