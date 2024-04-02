@@ -20,6 +20,7 @@ import path from "path";
 import crypto from "crypto";
 import _ from "lodash";
 import { MailchimpClient } from "../libs/emails/mailchimp/MailchimpClient";
+import { urlChecker } from "../utils/urlChecker";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -271,7 +272,7 @@ export const giveConsent = async (
     }
 
     if (!consumerUserIdentifier) {
-      //if not foung in attached consumer participants
+      //if not found in attached consumer participants
       // search in userIdentifier to rattached it
 
       const userIdentifiers = await UserIdentifier.findOne({
@@ -294,17 +295,156 @@ export const giveConsent = async (
       if (userIdentifiers) consumerUserIdentifier = userIdentifiers._id;
     }
 
+    const consumerPurpose = privacyNotice.purposes[0].purpose;
+    const consumerServiceOffering = await axios.get(consumerPurpose, {
+      headers: { "Content-Type": "application/json" },
+    });
+    const providerUserIdentifierDocument = await UserIdentifier.findById(
+      providerUserIdentifier
+    ).lean();
+
+    if (
+      !consumerUserIdentifier &&
+      consumerServiceOffering.data.noUserInteraction
+    ) {
+      // create useridentifier for consumer
+      const consumerNewUserIdentifier = new UserIdentifier({
+        attachedParticipant: dataConsumer?._id.toString(),
+        email: providerUserIdentifierDocument.email,
+        identifier: providerUserIdentifierDocument.email,
+      });
+
+      await consumerNewUserIdentifier.save();
+
+      // register userIdentfier into consumer DSC
+      //login
+      const consumerLogin = await axios.post(
+        urlChecker(dataConsumer.dataspaceEndpoint, "login"),
+        {
+          serviceKey: dataConsumer.clientID,
+          secretKey: dataConsumer.clientSecret,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const consumerRegisterUser = await axios.post(
+        urlChecker(dataConsumer.dataspaceEndpoint, "private/users/register"),
+        {
+          email: consumerNewUserIdentifier.email,
+          internalID: consumerNewUserIdentifier.identifier,
+          userIdentifier: consumerNewUserIdentifier._id,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${consumerLogin.data.content.token}`,
+          },
+        }
+      );
+
+      if (consumerRegisterUser.data.code === 200) {
+        consumerUserIdentifier = consumerNewUserIdentifier._id;
+        user.identifiers.push(consumerUserIdentifier._id);
+        await user.save();
+      }
+    }
+
     // If user identifier in consumer was not found it is possible it exists
     // for another email. If it's the case, the user should provide the email
     // used in the consumer app and the consent service should validate the
     // consent grant by mail with the provided email.
-    if (!consumerUserIdentifier) {
-      if (!email)
-        return res.status(400).json({
-          error:
-            "User identifier not found in provider and no email was passed in the payload to look for an existing identifier with a different user email. Please provide the email",
-        });
+    if (
+      !consumerUserIdentifier &&
+      !email &&
+      !consumerServiceOffering.data.noUserInteraction
+    ) {
+      //draft consent
+      let consent;
+      const verifyDraftConsent = await Consent.findOne({
+        privacyNotice: privacyNotice._id,
+        user: req.user?.id,
+        providerUserIdentifier: providerUserIdentifier,
+        dataProvider: dataProvider?._id,
+        dataConsumer: dataConsumer?._id,
+        recipients: privacyNotice.recipients,
+        purposes: privacyNotice.purposes,
+        data: privacyNotice.data,
+        status: req.query.triggerDataExchange ? "draft" : "pending",
+        consented: false,
+        contract: privacyNotice.contract,
+      });
 
+      if (!verifyDraftConsent) {
+        consent = new Consent({
+          privacyNotice: privacyNotice._id,
+          user: req.user?.id,
+          providerUserIdentifier: providerUserIdentifier,
+          dataProvider: dataProvider?._id,
+          dataConsumer: dataConsumer?._id,
+          recipients: privacyNotice.recipients,
+          purposes: privacyNotice.purposes,
+          data: privacyNotice.data,
+          status: req.query.triggerDataExchange ? "draft" : "pending",
+          consented: false,
+          contract: privacyNotice.contract,
+        });
+        await consent.save();
+      } else {
+        consent = verifyDraftConsent;
+      }
+
+      // call new dsc endpoint
+      //login
+      const consumerLogin = await axios.post(
+        urlChecker(dataConsumer.dataspaceEndpoint, "login"),
+        {
+          serviceKey: dataConsumer.clientID,
+          secretKey: dataConsumer.clientSecret,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      //post to register user app side
+      try {
+        const consumerRegisterUserAppSide = await axios.post(
+          urlChecker(dataConsumer.dataspaceEndpoint, "private/users/app"),
+          {
+            email: providerUserIdentifierDocument.email,
+            consentID: consent._id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${consumerLogin.data.content.token}`,
+            },
+          }
+        );
+        if (consumerRegisterUserAppSide.status === 200) {
+          return res.status(200).json(consent);
+        }
+      } catch (e) {
+        if (e.response.status === 404) {
+          return res.status(400).json({
+            error: "Registration Uri error.",
+          });
+        } else if (e.response.status === 500) {
+          return res.status(400).json({
+            error: "Registration Error.",
+          });
+        } else {
+          return res.status(400).json({
+            error:
+              "User identifier not found in provider and no email was passed in the payload to look for an existing identifier with a different user email. Please provide the email",
+          });
+        }
+      }
+    }
+
+    if (!consumerUserIdentifier && email) {
       const existingUserIdentifier = await findMatchingUserIdentifier(
         email,
         dataConsumer?._id
@@ -802,6 +942,99 @@ export const getAvailableExchanges = async (
       },
       exchanges,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const dataExchanges = async (consentId: string) => {
+  const consent: any = await Consent.findById(consentId)
+    .populate([
+      { path: "dataConsumer", select: "-clientID -clientSecret" },
+      { path: "dataProvider", select: "-clientID -clientSecret" },
+    ])
+    .lean();
+  if (!consent) throw new Error("consent not found");
+
+  if (consent.status !== "granted") {
+    throw new Error("Consent has not been granted by user");
+  }
+
+  const payload = {
+    ...consent,
+  };
+
+  const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
+
+  const consentExportResponse = await axios.post(
+    consent.dataProvider.endpoints.consentExport,
+    {
+      signedConsent,
+      encrypted,
+    }
+  );
+
+  return {
+    dataExchangeId: consentExportResponse?.data?.dataExchangeId,
+    consent,
+  };
+};
+
+/**
+ * Resume a given consent
+ */
+export const resumeConsent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { consentId } = req.params;
+    const consent: any = await Consent.findById(consentId).populate([
+      { path: "dataConsumer", select: "-clientID -clientSecret" },
+      { path: "dataProvider", select: "-clientID -clientSecret" },
+    ]);
+    if (!consent) return res.status(404).json({ error: "consent not found" });
+
+    if (consent.status !== "pending" && consent.status !== "draft") {
+      return res.status(400).json({ error: "The consent can't be resume" });
+    }
+
+    const { internalID, email } = req.body;
+
+    //verify payload to create userIdentifier
+    if (internalID && email) {
+      const userIdentifier = new UserIdentifier({
+        email,
+        identifier: internalID,
+        attachedParticipant: req.userParticipant.id,
+      });
+
+      await userIdentifier.save();
+
+      const user = await User.findById(consent.user);
+      user.identifiers.push(userIdentifier._id);
+      await user.save();
+
+      //add missing information in consent
+      consent.consumerUserIdentifier = userIdentifier._id;
+      consent.consented = true;
+
+      // verify if data exchange can be made
+      if (consent.status === "draft") {
+        consent.status = "granted";
+        //save consent
+        await consent.save();
+        await dataExchanges(consentId);
+      } else if (consent.status === "pending") {
+        consent.status = "granted";
+        //save consent
+        await consent.save();
+      }
+
+      //return userIfentifier and consent
+      return res.status(200).json(consent);
+    }
   } catch (err) {
     next(err);
   }

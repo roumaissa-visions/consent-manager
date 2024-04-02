@@ -8,6 +8,7 @@ import {
   getUserConsents,
   giveConsent,
   giveConsentOnEmailValidation,
+  resumeConsent,
   revokeConsent,
   triggerDataExchange,
   verifyToken,
@@ -60,6 +61,13 @@ r.post(
   verifyUserJWT,
   // verifyContract,
   triggerDataExchange
+);
+
+r.post(
+  "/:consentId/resume",
+  verifyParticipantJWT,
+  // verifyContract,
+  resumeConsent
 );
 
 r.post(

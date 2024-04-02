@@ -15,7 +15,7 @@ const schema = new Schema<IConsent>(
     consumerUserIdentifier: {
       type: Schema.Types.ObjectId,
       ref: "UserIdentifier",
-      required: true,
+      required: false,
     },
     consented: { type: Boolean, required: true },
     dataProvider: {
@@ -39,7 +39,7 @@ const schema = new Schema<IConsent>(
     data: [{ type: String }],
     status: {
       type: String,
-      enum: ["pending", "granted", "revoked", "expired"],
+      enum: ["pending", "draft", "granted", "revoked", "expired"],
     },
     piiPrincipalRights: [String],
     privacyNotice: { type: String, default: "" },
