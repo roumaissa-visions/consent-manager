@@ -28,8 +28,8 @@ before(async () => {
   serverInstance = startServer(9090);
   // Create Provider
   const providerData = {
-    legalName: "consumer",
-    identifier: "656dfb3e282d47cfa6b66b2a",
+    legalName: "provider",
+    identifier: "656dfb3e282d47cfa6b66b2b",
     did: "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
     selfDescriptionURL:
       "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
@@ -65,12 +65,12 @@ before(async () => {
   // Create Consumer
 
   const consumerData = {
-    legalName: "provider",
+    legalName: "consumer",
     identifier: "656dfb3e282d47cfa6b66b2a",
     did: "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
     selfDescriptionURL:
       "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-    email: "provider@email.com",
+    email: "consumer@email.com",
     endpoints: {
       dataExport: "https://test.consent/data/export",
       dataImport: "https://test.consent/data/import",
@@ -181,17 +181,17 @@ describe("Consent Controller Tests", () => {
             {
               _id: "65e5d715c99e484e4685a964",
               ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
+                "https://api.test.com/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
               orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
+                "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
               rolesAndObligations: [],
               status: "pending",
               serviceOfferings: [
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
                   serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
+                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
                   policies: [
                     {
                       description: "CAN use data without any restrictions",
@@ -199,7 +199,7 @@ describe("Consent Controller Tests", () => {
                         {
                           action: "use",
                           target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
+                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
                           constraint: [],
                         },
                       ],
@@ -208,19 +208,40 @@ describe("Consent Controller Tests", () => {
                   ],
                   _id: "65e5d73dc99e484e4685a970",
                 },
+                {
+                  participant:
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
+                  serviceOffering:
+                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
+                  policies: [
+                    {
+                      description: "CAN use data without any restrictions",
+                      permission: [
+                        {
+                          action: "use",
+                          target:
+                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
+                          constraint: [],
+                        },
+                      ],
+                      prohibition: [],
+                    },
+                  ],
+                  _id: "65e5d73dc99e484e4685a971",
+                },
               ],
               purpose: [],
               members: [
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
                   role: "orchestrator",
                   signature: "hasSigned",
                   date: "2024-03-04T14:13:47.598Z",
                 },
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
                   role: "participant",
                   signature: "hasSigned",
                   date: "2024-03-04T14:14:21.410Z",
@@ -230,324 +251,6 @@ describe("Consent Controller Tests", () => {
               createdAt: "2024-03-04T14:13:41.616Z",
               updatedAt: "2024-03-04T14:14:21.409Z",
               __v: 1,
-            },
-            {
-              _id: "65e6ef30ae6f8246c7fcf0e1",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e6ef30d8dc3769558c1a51",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71e5474f9e9026bd5dc51",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71e5474f9e9026bd5dc51",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e71f132071f7d44f4c42df",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71ee074f9e9026bd5dd84",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71ee074f9e9026bd5dd84",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e71f2a2071f7d44f4c42eb",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-05T10:08:57.562Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-05T13:33:07.914Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-05T13:33:30.055Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-05T10:08:48.798Z",
-              updatedAt: "2024-03-05T13:33:30.054Z",
-              __v: 2,
-            },
-            {
-              _id: "65e9b5281b787b8df8dc1e8a",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e9b5286f9143089515016d",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65eb2557a32767256e85f9f1",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65eb255ea32767256e85f9fb",
-                },
-                {
-                  participant: "6564abb5d853e8e05b132057",
-                  serviceOffering: "65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target: "65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 55,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0987b6e24b4edb614f3f",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-07T12:38:05.820Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-08T14:48:55.116Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-08T14:49:02.272Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-07T12:38:00.541Z",
-              updatedAt: "2024-03-11T13:46:23.128Z",
-              __v: 8,
-            },
-            {
-              _id: "65ef0bedb6e24b4edb614f9e",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65ef0bed153989ad96b66e00",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 101,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0e73b6e24b4edb61500a",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 55,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0e9bb6e24b4edb615021",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef13cf1e9676925260ce67",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-11T13:49:39.811Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-11T14:00:19.162Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-11T14:23:11.134Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-11T13:49:33.422Z",
-              updatedAt: "2024-03-11T14:23:11.129Z",
-              __v: 9,
             },
           ],
         });
@@ -567,6 +270,178 @@ describe("Consent Controller Tests", () => {
 
   describe("getPrivacyNotices", () => {
     it("should get the privacy notices", async () => {
+      //data resources
+      mockAxios
+        .onGet(
+          "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1"
+        )
+        .reply(200, {
+          "@context": "http://host.docker.internal:4040/v1/serviceoffering",
+          "@type": "ServiceOffering",
+          _id: "660432088020cd0ef5427e1b",
+          name: "test no user interacton",
+          providedBy: "6564abb5d853e8e05b132057",
+          aggregationOf: [
+            "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
+          ],
+          dependsOn: [],
+          policy: [
+            {
+              "@context": {
+                xsd: "http://www.w3.org/2001/XMLSchema#",
+                description: {
+                  "@id": "https://schema.org/description",
+                  "@container": "@language",
+                },
+              },
+              "@id":
+                "http://localhost:3000/static/references/rules/rule-access-4.json",
+              title: {
+                "@type": "xsd/string",
+                "@value": "Count",
+              },
+              uid: "rule-access-4",
+              name: "Count",
+              description: [
+                {
+                  "@value": "MUST not use data for more than n times",
+                  "@language": "en",
+                },
+              ],
+              policy: {
+                permission: [
+                  {
+                    action: "use",
+                    target: "@{target}",
+                    constraint: [
+                      {
+                        leftOperand: "count",
+                        operator: "lt",
+                        rightOperand: "@{value}",
+                      },
+                    ],
+                  },
+                ],
+              },
+              requestedFields: ["target", "value"],
+            },
+          ],
+          termsAndConditions: "",
+          dataProtectionRegime: [],
+          dataAccountExport: [],
+          location: "World",
+          description: "des",
+          keywords: [],
+          dataResources: [
+            "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
+          ],
+          softwareResources: [],
+          archived: false,
+          visible: true,
+          pricing: "180",
+          pricingModel: [
+            "http://localhost:3000/static/references/pricing-model/dataBased.json",
+          ],
+          businessModel: [
+            "http://localhost:3000/static/references/business-model/subscription.json",
+          ],
+          maximumConsumption: "",
+          maximumPerformance: "",
+          pricingDescription: "dfezd",
+          noUserInteraction: false,
+          compliantServiceOfferingVC: "",
+          serviceOfferingVC: "",
+          schema_version: "1.1.0",
+          createdAt: "2024-03-27T14:49:44.506Z",
+          updatedAt: "2024-03-27T14:50:02.746Z",
+          __v: 0,
+        });
+      mockAxios
+        .onGet(
+          "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0"
+        )
+        .reply(200, {
+          "@context": "http://host.docker.internal:4040/v1/serviceoffering",
+          "@type": "ServiceOffering",
+          _id: "65e7380074f9e9026bd5edc8",
+          name: "CONSUMER PAYLOAD BIL",
+          providedBy: "6564aaebd853e8e05b1317c1",
+          aggregationOf: [
+            "http://host.docker.internal:4040/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+          ],
+          dependsOn: [],
+          policy: [
+            {
+              "@context": {
+                xsd: "http://www.w3.org/2001/XMLSchema#",
+                description: {
+                  "@id": "https://schema.org/description",
+                  "@container": "@language",
+                },
+              },
+              "@id":
+                "http://localhost:3000/static/references/rules/rule-access-4.json",
+              title: {
+                "@type": "xsd/string",
+                "@value": "Count",
+              },
+              uid: "rule-access-4",
+              name: "Count",
+              description: [
+                {
+                  "@value": "MUST not use data for more than n times",
+                  "@language": "en",
+                },
+              ],
+              policy: {
+                permission: [
+                  {
+                    action: "use",
+                    target: "@{target}",
+                    constraint: [
+                      {
+                        leftOperand: "count",
+                        operator: "lt",
+                        rightOperand: "@{value}",
+                      },
+                    ],
+                  },
+                ],
+              },
+              requestedFields: ["target", "value"],
+            },
+          ],
+          termsAndConditions: "",
+          dataProtectionRegime: [],
+          dataAccountExport: [],
+          location: "World",
+          description: "desc",
+          keywords: [],
+          dataResources: [],
+          softwareResources: [
+            "http://host.docker.internal:4040/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+          ],
+          archived: false,
+          visible: true,
+          pricing: "150",
+          pricingModel: [
+            "http://localhost:3000/static/references/pricing-model/valueBased.json",
+          ],
+          businessModel: [
+            "https://registry.visionstrust.com/static/references/business-model/freemium.json",
+            "http://localhost:3000/static/references/business-model/subscription.json",
+          ],
+          maximumConsumption: "",
+          maximumPerformance: "",
+          pricingDescription: "desc",
+          compliantServiceOfferingVC: "",
+          serviceOfferingVC: "",
+          schema_version: "1.1.0",
+          createdAt: "2024-03-05T15:19:28.562Z",
+          updatedAt: "2024-03-29T09:08:33.183Z",
+          __v: 0,
+          noUserInteraction: false,
+        });
       mockAxios
         .onGet(
           "http://localhost:8888/bilaterals/for/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJh?hasSigned=true"
@@ -581,17 +456,17 @@ describe("Consent Controller Tests", () => {
             {
               _id: "65e5d715c99e484e4685a964",
               ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
+                "https://api.test.com/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
               orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
+                "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
               rolesAndObligations: [],
               status: "pending",
               serviceOfferings: [
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
                   serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
+                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
                   policies: [
                     {
                       description: "CAN use data without any restrictions",
@@ -599,7 +474,7 @@ describe("Consent Controller Tests", () => {
                         {
                           action: "use",
                           target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
+                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
                           constraint: [],
                         },
                       ],
@@ -608,19 +483,40 @@ describe("Consent Controller Tests", () => {
                   ],
                   _id: "65e5d73dc99e484e4685a970",
                 },
+                {
+                  participant:
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
+                  serviceOffering:
+                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
+                  policies: [
+                    {
+                      description: "CAN use data without any restrictions",
+                      permission: [
+                        {
+                          action: "use",
+                          target:
+                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
+                          constraint: [],
+                        },
+                      ],
+                      prohibition: [],
+                    },
+                  ],
+                  _id: "65e5d73dc99e484e4685a971",
+                },
               ],
               purpose: [],
               members: [
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
                   role: "orchestrator",
                   signature: "hasSigned",
                   date: "2024-03-04T14:13:47.598Z",
                 },
                 {
                   participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
                   role: "participant",
                   signature: "hasSigned",
                   date: "2024-03-04T14:14:21.410Z",
@@ -630,324 +526,6 @@ describe("Consent Controller Tests", () => {
               createdAt: "2024-03-04T14:13:41.616Z",
               updatedAt: "2024-03-04T14:14:21.409Z",
               __v: 1,
-            },
-            {
-              _id: "65e6ef30ae6f8246c7fcf0e1",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e6ef30d8dc3769558c1a51",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71e5474f9e9026bd5dc51",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71e5474f9e9026bd5dc51",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e71f132071f7d44f4c42df",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71ee074f9e9026bd5dd84",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e71ee074f9e9026bd5dd84",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e71f2a2071f7d44f4c42eb",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-05T10:08:57.562Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-05T13:33:07.914Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-05T13:33:30.055Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-05T10:08:48.798Z",
-              updatedAt: "2024-03-05T13:33:30.054Z",
-              __v: 2,
-            },
-            {
-              _id: "65e9b5281b787b8df8dc1e8a",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65e9b5286f9143089515016d",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65eb2557a32767256e85f9f1",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65eb255ea32767256e85f9fb",
-                },
-                {
-                  participant: "6564abb5d853e8e05b132057",
-                  serviceOffering: "65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target: "65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 55,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0987b6e24b4edb614f3f",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-07T12:38:05.820Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-08T14:48:55.116Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-08T14:49:02.272Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-07T12:38:00.541Z",
-              updatedAt: "2024-03-11T13:46:23.128Z",
-              __v: 8,
-            },
-            {
-              _id: "65ef0bedb6e24b4edb614f9e",
-              ecosystem:
-                "http://host.docker.internal:4040/v1/catalog/ecosystems/65ef0bed153989ad96b66e00",
-              orchestrator:
-                "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 101,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0e73b6e24b4edb61500a",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7384774f9e9026bd5ee7c",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 55,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef0e9bb6e24b4edb615021",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  serviceOffering:
-                    "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                  policies: [
-                    {
-                      description: "MUST not use data for more than n times",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "http://host.docker.internal:4040/v1/catalog/serviceofferings/65e7380074f9e9026bd5edc8",
-                          constraint: [
-                            {
-                              leftOperand: "count",
-                              operator: "lt",
-                              rightOperand: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65ef13cf1e9676925260ce67",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6580169c805dabd62b17560d",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-11T13:49:39.811Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564abb5d853e8e05b132057",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-11T14:00:19.162Z",
-                },
-                {
-                  participant:
-                    "http://host.docker.internal:4040/v1/catalog/participants/6564aaebd853e8e05b1317c1",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-11T14:23:11.134Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-11T13:49:33.422Z",
-              updatedAt: "2024-03-11T14:23:11.129Z",
-              __v: 9,
             },
           ],
         });
@@ -1015,7 +593,7 @@ describe("Consent Controller Tests", () => {
         });
       const response = await supertest(serverInstance.app)
         .get(
-          `/v1/consents/${userId}/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJh/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJi`
+          `/v1/consents/${userId}/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJi/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJh`
         )
         .set("x-user-key", providerUserIdentifier);
       privacyNoticeId = response.body[0]._id;
@@ -1045,10 +623,10 @@ describe("Consent Controller Tests", () => {
         .send({
           privacyNoticeId: privacyNoticeId,
         });
+      consentId = response.body._id;
       expect(response.status).to.be.equal(201);
       expect(response.body).to.not.be.empty;
       expect(response.body).to.have.property("_id");
-      consentId = response.body._id;
     });
   });
 
@@ -1056,10 +634,7 @@ describe("Consent Controller Tests", () => {
     it("should failed to communicate with endpoint", async () => {
       const response = await supertest(serverInstance.app)
         .post(`/v1/consents/${consentId}/data-exchange`)
-        .set("x-user-key", providerUserIdentifier)
-        .send({
-          privacyNoticeId: privacyNoticeId,
-        });
+        .set("x-user-key", providerUserIdentifier);
       expect(response.status).to.be.equal(424);
       expect(response.body).to.have.property(
         "error",
@@ -1073,16 +648,13 @@ describe("Consent Controller Tests", () => {
         .reply(200, { message: "ok" });
       const response = await supertest(serverInstance.app)
         .post(`/v1/consents/${consentId}/data-exchange`)
-        .set("x-user-key", providerUserIdentifier)
-        .send({
-          privacyNoticeId: privacyNoticeId,
-        });
+        .set("x-user-key", providerUserIdentifier);
+      consent = response.body.consent;
       expect(response.status).to.be.equal(200);
       expect(response.body).to.have.property(
         "message",
         "successfully sent consent to the provider's consent export endpoint to trigger the data exchange"
       );
-      consent = response.body.consent;
     });
 
     it("should not found the consent", async () => {
