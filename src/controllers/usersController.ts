@@ -7,9 +7,9 @@ import {
   generateRefreshToken,
 } from "../libs/OAuth/tokens";
 import { OAUTH_SCOPES } from "../libs/OAuth/scopes";
-import { NotFoundError } from "../errors/NotFoundError";
 import { userToSelfDescription } from "../libs/jsonld/selfDescriptions";
 import { USER_SELECTION } from "../utils/schemaSelection";
+import { checkUserIdentifier } from "../utils/UserIdentifierMatchingProcessor";
 
 /**
  * Registers a new user in the PDI
@@ -140,6 +140,10 @@ export const registerUserIdentifier = async (
     });
 
     await newId.save();
+
+    // check if another userIdentifier exist from another participant
+    await checkUserIdentifier(email, req.userParticipant.id, newId._id);
+
     return res.json(newId);
   } catch (err) {
     next(err);
