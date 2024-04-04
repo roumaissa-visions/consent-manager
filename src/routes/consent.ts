@@ -13,23 +13,31 @@ import {
   triggerDataExchange,
   verifyToken,
 } from "../controllers/consentsController";
-import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
+import {
+  verifyInternalId,
+  verifyParticipantJWT,
+  verifyUserJWT,
+} from "../middleware/auth";
 // import { checkIDFormatMiddleware } from "../middleware/objectIdFormatCheck";
 import { setUserIdForParticipant } from "../middleware/participantsMiddleware";
 const r: Router = Router();
 
 r.get("/emailverification", giveConsentOnEmailValidation);
-r.get("/me", verifyUserJWT, getUserConsents);
+r.get("/me", verifyInternalId, getUserConsents);
 r.get(
   "/me/:id",
-  verifyUserJWT,
+  verifyInternalId,
   // checkIDFormatMiddleware,
   getUserConsentById
 );
 
 r.get("/exchanges/:as", verifyParticipantJWT, getAvailableExchanges);
 
-r.get("/privacy-notices/:privacyNoticeId", verifyUserJWT, getPrivacyNoticeById);
+r.get(
+  "/privacy-notices/:privacyNoticeId",
+  verifyInternalId,
+  getPrivacyNoticeById
+); //TODO jwt
 
 r.get(
   "/participants/:userId/",
@@ -45,11 +53,11 @@ r.get(
   getUserConsentById
 );
 
-r.get("/:userId/:providerId/:consumerId", verifyUserJWT, getPrivacyNotices);
+r.get("/:userId/:providerId/:consumerId", verifyInternalId, getPrivacyNotices); //TODO userID jwt
 
 r.post(
   "/",
-  verifyUserJWT,
+  verifyInternalId,
   // verifyContract,
   giveConsent
 );
@@ -58,7 +66,7 @@ r.delete("/:id", verifyUserJWT, revokeConsent);
 
 r.post(
   "/:consentId/data-exchange",
-  verifyUserJWT,
+  verifyInternalId,
   // verifyContract,
   triggerDataExchange
 );
