@@ -141,12 +141,35 @@ export const getPrivacyNoticeById = async (
   next: NextFunction
 ) => {
   try {
-    const pn = await PrivacyNotice.findById(req.params.privacyNoticeId);
+    let consumerEmail = false;
+
+    const userIdentifier = await UserIdentifier.findById(req.user.id);
+    const sameEmailUserIdentifier = await UserIdentifier.findOne({
+      _id: {
+        $ne: userIdentifier._id,
+      },
+      email: userIdentifier.email,
+    });
+
+    if (!sameEmailUserIdentifier) {
+      consumerEmail = true;
+    } else {
+      consumerEmail = false;
+    }
+
+    const user = await User.findOne({
+      identifiers: userIdentifier._id,
+    });
+
+    const pn = await PrivacyNotice.findById(req.params.privacyNoticeId).lean();
     if (!pn) {
       return res.status(404).json({ error: "Privacy notice not found" });
     }
 
-    return res.json(pn);
+    return res.json({
+      ...pn,
+      consumerEmail,
+    });
   } catch (err) {
     next(err);
   }
@@ -249,17 +272,18 @@ export const giveConsent = async (
       providerUserIdentifier
     ).lean();
 
-    //noUserInteraction case
+    //userInteraction case
     if (
       !consumerUserIdentifier &&
-      consumerServiceOffering.data.noUserInteraction
+      !consumerServiceOffering.data.userInteraction
     ) {
-      consumerUserIdentifier = await noUserInteraction({
+      consumerUserIdentifier = await userInteraction({
         dataConsumer,
         providerUserIdentifierDocument,
         consumerUserIdentifier,
         email,
-        userParticipantId: req.userParticipant.id,
+        userParticipantId:
+          providerUserIdentifier.attachedParticipant.toString(),
       });
     }
 
@@ -270,7 +294,7 @@ export const giveConsent = async (
     if (
       !consumerUserIdentifier &&
       !email &&
-      !consumerServiceOffering.data.noUserInteraction
+      !consumerServiceOffering.data.userInteraction
     ) {
       const registerNewUserToConsumerSideResponse =
         await registerNewUserToConsumerSide({
@@ -945,23 +969,28 @@ export const resumeConsent = async (
       consent.consumerUserIdentifier = userIdentifier._id;
       consent.consented = true;
 
-      // verify if data exchange can be made
-      if (consent.status === "draft") {
-        consent.status = "granted";
-        //save consent
-        await consent.save();
-        await dataExchanges(consentId);
-      } else if (consent.status === "pending") {
-        consent.status = "granted";
-        //save consent
-        await consent.save();
-      }
-
-      await checkUserIdentifier(
+      const user = await checkUserIdentifier(
         email,
         req.userParticipant.id,
         userIdentifier._id
       );
+
+      // verify if data exchange can be made
+      if (consent.status === "draft") {
+        consent.status = "granted";
+        if (!consent.user) {
+          consent.user = user._id;
+        }
+        //save consent
+        await dataExchanges(consentId);
+      } else if (consent.status === "pending") {
+        consent.status = "granted";
+        if (!consent.user) {
+          consent.user = user._id;
+        }
+        //save consent
+        await consent.save();
+      }
 
       //return userIfentifier and consent
       return res.status(200).json(consent);
@@ -971,7 +1000,7 @@ export const resumeConsent = async (
   }
 };
 
-const noUserInteraction = async ({
+const userInteraction = async ({
   dataConsumer,
   providerUserIdentifierDocument,
   consumerUserIdentifier,
@@ -1024,8 +1053,8 @@ const noUserInteraction = async ({
   if (consumerRegisterUser.data.code === 200) {
     consumerUserIdentifier = consumerNewUserIdentifier._id;
     await checkUserIdentifier(
-      email,
-      userParticipantId,
+      providerUserIdentifierDocument.email,
+      dataConsumer?._id.toString(),
       consumerNewUserIdentifier._id
     );
   }
@@ -1055,7 +1084,6 @@ const registerNewUserToConsumerSide = async ({
     let consent;
     const verifyDraftConsent = await Consent.findOne({
       privacyNotice: privacyNotice._id,
-      user: req.user?.id,
       providerUserIdentifier: providerUserIdentifier,
       dataProvider: dataProvider?._id,
       dataConsumer: dataConsumer?._id,
@@ -1070,7 +1098,6 @@ const registerNewUserToConsumerSide = async ({
     if (!verifyDraftConsent) {
       consent = new Consent({
         privacyNotice: privacyNotice._id,
-        user: req.user?.id,
         providerUserIdentifier: providerUserIdentifier,
         dataProvider: dataProvider?._id,
         dataConsumer: dataConsumer?._id,
@@ -1121,12 +1148,12 @@ const registerNewUserToConsumerSide = async ({
         };
       }
     } catch (e) {
-      if (e.response.status === 404) {
+      if (e?.response?.status === 404) {
         return {
           status: 400,
           error: "Registration Uri error.",
         };
-      } else if (e.response.status === 500) {
+      } else if (e?.response?.status === 500) {
         return {
           status: 400,
           error: "Registration Error.",
@@ -1250,6 +1277,8 @@ const emailReattached = async ({
         // case 2.c2: User identifier from Provider has a user attached and user identifier from consumer has another user attached
         // No user account have the “manual registration” information
         if (!providerUser.password && !consumerUser.password) {
+          //delete useless user
+          await providerUser.deleteOne();
           return sendEmail({
             email,
             dataConsumerId,

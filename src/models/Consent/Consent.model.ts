@@ -6,7 +6,10 @@ const schema = new Schema<IConsent>(
   {
     identifier: { type: String },
     contract: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     providerUserIdentifier: {
       type: Schema.Types.ObjectId,
       ref: "UserIdentifier",
@@ -95,6 +98,14 @@ schema.methods.getParticipantsIDs = function () {
   );
   return { assignerID, assigneeID };
 };
+
+schema.path("user").validate(function (value) {
+  return !(["granted", "revoked", "expired"].includes(this.status) && !value);
+}, "User is required when status is granted, revoked or expired");
+
+schema.path("status").validate(function (value) {
+  return !(["granted", "revoked", "expired"].includes(value) && !this.user);
+}, "User is required when status is granted, revoked or expired");
 
 const Consent = model<
   IConsent & {

@@ -1,6 +1,7 @@
 import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
 import { IUser } from "../types/models";
+import mongoose from "mongoose";
 
 export const checkUserIdentifier = async (
   email: string,
@@ -20,17 +21,22 @@ export const checkUserIdentifier = async (
     //find user reattached to this userIdentifier
     let user: IUser;
     if (existingUser) user = existingUser;
-    else user = await User.findOne({ identifier: verifyUserIdentifier._id });
+    else user = await User.findOne({ identifiers: verifyUserIdentifier._id });
 
     //if user is found add new userIdentifier to user
     if (user) {
-      user.identifiers.push(verifyUserIdentifier._id);
+      user.identifiers.push(new mongoose.Types.ObjectId(userIdentifier));
       await user.save();
     } else {
-      new User({
+      const newUser = new User({
         email,
         identifiers: [verifyUserIdentifier._id, userIdentifier],
       });
+      await newUser.save();
+
+      user = newUser;
     }
+
+    return user;
   }
 };

@@ -348,7 +348,7 @@ describe("Consent Controller Tests", () => {
           maximumConsumption: "",
           maximumPerformance: "",
           pricingDescription: "dfezd",
-          noUserInteraction: false,
+          userInteraction: true,
           compliantServiceOfferingVC: "",
           serviceOfferingVC: "",
           schema_version: "1.1.0",
@@ -440,7 +440,7 @@ describe("Consent Controller Tests", () => {
           createdAt: "2024-03-05T15:19:28.562Z",
           updatedAt: "2024-03-29T09:08:33.183Z",
           __v: 0,
-          noUserInteraction: false,
+          userInteraction: true,
         });
       mockAxios
         .onGet(
