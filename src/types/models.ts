@@ -6,7 +6,7 @@ export interface AllSchemas {
   /**
    * JSON-LD Self Description
    */
-  jsonld: string;
+  jsonld?: string;
 
   createdAt: Date;
   updatedAt: Date;
@@ -111,10 +111,10 @@ export interface IUserIdentifier extends Document, AllSchemas {
 }
 
 export interface IUser extends Document, AllSchemas {
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
-  password: string;
+  password?: string;
   identifiers: Types.ObjectId[];
   oauth: {
     scopes: string[];

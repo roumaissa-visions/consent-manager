@@ -13,8 +13,6 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
-      default: "",
     },
     identifiers: [{ type: Schema.Types.ObjectId, ref: "UserIdentifier" }],
     oauth: {
@@ -23,7 +21,6 @@ const userSchema = new Schema<IUser>(
     },
     jsonld: {
       type: String,
-      required: true,
       default: "",
     },
     schema_version: {
@@ -47,7 +44,7 @@ userSchema.methods.validatePassword = async function (
 
 userSchema.pre<IUser>("save", async function (next) {
   try {
-    if (this.isModified("password") || this.isNew) {
+    if (this.password || this.isModified("password")) {
       const saltRounds = parseInt(process.env.SALT_ROUNDS || "10") || 10;
       const hashedPassword: string = await bcrypt.hash(
         this.password,

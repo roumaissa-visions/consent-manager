@@ -7,9 +7,9 @@ import {
   generateRefreshToken,
 } from "../libs/OAuth/tokens";
 import { OAUTH_SCOPES } from "../libs/OAuth/scopes";
-import { NotFoundError } from "../errors/NotFoundError";
 import { userToSelfDescription } from "../libs/jsonld/selfDescriptions";
 import { USER_SELECTION } from "../utils/schemaSelection";
+import { checkUserIdentifier } from "../utils/UserIdentifierMatchingProcessor";
 
 /**
  * Registers a new user in the PDI
@@ -56,7 +56,7 @@ export const login = async (
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw new NotFoundError("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
     const isPasswordValid = await user.validatePassword(password);
@@ -98,7 +98,7 @@ export const getUserById = async (
 ) => {
   try {
     const user = await User.findById(req.params.userId).select(USER_SELECTION);
-    if (!user) throw new NotFoundError();
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     return res.status(200).json(user);
   } catch (err) {
@@ -140,6 +140,10 @@ export const registerUserIdentifier = async (
     });
 
     await newId.save();
+
+    // check if another userIdentifier exist from another participant
+    await checkUserIdentifier(email, req.userParticipant.id, newId._id);
+
     return res.json(newId);
   } catch (err) {
     next(err);
