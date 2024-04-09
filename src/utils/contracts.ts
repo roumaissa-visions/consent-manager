@@ -159,16 +159,18 @@ export const getDataFromPoliciesInEcosystemContract = async (
     ].reduce((acc, curr) => acc.concat(curr), []);
 
     const data = [];
-    for (const so of combinedData) {
-      const soResponse = await axios.get(so);
+    for (const serviceOffering of combinedData) {
+      const serviceOfferingResponse = await axios.get(serviceOffering);
 
       data.push(
-        ...soResponse.data.dataResources.map((resource: string) => {
-          return {
-            data: resource,
-            serviceOffering: so,
-          };
-        })
+        ...serviceOfferingResponse.data.dataResources.map(
+          (resource: string) => {
+            return {
+              resource,
+              serviceOffering,
+            };
+          }
+        )
       );
     }
 
