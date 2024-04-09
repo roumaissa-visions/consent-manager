@@ -23,10 +23,10 @@ import { setUserIdForParticipant } from "../middleware/participantsMiddleware";
 const r: Router = Router();
 
 r.get("/emailverification", giveConsentOnEmailValidation);
-r.get("/me", verifyInternalId, getUserConsents);
+r.get("/me", verifyUserJWT, getUserConsents);
 r.get(
   "/me/:id",
-  verifyInternalId,
+  verifyUserJWT,
   // checkIDFormatMiddleware,
   getUserConsentById
 );
