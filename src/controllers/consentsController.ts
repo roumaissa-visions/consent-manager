@@ -41,15 +41,25 @@ export const getUserConsents = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user.id;
-
     const { limit = "10", page = "1" } = req.query;
 
     const skip = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
-    const consents = await Consent.find({ user: userId })
-      .skip(skip)
-      .limit(parseInt(limit.toString()));
+    let consents;
+    if (req.user && req.user?.id) {
+      consents = await Consent.find({ user: req.user?.id })
+        .skip(skip)
+        .limit(parseInt(limit.toString()));
+    } else if (req.userIdentifier && req.userIdentifier?.id) {
+      consents = await Consent.find({
+        $or: [
+          { consumerUserIdentifier: req.userIdentifier?.id },
+          { providerUserIdentifier: req.userIdentifier?.id },
+        ],
+      })
+        .skip(skip)
+        .limit(parseInt(limit.toString()));
+    }
 
     const totalCount = await Consent.countDocuments();
 
@@ -143,7 +153,9 @@ export const getPrivacyNoticeById = async (
   try {
     let consumerEmail = false;
 
-    const userIdentifier = await UserIdentifier.findById(req.user.id);
+    const userIdentifier = await UserIdentifier.findById(
+      req.userIdentifier?.id
+    );
     const sameEmailUserIdentifier = await UserIdentifier.findOne({
       _id: {
         $ne: userIdentifier._id,
@@ -184,11 +196,24 @@ export const getUserConsentById = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user.id;
+    let consent;
+    if (req.user && req.user?.id) {
+      const userId = req.user?.id;
 
-    const consent = await Consent.findOne({
-      user: userId,
-    });
+      consent = await Consent.findOne({
+        _id: req.params.id,
+        user: userId,
+      });
+    } else if (req.userIdentifier && req.userIdentifier?.id) {
+      consent = await Consent.findOne({
+        _id: req.params.id,
+        $or: [
+          { consumerUserIdentifier: req.userIdentifier?.id },
+          { providerUserIdentifier: req.userIdentifier?.id },
+        ],
+      });
+    }
+
     if (!consent) throw new NotFoundError();
 
     res.json(consent);
@@ -226,7 +251,7 @@ export const giveConsent = async (
   try {
     let userId;
     const providerUserIdentifier = await UserIdentifier.findById(
-      req.user?.id
+      req.userIdentifier?.id
     ).lean();
     const { privacyNoticeId, email, data } = req.body;
     const { triggerDataExchange } = req.query;
@@ -644,12 +669,23 @@ export const revokeConsent = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    let consent;
+    if (req.user && req.user?.id) {
+      const userId = req.user?.id;
 
-    const consent = await Consent.findOne({
-      user: req.user.id,
-      identifier: id,
-    });
+      consent = await Consent.findOne({
+        _id: req.params.id,
+        user: userId,
+      });
+    } else if (req.userIdentifier?.id) {
+      consent = await Consent.findOne({
+        _id: req.params.id,
+        $or: [
+          { consumerUserIdentifier: req.userIdentifier?.id },
+          { providerUserIdentifier: req.userIdentifier?.id },
+        ],
+      });
+    }
     if (!consent) throw new NotFoundError("Consent not found");
 
     consent.consented = false;
