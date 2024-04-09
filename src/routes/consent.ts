@@ -62,7 +62,7 @@ r.post(
   giveConsent
 );
 
-r.delete("/:id", verifyUserJWT, revokeConsent);
+r.delete("/:id", verifyInternalId, revokeConsent);
 
 r.post(
   "/:consentId/data-exchange",

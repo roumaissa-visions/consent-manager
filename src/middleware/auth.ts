@@ -106,7 +106,7 @@ export const verifyInternalId = async (
       });
     }
 
-    req.user = {
+    req.userIdentifier = {
       id: userIdentifier._id,
     };
     next();
@@ -145,7 +145,7 @@ export const verifyUserJWT = async (
     });
 
     if (userExisitingIdentifier) {
-      req.user = {
+      req.userIdentifier = {
         id: userExisitingIdentifier._id,
       };
       next();
