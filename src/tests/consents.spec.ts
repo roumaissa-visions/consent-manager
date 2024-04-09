@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import supertest from "supertest";
 import { Application } from "express";
-import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { startServer } from "../server";
 import { IncomingMessage, ServerResponse } from "http";
@@ -10,7 +9,6 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import crypto from "crypto";
 
-let mongoServer: MongoMemoryServer;
 let serverInstance: {
   app: Application;
   server: http.Server<typeof IncomingMessage, typeof ServerResponse>;

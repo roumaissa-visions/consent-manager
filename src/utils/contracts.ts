@@ -120,7 +120,7 @@ export const getDataFromPoliciesInBilateralContract = (
  *
  * Does not check for if the target is based off a data resource or software resource
  */
-export const getDataFromPoliciesInEcosystemContract = (
+export const getDataFromPoliciesInEcosystemContract = async (
   contract: EcosystemContract,
   dataProvider?: string
 ) => {
@@ -157,7 +157,22 @@ export const getDataFromPoliciesInEcosystemContract = (
       ...dataFromPermissions,
       ...dataFromProhibitions,
     ].reduce((acc, curr) => acc.concat(curr), []);
-    return combinedData;
+
+    const data = [];
+    for (const so of combinedData) {
+      const soResponse = await axios.get(so);
+
+      data.push(
+        ...soResponse.data.dataResources.map((resource: string) => {
+          return {
+            data: resource,
+            serviceOffering: so,
+          };
+        })
+      );
+    }
+
+    return data;
   } else {
     return [];
   }
@@ -261,7 +276,7 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
               ? dataProviderSD
               : dataProviderID;
 
-          pn.data = getDataFromPoliciesInEcosystemContract(
+          pn.data = await getDataFromPoliciesInEcosystemContract(
             contract,
             dataProviderID
           );

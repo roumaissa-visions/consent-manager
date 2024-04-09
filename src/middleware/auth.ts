@@ -129,28 +129,76 @@ export const verifyUserJWT = async (
     return next();
   }
 
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res
-      .status(401)
-      .json({ message: "Authorization header missing or invalid" });
-  }
+  if (req.headers["x-user-key"]) {
+    const userIdentifier = await UserIdentifier.findById(
+      req.headers["x-user-key"]
+    ).lean();
 
-  const token = authHeader.slice(7);
+    if (!userIdentifier) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
 
-  try {
-    const decodedToken = jwt.verify(
-      token,
-      process.env.OAUTH_SECRET_KEY
-    ) as JwtPayload;
+    const userExisitingIdentifier = await User.findOne({
+      identifiers: {
+        $in: userIdentifier._id,
+      },
+    });
 
-    req.decodedToken = decodedToken;
-    req.user = {
-      id: decodedToken.sub,
-    };
+    if (userExisitingIdentifier) {
+      req.user = {
+        id: userExisitingIdentifier._id,
+      };
+      next();
+    } else {
+      const userExisitingEmail = await User.findOne({
+        email: userIdentifier.email,
+      });
 
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+      if (!userExisitingEmail) {
+        return res
+          .status(401)
+          .json({ message: "User with email doesn't exist" });
+      }
+
+      if (
+        userExisitingEmail &&
+        !userExisitingEmail.identifiers.includes(userIdentifier?._id)
+      ) {
+        userExisitingEmail.identifiers.push(userIdentifier?._id);
+      }
+
+      await userExisitingEmail.save();
+
+      req.user = {
+        id: userExisitingEmail._id,
+      };
+
+      next();
+    }
+  } else {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json({ message: "Authorization header missing or invalid" });
+    }
+
+    const token = authHeader.slice(7);
+
+    try {
+      const decodedToken = jwt.verify(
+        token,
+        process.env.OAUTH_SECRET_KEY
+      ) as JwtPayload;
+
+      req.decodedToken = decodedToken;
+      req.user = {
+        id: decodedToken.sub,
+      };
+
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
   }
 };

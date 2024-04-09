@@ -11,7 +11,6 @@ import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
 import { IPrivacyNotice } from "../types/models";
 import Participant from "../models/Participant/Participant.model";
-import { NodemailerClient } from "../libs/emails/nodemailer";
 import { Logger } from "../libs/loggers";
 import axios from "axios";
 import * as CryptoJS from "crypto";
@@ -141,7 +140,7 @@ export const getPrivacyNoticeById = async (
   next: NextFunction
 ) => {
   try {
-    let consumerEmail = false;
+    let consumerEmail: boolean;
 
     const userIdentifier = await UserIdentifier.findById(req.user.id);
     const sameEmailUserIdentifier = await UserIdentifier.findOne({
@@ -156,10 +155,6 @@ export const getPrivacyNoticeById = async (
     } else {
       consumerEmail = false;
     }
-
-    const user = await User.findOne({
-      identifiers: userIdentifier._id,
-    });
 
     const pn = await PrivacyNotice.findById(req.params.privacyNoticeId).lean();
     if (!pn) {
@@ -304,7 +299,7 @@ export const giveConsent = async (
           dataProvider,
           dataConsumer,
           providerUserIdentifierDocument,
-          res,
+          data,
         });
 
       if (registerNewUserToConsumerSideResponse.error) {
@@ -376,21 +371,6 @@ export const giveConsent = async (
     }
 
     if (userId) {
-      const consent = new Consent({
-        privacyNotice: privacyNotice._id,
-        user: userId,
-        providerUserIdentifier: providerUserIdentifier,
-        consumerUserIdentifier: consumerUserIdentifier,
-        dataProvider: dataProvider?._id,
-        dataConsumer: dataConsumer?._id,
-        recipients: privacyNotice.recipients,
-        purposes: privacyNotice.purposes,
-        data: privacyNotice.data,
-        status: "granted",
-        consented: true,
-        contract: privacyNotice.contract,
-      });
-
       const verification = await Consent.findOne({
         providerUserIdentifier: providerUserIdentifier._id,
         consumerUserIdentifier: consumerUserIdentifier._id,
@@ -402,6 +382,21 @@ export const giveConsent = async (
       if (verification) {
         return res.status(200).json(verification);
       }
+
+      const consent = new Consent({
+        privacyNotice: privacyNotice._id,
+        user: userId,
+        providerUserIdentifier: providerUserIdentifier,
+        consumerUserIdentifier: consumerUserIdentifier,
+        dataProvider: dataProvider?._id,
+        dataConsumer: dataConsumer?._id,
+        recipients: privacyNotice.recipients,
+        purposes: privacyNotice.purposes,
+        data: data ?? privacyNotice.data,
+        status: "granted",
+        consented: true,
+        contract: privacyNotice.contract,
+      });
 
       const newConsent = await consent.save();
 
@@ -619,7 +614,7 @@ export const giveConsentOnEmailValidation = async (
           return res.status(424).json({
             error: "Failed to communicate with the data consumer connector",
             message:
-              "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+              "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
           });
         }
       } catch (err) {
@@ -715,7 +710,7 @@ export const triggerDataExchange = async (
       return res.status(424).json({
         error: "Failed to communicate with the data consumer connector",
         message:
-          "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+          "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
       });
     }
   } catch (err) {
@@ -780,7 +775,7 @@ export const attachTokenToConsent = async (
     } catch (err) {
       Logger.error({ location: "consents.attachToken", message: err.message });
       // return res.status(424).json({
-      //   message: `an error occured after calling the data consumer's /consent/import endpoint`,
+      //   message: `an error occurred after calling the data consumer's /consent/import endpoint`,
       //   data: {
       //     details: {
       //       errorMessage: err.message,
@@ -992,7 +987,7 @@ export const resumeConsent = async (
         await consent.save();
       }
 
-      //return userIfentifier and consent
+      //return userIdentifier and consent
       return res.status(200).json(consent);
     }
   } catch (err) {
@@ -1013,7 +1008,7 @@ const userInteraction = async ({
   email: string;
   userParticipantId: string;
 }) => {
-  // create useridentifier for consumer
+  // create userIdentifier for consumer
   const consumerNewUserIdentifier = new UserIdentifier({
     attachedParticipant: dataConsumer?._id.toString(),
     email: providerUserIdentifierDocument.email,
@@ -1022,7 +1017,7 @@ const userInteraction = async ({
 
   await consumerNewUserIdentifier.save();
 
-  // register userIdentfier into consumer DSC
+  // register userIdentifier into consumer DSC
   //login
   const consumerLogin = await axios.post(
     urlChecker(dataConsumer.dataspaceEndpoint, "login"),
@@ -1069,7 +1064,7 @@ const registerNewUserToConsumerSide = async ({
   dataProvider,
   dataConsumer,
   providerUserIdentifierDocument,
-  res,
+  data,
 }: {
   privacyNotice: any;
   req: any;
@@ -1077,7 +1072,7 @@ const registerNewUserToConsumerSide = async ({
   dataProvider: any;
   dataConsumer: any;
   providerUserIdentifierDocument: any;
-  res: any;
+  data: any;
 }): Promise<{ consent?: any; error?: string; status: number }> => {
   {
     //draft consent
@@ -1089,7 +1084,7 @@ const registerNewUserToConsumerSide = async ({
       dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
-      data: privacyNotice.data,
+      data: data ?? privacyNotice.data,
       status: req.query.triggerDataExchange ? "draft" : "pending",
       consented: false,
       contract: privacyNotice.contract,
@@ -1103,7 +1098,7 @@ const registerNewUserToConsumerSide = async ({
         dataConsumer: dataConsumer?._id,
         recipients: privacyNotice.recipients,
         purposes: privacyNotice.purposes,
-        data: privacyNotice.data,
+        data: data ?? privacyNotice.data,
         status: req.query.triggerDataExchange ? "draft" : "pending",
         consented: false,
         contract: privacyNotice.contract,
@@ -1249,7 +1244,7 @@ const emailReattached = async ({
     if (providerUser && consumerUser) {
       if (providerUser._id !== consumerUser._id) {
         // case 2.c1: User identifier from Provider has a user attached and user identifier from consumer has another user attached
-        // One of the users has the “manual registration” information (first name, last name etc)
+        // One of the users has the “manual registration” information (first name, last name etc.)
         if (providerUser.password && !consumerUser.password) {
           providerUser.identifiers.push(existingConsumerUserIdentifier._id);
           await providerUser.save();

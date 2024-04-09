@@ -23,7 +23,12 @@ const schema = new Schema<IPrivacyNoticeDocument>(
       },
     ],
     categoriesOfData: [String],
-    data: [String],
+    data: [
+      {
+        resource: String,
+        serviceOffering: String,
+      },
+    ],
     recipients: [String],
     internationalTransfers: {
       countries: [String],
