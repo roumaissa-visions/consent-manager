@@ -90,7 +90,7 @@ export const verifyParticipantJWT = async (
   }
 };
 
-export const verifyInternalId = async (
+export const verifyUserKey = async (
   req: Request,
   res: Response,
   next: NextFunction

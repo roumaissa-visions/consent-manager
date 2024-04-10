@@ -30,12 +30,6 @@ declare module "express" {
 
     userIdentifier?: {
       id: string;
-
-      /**
-       * Only available on handlers that come
-       * after usePopulatedParticipant
-       */
-      populated?: IParticipant;
     };
 
     validationSchema?: Joi.ObjectSchema;
