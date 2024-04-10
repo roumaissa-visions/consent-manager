@@ -285,7 +285,7 @@ export const giveConsent = async (
       email: providerUserIdentifier.email,
     }).lean();
 
-    const consumerPurpose = privacyNotice.purposes[0].resource;
+    const consumerPurpose = privacyNotice.purposes[0].serviceOffering;
     const consumerServiceOffering = await axios.get(consumerPurpose, {
       headers: { "Content-Type": "application/json" },
     });

@@ -128,6 +128,24 @@ export const getDataFromPoliciesInBilateralContract = async (
   return data;
 };
 
+export const getPurposeFromBilateralContract = async (
+  contract: BilateralContract
+) => {
+  const data = [];
+
+  for (const bilateralContract of contract.purpose) {
+    const purposeResponse = await axios.get(bilateralContract.purpose);
+    for (const sr of purposeResponse.data.softwareResources) {
+      data.push({
+        serviceOffering: bilateralContract.purpose,
+        resource: sr,
+        legalBasis: bilateralContract?.legalBasis || "",
+      });
+    }
+  }
+  return data;
+};
+
 /**
  * Looks for all of the targets from the service offerings inside of the ecosystem contract
  * If options is specified, will filter only the service offerings based on the specified participants
@@ -246,15 +264,16 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
       ? dataConsumerSDResponse.data
       : dataConsumerID;
 
-  let bilateralPrivacyNotices = [];
+  const bilateralPrivacyNotices = [];
   if (
     bilateralContractsRes?.data.contracts &&
     bilateralContractsRes?.data.contracts.length > 0
   ) {
-    bilateralPrivacyNotices = bilateralContractsRes?.data.contracts.map(
-      async (contract: BilateralContract) =>
-        bilateralContractToPrivacyNotice(contract)
-    );
+    for (const contract of bilateralContractsRes.data.contracts) {
+      bilateralPrivacyNotices?.push(
+        await bilateralContractToPrivacyNotice(contract)
+      );
+    }
   }
   let ecosystemPrivacyNotices = [];
   if (

@@ -613,97 +613,97 @@ describe("Consent Controller Tests", () => {
     });
   });
 
-  // describe("giveConsent", () => {
-  //   it("should give consent", async () => {
-  //     const response = await supertest(serverInstance.app)
-  //       .post(`/v1/consents`)
-  //       .set("x-user-key", providerUserIdentifier)
-  //       .send({
-  //         privacyNoticeId: privacyNoticeId,
-  //       });
-  //     consentId = response.body._id;
-  //     expect(response.status).to.be.equal(201);
-  //     expect(response.body).to.not.be.empty;
-  //     expect(response.body).to.have.property("_id");
-  //   });
-  // });
+  describe("giveConsent", () => {
+    it("should give consent", async () => {
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents`)
+        .set("x-user-key", providerUserIdentifier)
+        .send({
+          privacyNoticeId: privacyNoticeId,
+        });
+      consentId = response.body._id;
+      expect(response.status).to.be.equal(201);
+      expect(response.body).to.not.be.empty;
+      expect(response.body).to.have.property("_id");
+    });
+  });
 
-  // describe("triggerDataExchange", () => {
-  //   it("should failed to communicate with endpoint", async () => {
-  //     const response = await supertest(serverInstance.app)
-  //       .post(`/v1/consents/${consentId}/data-exchange`)
-  //       .set("x-user-key", providerUserIdentifier);
-  //     expect(response.status).to.be.equal(424);
-  //     expect(response.body).to.have.property(
-  //       "error",
-  //       "Failed to communicate with the data consumer connector"
-  //     );
-  //   });
+  describe("triggerDataExchange", () => {
+    it("should failed to communicate with endpoint", async () => {
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${consentId}/data-exchange`)
+        .set("x-user-key", providerUserIdentifier);
+      expect(response.status).to.be.equal(424);
+      expect(response.body).to.have.property(
+        "error",
+        "Failed to communicate with the data consumer connector"
+      );
+    });
 
-  // it("should trigger the data exchange", async () => {
-  //   mockAxios
-  //     .onPost("https://test.consent/consent/export")
-  //     .reply(200, { message: "ok" });
-  //   const response = await supertest(serverInstance.app)
-  //     .post(`/v1/consents/${consentId}/data-exchange`)
-  //     .set("x-user-key", providerUserIdentifier);
-  //   consent = response.body.consent;
-  //   expect(response.status).to.be.equal(200);
-  //   expect(response.body).to.have.property(
-  //     "message",
-  //     "successfully sent consent to the provider's consent export endpoint to trigger the data exchange"
-  //   );
-  // });
+    it("should trigger the data exchange", async () => {
+      mockAxios
+        .onPost("https://test.consent/consent/export")
+        .reply(200, { message: "ok" });
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${consentId}/data-exchange`)
+        .set("x-user-key", providerUserIdentifier);
+      consent = response.body.consent;
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.have.property(
+        "message",
+        "successfully sent consent to the provider's consent export endpoint to trigger the data exchange"
+      );
+    });
 
-  //   it("should not found the consent", async () => {
-  //     const response = await supertest(serverInstance.app)
-  //       .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
-  //       .set("x-user-key", providerUserIdentifier)
-  //       .send({
-  //         privacyNoticeId: privacyNoticeId,
-  //       });
-  //     expect(response.status).to.be.equal(404);
-  //     expect(response.body).to.have.property("error", "consent not found");
-  //   });
-  // });
+    it("should not found the consent", async () => {
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
+        .set("x-user-key", providerUserIdentifier)
+        .send({
+          privacyNoticeId: privacyNoticeId,
+        });
+      expect(response.status).to.be.equal(404);
+      expect(response.body).to.have.property("error", "consent not found");
+    });
+  });
 
-  // describe("attachTokenToConsent", () => {
-  //   it("should attach token to consent", async () => {
-  //     mockAxios
-  //       .onPost("https://test.consent/consent/import")
-  //       .reply(200, { message: "ok" });
-  //
-  //     token = crypto.randomUUID();
-  //
-  //     const response = await supertest(serverInstance.app)
-  //       .post(`/v1/consents/${consentId}/token`)
-  //       .set("Authorization", providerJWT)
-  //       .send({
-  //         token,
-  //         providerDataExchangeId: "6601aa0cc344579ca63aeb9b",
-  //       });
-  //     expect(response.status).to.be.equal(200);
-  //     expect(response.body).to.have.property(
-  //       "message",
-  //       "successfully forwarded consent to the data consumer"
-  //     );
-  //   });
-  // });
+  describe("attachTokenToConsent", () => {
+    it("should attach token to consent", async () => {
+      mockAxios
+        .onPost("https://test.consent/consent/import")
+        .reply(200, { message: "ok" });
 
-  // describe("verifyToken", () => {
-  //   it("should validate the consent", async () => {
-  //     const response = await supertest(serverInstance.app)
-  //       .post(`/v1/consents/${consentId}/validate`)
-  //       .set("Authorization", providerJWT)
-  //       .send({
-  //         token,
-  //       });
-  //     expect(response.status).to.be.equal(200);
-  //     expect(response.body).to.have.property(
-  //       "message",
-  //       "token matches consent token"
-  //     );
-  //     expect(response.body).to.have.property("verified", true);
-  //   });
-  // });
+      token = crypto.randomUUID();
+
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${consentId}/token`)
+        .set("Authorization", providerJWT)
+        .send({
+          token,
+          providerDataExchangeId: "6601aa0cc344579ca63aeb9b",
+        });
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.have.property(
+        "message",
+        "successfully forwarded consent to the data consumer"
+      );
+    });
+  });
+
+  describe("verifyToken", () => {
+    it("should validate the consent", async () => {
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${consentId}/validate`)
+        .set("Authorization", providerJWT)
+        .send({
+          token,
+        });
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.have.property(
+        "message",
+        "token matches consent token"
+      );
+      expect(response.body).to.have.property("verified", true);
+    });
+  });
 });
