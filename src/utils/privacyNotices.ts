@@ -5,10 +5,10 @@ import {
   getDataFromPoliciesInBilateralContract,
 } from "./contracts";
 
-export const bilateralContractToPrivacyNotice = (
+export const bilateralContractToPrivacyNotice = async (
   contract: BilateralContract
-): IPrivacyNotice => {
-  const privacyNotice: IPrivacyNotice = {
+): Promise<IPrivacyNotice> => {
+  return {
     contract: `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/${contract._id}`,
     title: contract.profile,
     lastUpdated: Date.now().toString(),
@@ -23,10 +23,11 @@ export const bilateralContractToPrivacyNotice = (
       },
     },
     purposes: contract.purpose.map((p) => ({
-      purpose: p?.purpose,
+      serviceOffering: p?.serviceOffering,
+      resource: p?.resource,
       legalBasis: p?.legalBasis || "",
     })),
-    data: getDataFromPoliciesInBilateralContract(contract),
+    data: await getDataFromPoliciesInBilateralContract(contract),
     categoriesOfData: [],
     recipients: [contract.dataConsumer],
     internationalTransfers: {
@@ -42,8 +43,6 @@ export const bilateralContractToPrivacyNotice = (
       details: "",
     },
   };
-
-  return privacyNotice;
 };
 
 /**
@@ -70,7 +69,8 @@ export const ecosystemContractToPrivacyNotice = (
       },
     },
     purposes: contract.purpose.map((p) => ({
-      purpose: p?.purpose,
+      serviceOffering: p?.serviceOffering,
+      resource: p?.resource,
       legalBasis: "",
     })),
     data: [],

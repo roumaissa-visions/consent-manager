@@ -128,9 +128,13 @@ export interface Service {
  */
 export interface Purpose {
   /**
-   * The purpose for which the data is being processed within the service.
+   * The serviceOffering for which the data is being processed within the service.
    */
-  purpose: string;
+  serviceOffering: string;
+  /**
+   * The resource for which the data is being processed within the service.
+   */
+  resource: string;
   /**
    * The type of consent obtained for this purpose (e.g., EXPLICIT).
    */

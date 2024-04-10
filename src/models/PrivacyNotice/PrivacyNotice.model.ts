@@ -18,7 +18,8 @@ const schema = new Schema<IPrivacyNoticeDocument>(
     },
     purposes: [
       {
-        purpose: String,
+        serviceOffering: String,
+        resource: String,
         legalBasis: String,
       },
     ],

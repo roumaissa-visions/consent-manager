@@ -78,7 +78,7 @@ export type EcosystemContract = {
   jsonLD: string;
 };
 
-export const getDataFromPoliciesInBilateralContract = (
+export const getDataFromPoliciesInBilateralContract = async (
   contract: BilateralContract
 ) => {
   const policiesMatchingServiceOffering = contract.policy.filter(
@@ -111,7 +111,21 @@ export const getDataFromPoliciesInBilateralContract = (
     []
   );
 
-  return combinedData;
+  const data = [];
+  for (const serviceOffering of combinedData) {
+    const serviceOfferingResponse = await axios.get(serviceOffering);
+
+    data.push(
+      ...serviceOfferingResponse.data.dataResources.map((resource: string) => {
+        return {
+          resource,
+          serviceOffering,
+        };
+      })
+    );
+  }
+
+  return data;
 };
 
 /**
@@ -238,7 +252,7 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
     bilateralContractsRes?.data.contracts.length > 0
   ) {
     bilateralPrivacyNotices = bilateralContractsRes?.data.contracts.map(
-      (contract: BilateralContract) =>
+      async (contract: BilateralContract) =>
         bilateralContractToPrivacyNotice(contract)
     );
   }
@@ -283,10 +297,19 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
             dataProviderID
           );
 
-          pn.purposes = filteredConsumerSOs.map((so) => ({
-            purpose: so.serviceOffering,
-            legalBasis: "",
-          }));
+          for (const serviceOffering of filteredConsumerSOs) {
+            const serviceOfferingResponse = await axios.get(
+              serviceOffering.serviceOffering
+            );
+
+            for (const sf of serviceOfferingResponse.data.softwareResources) {
+              pn.purposes.push({
+                serviceOffering: serviceOffering.serviceOffering,
+                resource: sf,
+                legalBasis: "",
+              });
+            }
+          }
 
           pn.recipients.push(
             typeof dataConsumerSD === "string" ? dataConsumerSD : dataConsumerID

@@ -248,7 +248,8 @@ export const giveConsent = async (
     const providerUserIdentifier = await UserIdentifier.findById(
       req.userIdentifier?.id
     ).lean();
-    const { privacyNoticeId, email, data } = req.body;
+    const { privacyNoticeId, email } = req.body;
+    let { data } = req.body;
     const { triggerDataExchange } = req.query;
 
     if (!privacyNoticeId) {
@@ -284,7 +285,7 @@ export const giveConsent = async (
       email: providerUserIdentifier.email,
     }).lean();
 
-    const consumerPurpose = privacyNotice.purposes[0].purpose;
+    const consumerPurpose = privacyNotice.purposes[0].resource;
     const consumerServiceOffering = await axios.get(consumerPurpose, {
       headers: { "Content-Type": "application/json" },
     });
@@ -408,6 +409,14 @@ export const giveConsent = async (
         return res.status(200).json(verification);
       }
 
+      if (data) {
+        data = privacyNotice.data.filter((dt: any) => {
+          if (data.includes(dt.resource)) {
+            return dt;
+          }
+        });
+      }
+
       const consent = new Consent({
         privacyNotice: privacyNotice._id,
         user: userId,
@@ -416,8 +425,8 @@ export const giveConsent = async (
         dataProvider: dataProvider?._id,
         dataConsumer: dataConsumer?._id,
         recipients: privacyNotice.recipients,
-        purposes: privacyNotice.purposes,
-        data: data ?? privacyNotice.data,
+        purposes: [...privacyNotice.purposes],
+        data: data ?? [...privacyNotice.data],
         status: "granted",
         consented: true,
         contract: privacyNotice.contract,
