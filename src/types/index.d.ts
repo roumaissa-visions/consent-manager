@@ -28,6 +28,10 @@ declare module "express" {
       populated?: IParticipant;
     };
 
+    userIdentifier?: {
+      id: string;
+    };
+
     validationSchema?: Joi.ObjectSchema;
   }
 }
