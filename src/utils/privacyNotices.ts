@@ -3,6 +3,7 @@ import {
   BilateralContract,
   EcosystemContract,
   getDataFromPoliciesInBilateralContract,
+  getPurposeFromBilateralContract,
 } from "./contracts";
 
 export const bilateralContractToPrivacyNotice = async (
@@ -22,11 +23,7 @@ export const bilateralContractToPrivacyNotice = async (
         contact: "",
       },
     },
-    purposes: contract.purpose.map((p) => ({
-      serviceOffering: p?.serviceOffering,
-      resource: p?.resource,
-      legalBasis: p?.legalBasis || "",
-    })),
+    purposes: await getPurposeFromBilateralContract(contract),
     data: await getDataFromPoliciesInBilateralContract(contract),
     categoriesOfData: [],
     recipients: [contract.dataConsumer],
