@@ -62,15 +62,19 @@ describe("Users Routes Tests", () => {
         .send({
           firstName: "John",
           lastName: "Doe",
-          email: "john@example.com",
+          email: "john@exampleuser.com",
           password: "password",
         });
       userId = response.body.user._id;
+
       expect(response.status).to.be.equal(200);
       expect(response.body).to.have.property("user");
       expect(response.body.user).to.have.property("firstName", "John");
       expect(response.body.user).to.have.property("lastName", "Doe");
-      expect(response.body.user).to.have.property("email", "john@example.com");
+      expect(response.body.user).to.have.property(
+        "email",
+        "john@exampleuser.com"
+      );
       expect(response.body).to.have.property("accessToken");
       expect(response.body).to.have.property("refreshToken");
     });
@@ -81,14 +85,17 @@ describe("Users Routes Tests", () => {
       const response = await supertest(serverInstance.app)
         .post(`/v1/users/login`)
         .send({
-          email: "john@example.com",
+          email: "john@exampleuser.com",
           password: "password",
         });
       expect(response.status).to.be.equal(200);
       expect(response.body).to.have.property("user");
       expect(response.body.user).to.have.property("firstName", "John");
       expect(response.body.user).to.have.property("lastName", "Doe");
-      expect(response.body.user).to.have.property("email", "john@example.com");
+      expect(response.body.user).to.have.property(
+        "email",
+        "john@exampleuser.com"
+      );
       expect(response.body).to.have.property("accessToken");
       expect(response.body).to.have.property("refreshToken");
     });

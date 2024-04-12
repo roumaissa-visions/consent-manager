@@ -22,6 +22,16 @@ export const signup = async (
   try {
     const { firstName, lastName, email, password } = req.body;
 
+    const verify = await User.findOne({
+      email,
+    }).lean();
+
+    if (verify) {
+      return res
+        .status(409)
+        .json({ message: "User with this email address already exists" });
+    }
+
     const user = new User({ firstName, lastName, email, password });
 
     const scopes = [OAUTH_SCOPES.userRead, OAUTH_SCOPES.userWrite];
