@@ -16,20 +16,9 @@ const schema = new Schema<IPrivacyNoticeDocument>(
         contact: String,
       },
     },
-    purposes: [
-      {
-        serviceOffering: String,
-        resource: String,
-        legalBasis: String,
-      },
-    ],
+    purposes: [Schema.Types.Mixed],
     categoriesOfData: [String],
-    data: [
-      {
-        resource: String,
-        serviceOffering: String,
-      },
-    ],
+    data: [Schema.Types.Mixed],
     recipients: [String],
     internationalTransfers: {
       countries: [String],
