@@ -365,7 +365,7 @@ describe("Consent Controller Tests", () => {
           name: "CONSUMER PAYLOAD BIL",
           providedBy: "6564aaebd853e8e05b1317c1",
           aggregationOf: [
-            "http://host.docker.internal:4040/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+            "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
           ],
           dependsOn: [],
           policy: [
@@ -417,7 +417,7 @@ describe("Consent Controller Tests", () => {
           keywords: [],
           dataResources: [],
           softwareResources: [
-            "http://host.docker.internal:4040/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+            "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
           ],
           archived: false,
           visible: true,
@@ -589,12 +589,96 @@ describe("Consent Controller Tests", () => {
             "60302602dd21b879636317d54886f0181dd409f7f962d2a40a282f8cd099dad0837c86ddaa78a82c650a6d18347767a4c8f2532568ead3d267bf78e262a89444",
           dataspaceEndpoint: "",
         });
+      mockAxios
+        .onGet(
+          "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb"
+        )
+        .reply(200, {
+          "@context": "http://host.docker.internal:4040/v1/softwareresource",
+          "@type": "SoftwareResource",
+          _id: "65e737ed74f9e9026bd5edbb",
+          providedBy: "6564aaebd853e8e05b1317c1",
+          name: "CONSUMER PAYLOAD BIL",
+          description: "desc",
+          aggregationOf: [],
+          copyrightOwnedBy: ["6564aaebd853e8e05b1317c1"],
+          license: [],
+          policy: [
+            {
+              "@context": {
+                xsd: "http://www.w3.org/2001/XMLSchema#",
+                description: {
+                  "@id": "https://schema.org/description",
+                  "@container": "@language",
+                },
+              },
+              "@id":
+                "http://localhost:3000/static/references/rules/rule-access-4.json",
+              title: {
+                "@type": "xsd/string",
+                "@value": "Count",
+              },
+              uid: "rule-access-4",
+              name: "Count",
+              description: [
+                {
+                  "@value": "MUST not use data for more than n times",
+                  "@language": "en",
+                },
+              ],
+              policy: {
+                permission: [
+                  {
+                    action: "use",
+                    target: "@{target}",
+                    constraint: [
+                      {
+                        leftOperand: "count",
+                        operator: "lt",
+                        rightOperand: "@{value}",
+                      },
+                    ],
+                  },
+                ],
+              },
+              requestedFields: ["target", "value"],
+            },
+          ],
+          category: "5f8d9ea341184f59787e605a",
+          locationAddress: [
+            {
+              countryCode: "World",
+              _id: "65e737ed74f9e9026bd5edbc",
+            },
+          ],
+          users_clients: 0,
+          demo_link: "",
+          relevant_project_link: "",
+          schema_version: "1.1.0",
+          usePII: false,
+          isAPI: true,
+          createdAt: "2024-03-05T15:19:09.387Z",
+          updatedAt: "2024-03-05T15:19:09.426Z",
+          __v: 0,
+          representation: {
+            _id: "65e737ed74f9e9026bd5edc3",
+            resourceID: "65e737ed74f9e9026bd5edbb",
+            type: "REST",
+            url: "http://host.docker.internal:3332/users",
+            method: "none",
+            credential: "",
+            createdAt: "2024-03-05T15:19:09.429Z",
+            updatedAt: "2024-03-05T15:19:09.429Z",
+            __v: 0,
+          },
+        });
       const response = await supertest(serverInstance.app)
         .get(
           `/v1/consents/${userId}/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJi/aHR0cHM6Ly9hcGkudGVzdC5jb20vdjEvY2F0YWxvZy9wYXJ0aWNpcGFudHMvNjU2ZGZiM2UyODJkNDdjZmE2YjY2YjJh`
         )
         .set("x-user-key", providerUserIdentifier);
-      privacyNoticeId = response.body[0]._id;
+      console.log("response", response.body);
+      privacyNoticeId = response.body[0]?._id;
       expect(response.status).to.be.equal(200);
       expect(response.body).to.not.be.empty;
       expect(response.body[0]).to.have.property("_id");

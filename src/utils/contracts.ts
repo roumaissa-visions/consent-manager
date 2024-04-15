@@ -136,10 +136,11 @@ export const getPurposeFromBilateralContract = async (
   for (const bilateralContract of contract.purpose) {
     const purposeResponse = await axios.get(bilateralContract.purpose);
     for (const sr of purposeResponse.data.softwareResources) {
+      const softwareResourceResponse = await axios.get(sr);
       data.push({
+        purpose: softwareResourceResponse?.data?.name,
         serviceOffering: bilateralContract.purpose,
         resource: sr,
-        legalBasis: bilateralContract?.legalBasis || "",
       });
     }
   }
@@ -322,10 +323,11 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
             );
 
             for (const sf of serviceOfferingResponse.data.softwareResources) {
+              const softwareResourceResponse = await axios.get(sf);
               pn.purposes.push({
+                purpose: softwareResourceResponse?.data?.name,
                 serviceOffering: serviceOffering.serviceOffering,
                 resource: sf,
-                legalBasis: "",
               });
             }
           }
@@ -411,7 +413,6 @@ export const buildConsentsFromContracts = async (
       }
     });
     savedConsent.purposes = purposes.map((purpose) => ({
-      legalBasis: "",
       purpose: purpose,
     }));
     savedConsent.data = consent.data.map((data: any) => JSON.stringify(data));

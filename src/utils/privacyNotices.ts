@@ -68,7 +68,7 @@ export const ecosystemContractToPrivacyNotice = (
     purposes: contract.purpose.map((p) => ({
       serviceOffering: p?.serviceOffering,
       resource: p?.resource,
-      legalBasis: "",
+      purpose: p?.purpose,
     })),
     data: [],
     categoriesOfData: [],

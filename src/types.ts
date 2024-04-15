@@ -163,4 +163,8 @@ export interface Purpose {
    * The name of the third party to whom the data will be disclosed (if thirdPartyDisclosure is true).
    */
   thirdPartyName?: string;
+  /**
+   * The name of the purpose.
+   */
+  purpose: string;
 }

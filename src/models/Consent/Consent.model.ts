@@ -35,8 +35,8 @@ const schema = new Schema<IConsent>(
     purposes: [
       {
         _id: String,
+        purpose: String,
         resource: String,
-        legalBasis: String,
         serviceOffering: String,
       },
     ],

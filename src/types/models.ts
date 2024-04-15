@@ -148,7 +148,6 @@ export interface IConsent extends Document, AllSchemas {
    */
   purposes: {
     purpose: string;
-    legalBasis: string;
   }[];
 
   /**
@@ -245,9 +244,9 @@ export interface IPrivacyNotice {
    * The purposes of the processing for which the personal data are intended, as well as the legal basis for the processing.
    */
   purposes: {
+    purpose: string;
     serviceOffering: string;
     resource: string;
-    legalBasis: string;
   }[];
 
   /**
