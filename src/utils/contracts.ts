@@ -78,7 +78,7 @@ export type EcosystemContract = {
   jsonLD: string;
 };
 
-export const getDataFromPoliciesInBilateralContract = (
+export const getDataFromPoliciesInBilateralContract = async (
   contract: BilateralContract
 ) => {
   const policiesMatchingServiceOffering = contract.policy.filter(
@@ -111,7 +111,40 @@ export const getDataFromPoliciesInBilateralContract = (
     []
   );
 
-  return combinedData;
+  const data = [];
+  for (const serviceOffering of combinedData) {
+    const serviceOfferingResponse = await axios.get(serviceOffering);
+
+    data.push(
+      ...serviceOfferingResponse.data.dataResources.map((resource: string) => {
+        return {
+          resource,
+          serviceOffering,
+        };
+      })
+    );
+  }
+
+  return data;
+};
+
+export const getPurposeFromBilateralContract = async (
+  contract: BilateralContract
+) => {
+  const data = [];
+
+  for (const bilateralContract of contract.purpose) {
+    const purposeResponse = await axios.get(bilateralContract.purpose);
+    for (const sr of purposeResponse.data.softwareResources) {
+      const softwareResourceResponse = await axios.get(sr);
+      data.push({
+        purpose: softwareResourceResponse?.data?.name,
+        serviceOffering: bilateralContract.purpose,
+        resource: sr,
+      });
+    }
+  }
+  return data;
 };
 
 /**
@@ -120,7 +153,7 @@ export const getDataFromPoliciesInBilateralContract = (
  *
  * Does not check for if the target is based off a data resource or software resource
  */
-export const getDataFromPoliciesInEcosystemContract = (
+export const getDataFromPoliciesInEcosystemContract = async (
   contract: EcosystemContract,
   dataProvider?: string
 ) => {
@@ -157,7 +190,24 @@ export const getDataFromPoliciesInEcosystemContract = (
       ...dataFromPermissions,
       ...dataFromProhibitions,
     ].reduce((acc, curr) => acc.concat(curr), []);
-    return combinedData;
+
+    const data = [];
+    for (const serviceOffering of combinedData) {
+      const serviceOfferingResponse = await axios.get(serviceOffering);
+
+      data.push(
+        ...serviceOfferingResponse.data.dataResources.map(
+          (resource: string) => {
+            return {
+              resource,
+              serviceOffering,
+            };
+          }
+        )
+      );
+    }
+
+    return data;
   } else {
     return [];
   }
@@ -215,15 +265,16 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
       ? dataConsumerSDResponse.data
       : dataConsumerID;
 
-  let bilateralPrivacyNotices = [];
+  const bilateralPrivacyNotices = [];
   if (
     bilateralContractsRes?.data.contracts &&
     bilateralContractsRes?.data.contracts.length > 0
   ) {
-    bilateralPrivacyNotices = bilateralContractsRes?.data.contracts.map(
-      (contract: BilateralContract) =>
-        bilateralContractToPrivacyNotice(contract)
-    );
+    for (const contract of bilateralContractsRes.data.contracts) {
+      bilateralPrivacyNotices?.push(
+        await bilateralContractToPrivacyNotice(contract)
+      );
+    }
   }
   let ecosystemPrivacyNotices = [];
   if (
@@ -261,15 +312,25 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
               ? dataProviderSD
               : dataProviderID;
 
-          pn.data = getDataFromPoliciesInEcosystemContract(
+          pn.data = await getDataFromPoliciesInEcosystemContract(
             contract,
             dataProviderID
           );
 
-          pn.purposes = filteredConsumerSOs.map((so) => ({
-            purpose: so.serviceOffering,
-            legalBasis: "",
-          }));
+          for (const serviceOffering of filteredConsumerSOs) {
+            const serviceOfferingResponse = await axios.get(
+              serviceOffering.serviceOffering
+            );
+
+            for (const sf of serviceOfferingResponse.data.softwareResources) {
+              const softwareResourceResponse = await axios.get(sf);
+              pn.purposes.push({
+                purpose: softwareResourceResponse?.data?.name,
+                serviceOffering: serviceOffering.serviceOffering,
+                resource: sf,
+              });
+            }
+          }
 
           pn.recipients.push(
             typeof dataConsumerSD === "string" ? dataConsumerSD : dataConsumerID
@@ -352,7 +413,6 @@ export const buildConsentsFromContracts = async (
       }
     });
     savedConsent.purposes = purposes.map((purpose) => ({
-      legalBasis: "",
       purpose: purpose,
     }));
     savedConsent.data = consent.data.map((data: any) => JSON.stringify(data));

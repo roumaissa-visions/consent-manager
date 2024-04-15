@@ -33,7 +33,8 @@ export class ConsentGenerator {
           service: "Dummy service skills analytics",
           purposes: [
             {
-              purpose: "To provide analysis on skills",
+              serviceOffering: "http://dummy-service-offering/catalg/1",
+              resource: "To provide analysis on skills",
               purposeCategory: [],
               consentType: "EXPLICIT",
               piiCategory: ["1 Biographical", "11 - Employment"],
