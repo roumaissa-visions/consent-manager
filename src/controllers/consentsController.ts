@@ -426,7 +426,7 @@ export const giveConsent = async (
         dataConsumer: dataConsumer?._id,
         recipients: privacyNotice.recipients,
         purposes: [...privacyNotice.purposes],
-        data: data.length > 0 ? data : [...privacyNotice.data],
+        data: data?.length > 0 ? data : [...privacyNotice.data],
         status: "granted",
         consented: true,
         contract: privacyNotice.contract,
