@@ -404,7 +404,18 @@ export const giveConsent = async (
         consumerUserIdentifier: consumerUserIdentifier._id,
         dataProvider: dataProvider._id,
         privacyNotice: privacyNoticeId,
-        data: data?.length > 0 ? [...data] : [...privacyNotice.data],
+        data: {
+          $size:
+            data && data.length > 0 ? data.length : privacyNotice.data.length, // Ensure that data array has the same size as the provided data array
+          $elemMatch: {
+            resource: {
+              $in:
+                data?.length > 0
+                  ? data.map((item: string) => item)
+                  : [...privacyNotice.data.map((el: any) => el.resource)],
+            },
+          }, // Ensure that all elements in the data array are in the provided data array
+        },
         user: userId,
       }).lean();
 
