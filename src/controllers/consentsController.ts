@@ -124,8 +124,10 @@ export const getPrivacyNotices = async (
       // privacy notices in the final returned result.
 
       for (const pn of filteredPrivacyNoticesComingFromContracts) {
-        const newPn = new PrivacyNotice(pn);
-        await newPn.save();
+        if (pn.data.length > 0 && pn.purposes.length > 0) {
+          const newPn = new PrivacyNotice(pn);
+          await newPn.save();
+        }
       }
     }
 
@@ -402,6 +404,7 @@ export const giveConsent = async (
         consumerUserIdentifier: consumerUserIdentifier._id,
         dataProvider: dataProvider._id,
         privacyNotice: privacyNoticeId,
+        data: data?.length > 0 ? [...data] : [...privacyNotice.data],
         user: userId,
       }).lean();
 
