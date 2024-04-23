@@ -36,10 +36,17 @@ const schema = new Schema<IConsent>(
       {
         _id: String,
         purpose: String,
-        legalBasis: String,
+        resource: String,
+        serviceOffering: String,
       },
     ],
-    data: [{ type: String }],
+    data: [
+      {
+        _id: String,
+        resource: String,
+        serviceOffering: String,
+      },
+    ],
     status: {
       type: String,
       enum: ["pending", "draft", "granted", "revoked", "expired"],

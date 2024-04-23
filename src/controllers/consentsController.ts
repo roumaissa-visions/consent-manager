@@ -276,7 +276,7 @@ export const giveConsent = async (
       req.userIdentifier?.id
     ).lean();
     const { privacyNoticeId, email } = req.body;
-    let { data } = req.body;
+    const { data } = req.body;
     const { triggerDataExchange } = req.query;
 
     if (!privacyNoticeId) {
@@ -424,38 +424,6 @@ export const giveConsent = async (
     }
 
     if (userId) {
-      const verification = await Consent.findOne({
-        providerUserIdentifier: providerUserIdentifier._id,
-        consumerUserIdentifier: consumerUserIdentifier._id,
-        dataProvider: dataProvider._id,
-        privacyNotice: privacyNoticeId,
-        data: {
-          $size:
-            data && data.length > 0 ? data.length : privacyNotice.data.length, // Ensure that data array has the same size as the provided data array
-          $elemMatch: {
-            resource: {
-              $in:
-                data?.length > 0
-                  ? data.map((item: string) => item)
-                  : [...privacyNotice.data.map((el: any) => el.resource)],
-            },
-          }, // Ensure that all elements in the data array are in the provided data array
-        },
-        user: userId,
-      }).lean();
-
-      if (verification) {
-        return res.status(200).json(verification);
-      }
-
-      if (data) {
-        data = privacyNotice.data.filter((dt: any) => {
-          if (data.includes(dt.resource)) {
-            return dt;
-          }
-        });
-      }
-
       const consent = new Consent({
         privacyNotice: privacyNotice._id,
         user: userId,

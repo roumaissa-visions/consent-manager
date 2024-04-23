@@ -148,7 +148,6 @@ export interface IConsent extends Document, AllSchemas {
    */
   purposes: {
     purpose: string;
-    legalBasis: string;
   }[];
 
   /**
@@ -246,7 +245,8 @@ export interface IPrivacyNotice {
    */
   purposes: {
     purpose: string;
-    legalBasis: string;
+    serviceOffering: string;
+    resource: string;
   }[];
 
   /**
