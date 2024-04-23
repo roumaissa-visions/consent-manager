@@ -4,6 +4,7 @@ import {
   getAvailableExchanges,
   getPrivacyNoticeById,
   getPrivacyNotices,
+  getUserAvailableExchanges,
   getUserConsentById,
   getUserConsents,
   giveConsent,
@@ -31,9 +32,17 @@ r.get(
   getUserConsentById
 );
 
+r.get("/exchanges/user", verifyUserJWT, getUserAvailableExchanges);
+
 r.get("/exchanges/:as", verifyParticipantJWT, getAvailableExchanges);
 
 r.get("/privacy-notices/:privacyNoticeId", verifyUserKey, getPrivacyNoticeById); //TODO jwt
+
+r.get(
+  "/privacy-notices/:privacyNoticeId/user",
+  verifyUserJWT,
+  getPrivacyNoticeById
+); //TODO jwt
 
 r.get(
   "/participants/:userId/",
@@ -50,6 +59,11 @@ r.get(
 );
 
 r.get("/:userId/:providerId/:consumerId", verifyUserKey, getPrivacyNotices); //TODO userID jwt
+r.get(
+  "/:userId/:providerId/:consumerId/user",
+  verifyUserJWT,
+  getPrivacyNotices
+);
 
 r.post(
   "/",

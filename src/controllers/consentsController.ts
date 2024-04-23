@@ -11,7 +11,6 @@ import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
 import { IPrivacyNotice } from "../types/models";
 import Participant from "../models/Participant/Participant.model";
-import { NodemailerClient } from "../libs/emails/nodemailer";
 import { Logger } from "../libs/loggers";
 import axios from "axios";
 import * as CryptoJS from "crypto";
@@ -23,6 +22,7 @@ import { MailchimpClient } from "../libs/emails/mailchimp/MailchimpClient";
 import { urlChecker } from "../utils/urlChecker";
 import { checkUserIdentifier } from "../utils/UserIdentifierMatchingProcessor";
 import mongoose from "mongoose";
+import { populatePrivacyNotice } from "../utils/populatePrivacyNotice";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -125,8 +125,10 @@ export const getPrivacyNotices = async (
       // privacy notices in the final returned result.
 
       for (const pn of filteredPrivacyNoticesComingFromContracts) {
-        const newPn = new PrivacyNotice(pn);
-        await newPn.save();
+        if (pn.data.length > 0 && pn.purposes.length > 0) {
+          const newPn = new PrivacyNotice(pn);
+          await newPn.save();
+        }
       }
     }
 
@@ -151,31 +153,51 @@ export const getPrivacyNoticeById = async (
   next: NextFunction
 ) => {
   try {
-    let consumerEmail = false;
+    let consumerEmail: boolean;
+    let userIdentifier;
+    let sameEmailUserIdentifier;
 
-    const userIdentifier = await UserIdentifier.findById(
-      req.userIdentifier?.id
-    );
-    const sameEmailUserIdentifier = await UserIdentifier.findOne({
-      _id: {
-        $ne: userIdentifier._id,
-      },
-      email: userIdentifier.email,
-    });
+    let pn = await PrivacyNotice.findById(req.params.privacyNoticeId).lean();
+    if (!pn) {
+      return res.status(404).json({ error: "Privacy notice not found" });
+    }
+
+    if (req.userIdentifier?.id) {
+      userIdentifier = await UserIdentifier.findById(req.userIdentifier?.id);
+      sameEmailUserIdentifier = await UserIdentifier.findOne({
+        _id: {
+          $ne: userIdentifier._id,
+        },
+        email: userIdentifier.email,
+      });
+    } else if (req.user.id) {
+      //get User
+      const user = await User.findById(req.user.id).lean();
+
+      const provider = await Participant.findOne({
+        selfDescriptionURL: pn.dataProvider,
+      }).lean();
+      const consumer = await Participant.findOne({
+        selfDescriptionURL: pn.recipients[0],
+      }).lean();
+
+      const providerUserIdentifier = await UserIdentifier.findOne({
+        attachedParticipant: provider._id,
+        email: user.email,
+      });
+
+      sameEmailUserIdentifier = await UserIdentifier.findOne({
+        attachedParticipant: consumer._id,
+        email: user.email,
+      });
+    }
+
+    pn = await populatePrivacyNotice(pn);
 
     if (!sameEmailUserIdentifier) {
       consumerEmail = true;
     } else {
       consumerEmail = false;
-    }
-
-    const user = await User.findOne({
-      identifiers: userIdentifier._id,
-    });
-
-    const pn = await PrivacyNotice.findById(req.params.privacyNoticeId).lean();
-    if (!pn) {
-      return res.status(404).json({ error: "Privacy notice not found" });
     }
 
     return res.json({
@@ -253,7 +275,8 @@ export const giveConsent = async (
     const providerUserIdentifier = await UserIdentifier.findById(
       req.userIdentifier?.id
     ).lean();
-    const { privacyNoticeId, email, data } = req.body;
+    const { privacyNoticeId, email } = req.body;
+    let { data } = req.body;
     const { triggerDataExchange } = req.query;
 
     if (!privacyNoticeId) {
@@ -329,7 +352,7 @@ export const giveConsent = async (
           dataProvider,
           dataConsumer,
           providerUserIdentifierDocument,
-          res,
+          data,
         });
 
       if (registerNewUserToConsumerSideResponse.error) {
@@ -401,6 +424,38 @@ export const giveConsent = async (
     }
 
     if (userId) {
+      const verification = await Consent.findOne({
+        providerUserIdentifier: providerUserIdentifier._id,
+        consumerUserIdentifier: consumerUserIdentifier._id,
+        dataProvider: dataProvider._id,
+        privacyNotice: privacyNoticeId,
+        data: {
+          $size:
+            data && data.length > 0 ? data.length : privacyNotice.data.length, // Ensure that data array has the same size as the provided data array
+          $elemMatch: {
+            resource: {
+              $in:
+                data?.length > 0
+                  ? data.map((item: string) => item)
+                  : [...privacyNotice.data.map((el: any) => el.resource)],
+            },
+          }, // Ensure that all elements in the data array are in the provided data array
+        },
+        user: userId,
+      }).lean();
+
+      if (verification) {
+        return res.status(200).json(verification);
+      }
+
+      if (data) {
+        data = privacyNotice.data.filter((dt: any) => {
+          if (data.includes(dt.resource)) {
+            return dt;
+          }
+        });
+      }
+
       const consent = new Consent({
         privacyNotice: privacyNotice._id,
         user: userId,
@@ -409,24 +464,12 @@ export const giveConsent = async (
         dataProvider: dataProvider?._id,
         dataConsumer: dataConsumer?._id,
         recipients: privacyNotice.recipients,
-        purposes: privacyNotice.purposes,
-        data: privacyNotice.data,
+        purposes: [...privacyNotice.purposes],
+        data: data?.length > 0 ? data : [...privacyNotice.data],
         status: "granted",
         consented: true,
         contract: privacyNotice.contract,
       });
-
-      const verification = await Consent.findOne({
-        providerUserIdentifier: providerUserIdentifier._id,
-        consumerUserIdentifier: consumerUserIdentifier._id,
-        dataProvider: dataProvider._id,
-        privacyNotice: privacyNoticeId,
-        user: userId,
-      }).lean();
-
-      if (verification) {
-        return res.status(200).json(verification);
-      }
 
       const newConsent = await consent.save();
 
@@ -644,7 +687,7 @@ export const giveConsentOnEmailValidation = async (
           return res.status(424).json({
             error: "Failed to communicate with the data consumer connector",
             message:
-              "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+              "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
           });
         }
       } catch (err) {
@@ -751,7 +794,7 @@ export const triggerDataExchange = async (
       return res.status(424).json({
         error: "Failed to communicate with the data consumer connector",
         message:
-          "An error occured after calling the consent data exchange trigger endpoint of the consumer service",
+          "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
       });
     }
   } catch (err) {
@@ -816,7 +859,7 @@ export const attachTokenToConsent = async (
     } catch (err) {
       Logger.error({ location: "consents.attachToken", message: err.message });
       // return res.status(424).json({
-      //   message: `an error occured after calling the data consumer's /consent/import endpoint`,
+      //   message: `an error occurred after calling the data consumer's /consent/import endpoint`,
       //   data: {
       //     details: {
       //       errorMessage: err.message,
@@ -892,6 +935,42 @@ export const encryptPayloadAndKey = (payload: object) => {
     };
   } catch (e) {
     Logger.error(e);
+  }
+};
+
+/**
+ * Returns all available exchanges for a user by participant
+ */
+export const getUserAvailableExchanges = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { participantId } = req.query;
+
+    const participant = await Participant.findById(participantId).lean();
+
+    if (!participant) {
+      throw new Error("Participant not found");
+    }
+
+    const exchanges = await getAvailableExchangesForParticipant(
+      participant?.selfDescriptionURL,
+      "provider"
+    );
+
+    return res.status(200).json({
+      participant: {
+        selfDescription: participant.selfDescriptionURL,
+        base64SelfDescription: Buffer.from(
+          participant.selfDescriptionURL
+        ).toString("base64"),
+      },
+      exchanges,
+    });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -1028,7 +1107,7 @@ export const resumeConsent = async (
         await consent.save();
       }
 
-      //return userIfentifier and consent
+      //return userIdentifier and consent
       return res.status(200).json(consent);
     }
   } catch (err) {
@@ -1049,7 +1128,7 @@ const userInteraction = async ({
   email: string;
   userParticipantId: string;
 }) => {
-  // create useridentifier for consumer
+  // create userIdentifier for consumer
   const consumerNewUserIdentifier = new UserIdentifier({
     attachedParticipant: dataConsumer?._id.toString(),
     email: providerUserIdentifierDocument.email,
@@ -1058,7 +1137,7 @@ const userInteraction = async ({
 
   await consumerNewUserIdentifier.save();
 
-  // register userIdentfier into consumer DSC
+  // register userIdentifier into consumer DSC
   //login
   const consumerLogin = await axios.post(
     urlChecker(dataConsumer.dataspaceEndpoint, "login"),
@@ -1105,7 +1184,7 @@ const registerNewUserToConsumerSide = async ({
   dataProvider,
   dataConsumer,
   providerUserIdentifierDocument,
-  res,
+  data,
 }: {
   privacyNotice: any;
   req: any;
@@ -1113,7 +1192,7 @@ const registerNewUserToConsumerSide = async ({
   dataProvider: any;
   dataConsumer: any;
   providerUserIdentifierDocument: any;
-  res: any;
+  data: any;
 }): Promise<{ consent?: any; error?: string; status: number }> => {
   {
     //draft consent
@@ -1125,7 +1204,7 @@ const registerNewUserToConsumerSide = async ({
       dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
-      data: privacyNotice.data,
+      data: data ?? privacyNotice.data,
       status: req.query.triggerDataExchange ? "draft" : "pending",
       consented: false,
       contract: privacyNotice.contract,
@@ -1139,7 +1218,7 @@ const registerNewUserToConsumerSide = async ({
         dataConsumer: dataConsumer?._id,
         recipients: privacyNotice.recipients,
         purposes: privacyNotice.purposes,
-        data: privacyNotice.data,
+        data: data.length > 0 ? data : [...privacyNotice.data],
         status: req.query.triggerDataExchange ? "draft" : "pending",
         consented: false,
         contract: privacyNotice.contract,
@@ -1285,7 +1364,7 @@ const emailReattached = async ({
     if (providerUser && consumerUser) {
       if (providerUser._id !== consumerUser._id) {
         // case 2.c1: User identifier from Provider has a user attached and user identifier from consumer has another user attached
-        // One of the users has the “manual registration” information (first name, last name etc)
+        // One of the users has the “manual registration” information (first name, last name etc.)
         if (providerUser.password && !consumerUser.password) {
           providerUser.identifiers.push(existingConsumerUserIdentifier._id);
           await providerUser.save();

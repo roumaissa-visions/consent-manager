@@ -303,3 +303,51 @@ export const getPublicKey = async (
     next(err);
   }
 };
+
+/**
+ * Finds a participant using its service key (clientID)
+ */
+export const updateParticipantByClientId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { clientId } = req.params;
+    const {
+      dataExport,
+      dataImport,
+      consentExport,
+      consentImport,
+      dataspaceEndpoint,
+    } = req.body;
+
+    const participant = await Participant.findOne({
+      clientID: clientId,
+    }).select(PARTICIPANT_SELECTION);
+    if (!participant)
+      return res.status(404).json({ error: "participant not found" });
+
+    participant.endpoints.dataExport = dataExport
+      ? dataExport
+      : participant.endpoints.dataExport;
+    participant.endpoints.dataImport = dataImport
+      ? dataImport
+      : participant.endpoints.dataImport;
+    participant.endpoints.consentImport = consentImport
+      ? consentImport
+      : participant.endpoints.consentImport;
+    participant.endpoints.consentExport = consentExport
+      ? consentExport
+      : participant.endpoints.consentExport;
+    participant.dataspaceEndpoint = dataspaceEndpoint
+      ? dataspaceEndpoint
+      : participant.dataspaceEndpoint;
+
+    participant.save();
+
+    return res.status(200).json(participant);
+  } catch (err) {
+    next(err);
+  }
+};

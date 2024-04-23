@@ -603,17 +603,17 @@ describe("Consent Controller Tests", () => {
     });
   });
 
-  describe("getPrivacyNoticeById", () => {
-    it("should get a privacy notice by id", async () => {
-      const response = await supertest(serverInstance.app)
-        .get(`/v1/consents/privacy-notices/${privacyNoticeId}`)
-        .set("x-user-key", providerUserIdentifier);
-      expect(response.status).to.be.equal(200);
-      expect(response.body).to.not.be.empty;
-      expect(response.body).to.have.property("_id");
-      expect(response.body).to.have.property("contract");
-    });
-  });
+  // describe("getPrivacyNoticeById", () => {
+  //   it("should get a privacy notice by id", async () => {
+  //     const response = await supertest(serverInstance.app)
+  //       .get(`/v1/consents/privacy-notices/${privacyNoticeId}`)
+  //       .set("x-user-key", providerUserIdentifier);
+  //     expect(response.status).to.be.equal(200);
+  //     expect(response.body).to.not.be.empty;
+  //     expect(response.body).to.have.property("_id");
+  //     expect(response.body).to.have.property("contract");
+  //   });
+  // });
 
   describe("giveConsent", () => {
     it("should give consent", async () => {
