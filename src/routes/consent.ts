@@ -102,4 +102,18 @@ r.post(
   verifyToken
 );
 
+r.get("/pdi/iframe", verifyParticipantJWT, (req, res) => {
+  // let parsedUrl = url.parse(req.url);
+  // res.set("Authorization", `Bearer ${req.query.participant}`);
+  res.redirect(
+    `${process.env.PDI_ENDPOINT}?userIdentifier=${
+      req.query.userIdentifier
+    }&participant=${req.session.userParticipant.id}${
+      req.query.privacyNoticeId
+        ? `&privacyNoticeId=${req.query.privacyNoticeId}`
+        : ""
+    }`
+  );
+});
+
 export default r;

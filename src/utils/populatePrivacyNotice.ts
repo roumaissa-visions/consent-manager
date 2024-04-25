@@ -9,7 +9,8 @@ export const populatePrivacyNotice = async (response: any) => {
   ]);
 
   const [...dataResponses] = await Promise.all([
-    response?.data.map(async (dt: { resource: string }) => {
+    /* eslint-disable-next-line no-unsafe-optional-chaining */
+    ...response?.data.map(async (dt: { resource: string }) => {
       const response = await axios.get(dt.resource);
       response.data.resource = dt.resource;
       return response;
@@ -17,11 +18,13 @@ export const populatePrivacyNotice = async (response: any) => {
   ]);
 
   const [...recipientsResponses] = await Promise.all([
-    response?.recipients.map((dt: string) => axios.get(dt)),
+    /* eslint-disable-next-line no-unsafe-optional-chaining */
+    ...response?.recipients.map((dt: string) => axios.get(dt)),
   ]);
 
   const [...purposeResponses] = await Promise.all([
-    response?.purposes.map(async (purpose: { resource: string }) => {
+    /* eslint-disable-next-line no-unsafe-optional-chaining */
+    ...response?.purposes.map(async (purpose: { resource: string }) => {
       const response = await axios.get(purpose?.resource);
       response.data.resource = purpose?.resource;
       return response;

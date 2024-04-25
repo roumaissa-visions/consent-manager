@@ -17,6 +17,10 @@ export const verifyParticipantJWT = async (
     return next();
   }
 
+  if (!req.headers.authorization && req.query.participant) {
+    req.headers.authorization = `Bearer ${req.query.participant}`;
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res
