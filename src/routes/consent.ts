@@ -9,6 +9,7 @@ import {
   getUserConsents,
   giveConsent,
   giveConsentOnEmailValidation,
+  giveConsentUser,
   resumeConsent,
   revokeConsent,
   triggerDataExchange,
@@ -70,6 +71,13 @@ r.post(
   verifyUserKey,
   // verifyContract,
   giveConsent
+);
+
+r.post(
+  "/user",
+  verifyUserJWT,
+  // verifyContract,
+  giveConsentUser
 );
 
 r.delete("/:id", verifyUserKey, revokeConsent);
