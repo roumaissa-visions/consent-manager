@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { json as expressJson, urlencoded } from "express";
 import cors from "cors";
 import { loadRoutes } from "./routes";
 import { loadMongoose } from "./config/database";
@@ -11,13 +11,16 @@ import { initSession } from "./middleware/session";
 export const startServer = (testPort?: number) => {
   if (!testPort) loadMongoose();
 
-  const app: Application = express();
+  const app = express();
   const port = testPort || process.env.PORT || 3000;
 
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
-  app.use(express.json());
-  app.use(cors());
+
+  app.use(cors({ origin: true, credentials: true }));
+
+  app.use(expressJson());
+  app.use(urlencoded({ extended: true }));
 
   app.use(initSession());
 
