@@ -18,9 +18,9 @@ export const startServer = (testPort?: number) => {
   app.set("views", path.join(__dirname, "views"));
 
   app.use(cors({ origin: true, credentials: true }));
-
   app.use(expressJson());
-  app.use(urlencoded({ extended: true }));
+
+  app.set("trust proxy", true);
 
   app.use(initSession());
 

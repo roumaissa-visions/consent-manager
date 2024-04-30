@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import Participant from "../models/Participant/Participant.model";
 import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
+import { Logger } from "../libs/loggers";
 
 type DecodedServiceJWT = {
   serviceKey: string;
@@ -126,6 +127,9 @@ export const verifyUserJWT = async (
   res: Response,
   next: NextFunction
 ) => {
+  Logger.info({
+    message: JSON.stringify(req.session, null, 2),
+  });
   if (req.session.user) {
     req.user = {
       id: req.session.user.id,
