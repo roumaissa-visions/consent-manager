@@ -55,7 +55,24 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.json(user);
+    const scopes = [OAUTH_SCOPES.userRead, OAUTH_SCOPES.userWrite];
+    const accessToken = generateAccessToken(user, scopes);
+    const refreshToken = await generateRefreshToken(user);
+
+    req.session.user = {
+      id: user.id,
+      oath: {
+        accessToken,
+        refreshToken,
+      },
+    };
+
+    user.oauth.refreshToken = refreshToken;
+    await user.save();
+
+    const publicUser = await User.findById(user.id).select(USER_SELECTION);
+
+    return res.json({ user: publicUser, accessToken, refreshToken });
   } catch (err) {
     next(err);
   }
