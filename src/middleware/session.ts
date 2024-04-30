@@ -18,9 +18,8 @@ export const initSession: any = () => {
     name: process.env.SESSION_COOKIE_NAME,
     cookie: {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: "auto",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
     },
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   });

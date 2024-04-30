@@ -46,6 +46,24 @@ export const signup = async (
 /**
  * Logs in a user in the PDI
  */
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Logs in a user in the PDI
+ */
 export const login = async (
   req: Request,
   res: Response,
