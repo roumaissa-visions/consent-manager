@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Consent from "../models/Consent/Consent.model";
 import {
   getAvailableExchangesForParticipant,
+  getPrivacyNoticesFromContract,
   getPrivacyNoticesFromContractsBetweenParties,
 } from "../utils/contracts";
 import { NotFoundError } from "../errors/NotFoundError";
@@ -143,6 +144,54 @@ export const getPrivacyNotices = async (
   }
 };
 
+export const getPrivacyNoticesByContract = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let { providerURI, consumerURI, contractURI } = req.params;
+
+    consumerURI = Buffer.from(consumerURI, "base64").toString();
+    providerURI = Buffer.from(providerURI, "base64").toString();
+    contractURI = Buffer.from(contractURI, "base64").toString();
+
+    const privacyNotice = await getPrivacyNoticesFromContract(
+      providerURI,
+      consumerURI,
+      contractURI
+    );
+
+    const existingPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerURI,
+      recipients: { $in: consumerURI },
+    }).lean();
+
+    const existingPrivacyNoticesIds = existingPrivacyNotices
+      .map((element: { contract: any }) => element.contract)
+      .sort();
+
+    const privacyNoticesId = privacyNotice.contract;
+
+    if (!privacyNotice && !existingPrivacyNotices)
+      return res.status(404).json({ error: "No contracts found" });
+
+    if (!existingPrivacyNoticesIds.includes(privacyNoticesId)) {
+      const newPn = new PrivacyNotice(privacyNotice);
+      await newPn.save();
+      return res.json([newPn]);
+    } else {
+      const finalPrivacyNotices: any = await PrivacyNotice.find({
+        dataProvider: providerURI,
+        recipients: { $in: consumerURI },
+        contract: privacyNoticesId,
+      }).lean(); // This is what will be sent back
+      return res.json(finalPrivacyNotices);
+    }
+  } catch (err) {
+    next(err);
+  }
+};
 /**
  * Returns the privacy notice by ID
  * @author Felix Bole
@@ -554,6 +603,23 @@ export const giveConsentUser = async (
         id.attachedParticipant?.toString() === dataConsumer?._id.toString()
     );
 
+    if (!consumerUserIdentifier) {
+      //if not found in user identifiers
+      // search in userIdentifier to reattached it
+
+      const userIdentifiers = await UserIdentifier.findOne({
+        attachedParticipant: dataConsumer?._id,
+        email: providerUserIdentifier.email,
+      }).lean();
+
+      if (userIdentifiers && !user.identifiers.includes(userIdentifiers._id)) {
+        user.identifiers.push(userIdentifiers._id);
+        await user.save();
+      }
+
+      consumerUserIdentifier = userIdentifiers;
+    }
+
     const consumerPurpose = privacyNotice.purposes[0].serviceOffering;
     const consumerServiceOffering = await axios.get(consumerPurpose, {
       headers: { "Content-Type": "application/json" },
@@ -679,7 +745,11 @@ export const giveConsentUser = async (
     }).lean();
 
     if (verification) {
-      return res.status(200).json(verification);
+      if (triggerDataExchange) {
+        await triggerDataExchangeByConsentId(verification._id, res);
+      } else {
+        return res.status(200).json(verification);
+      }
     }
 
     const consent = new Consent({
@@ -699,7 +769,11 @@ export const giveConsentUser = async (
 
     const newConsent = await consent.save();
 
-    return res.status(201).json(newConsent);
+    if (triggerDataExchange) {
+      await triggerDataExchangeByConsentId(newConsent._id, res);
+    } else {
+      return res.status(201).json(newConsent);
+    }
   } catch (err) {
     next(err);
   }
@@ -974,6 +1048,17 @@ export const triggerDataExchange = async (
 ) => {
   try {
     const { consentId } = req.params;
+    await triggerDataExchangeByConsentId(consentId, res);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const triggerDataExchangeByConsentId = async (
+  consentId: string,
+  res: Response
+) => {
+  try {
     const consent: any = await Consent.findById(consentId)
       .populate([
         { path: "dataConsumer", select: "-clientID -clientSecret" },
@@ -1020,8 +1105,12 @@ export const triggerDataExchange = async (
           "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
       });
     }
-  } catch (err) {
-    next(err);
+  } catch (e) {
+    Logger.error({
+      location: "consents.triggerDataExchangeByConsentId",
+      message: e.message,
+    });
+    throw e;
   }
 };
 
