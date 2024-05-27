@@ -4,6 +4,7 @@ import {
   getAvailableExchanges,
   getPrivacyNoticeById,
   getPrivacyNotices,
+  getPrivacyNoticesByContract,
   getUserAvailableExchanges,
   getUserConsentById,
   getUserConsents,
@@ -61,9 +62,9 @@ r.get(
 
 r.get("/:userId/:providerId/:consumerId", verifyUserKey, getPrivacyNotices); //TODO userID jwt
 r.get(
-  "/:userId/:providerId/:consumerId/user",
+  "/:userId/:providerURI/:consumerURI/:contractURI",
   verifyUserJWT,
-  getPrivacyNotices
+  getPrivacyNoticesByContract
 );
 
 r.post(

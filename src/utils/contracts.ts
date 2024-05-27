@@ -13,6 +13,7 @@ import {
   contractToExchange,
   IExchange,
 } from "./exchanges";
+import { Logger } from "../libs/loggers";
 
 type Permission = {
   action: string;
@@ -343,6 +344,97 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
   }
 
   return [...bilateralPrivacyNotices, ...ecosystemPrivacyNotices];
+};
+
+export const getPrivacyNoticesFromContract = async (
+  dataProviderURI: string,
+  dataConsumerURI: string,
+  contractURI: string
+): Promise<IPrivacyNotice> => {
+  const contractsRes = await axios.get(contractURI, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const contract = contractsRes.data;
+
+  if (contractURI.includes("contracts")) {
+    // Populate the Privacy Notice
+    const pn = ecosystemContractToPrivacyNotice(contractsRes.data);
+    const consumerServiceOfferings = contract.serviceOfferings.filter(
+      (so: any) => so.participant === dataConsumerURI
+    );
+
+    const consumerSOsThatArePurposes = await Promise.all(
+      consumerServiceOfferings.map(async (so: any) => {
+        if (so.serviceOffering.startsWith("http")) {
+          let soSelfDescription;
+          try {
+            soSelfDescription = await axios.get(so.serviceOffering);
+          } catch (e) {
+            Logger.error({
+              message: e.message,
+              location: "consumerServiceOfferings.map",
+            });
+          }
+          if (soSelfDescription.data?.softwareResources?.length > 0) return so;
+        }
+        return null;
+      })
+    );
+
+    const filteredConsumerSOs = consumerSOsThatArePurposes.filter(
+      (so) => so !== null
+    );
+
+    pn.dataProvider = dataProviderURI;
+
+    pn.controllerDetails.name =
+      typeof dataProviderURI === "string" ? dataProviderURI : dataProviderURI;
+
+    pn.data = await getDataFromPoliciesInEcosystemContract(
+      contract,
+      dataProviderURI
+    );
+
+    for (const serviceOffering of filteredConsumerSOs) {
+      let serviceOfferingResponse;
+      try {
+        serviceOfferingResponse = await axios.get(
+          serviceOffering.serviceOffering
+        );
+      } catch (e) {
+        Logger.error({
+          message: e.message,
+          location: "serviceOfferingResponse",
+        });
+      }
+      for (const sf of serviceOfferingResponse.data.softwareResources) {
+        let softwareResourceResponse;
+        try {
+          softwareResourceResponse = await axios.get(sf);
+        } catch (e) {
+          Logger.error({
+            message: e.message,
+            location: "softwareResourceResponse",
+          });
+        }
+
+        pn.purposes.push({
+          purpose: softwareResourceResponse?.data?.name,
+          serviceOffering: serviceOffering.serviceOffering,
+          resource: sf,
+        });
+      }
+    }
+
+    pn.recipients.push(
+      typeof dataConsumerURI === "string" ? dataConsumerURI : dataConsumerURI
+    );
+
+    return pn;
+  } else {
+    return await bilateralContractToPrivacyNotice(contract);
+  }
 };
 
 export const validate = async (
