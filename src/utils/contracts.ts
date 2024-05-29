@@ -1,4 +1,3 @@
-import axios from "axios";
 import { randomUUID } from "crypto";
 import { IConsent, IParticipant, IPrivacyNotice, IUser } from "../types/models";
 import Consent from "../models/Consent/Consent.model";
@@ -14,6 +13,8 @@ import {
   IExchange,
 } from "./exchanges";
 import { Logger } from "../libs/loggers";
+import Axios from "axios";
+import { setupCache } from "axios-cache-interceptor";
 
 type Permission = {
   action: string;
@@ -78,6 +79,9 @@ export type EcosystemContract = {
   status: "signed" | "revoked" | "pending";
   jsonLD: string;
 };
+
+const instance = Axios.create();
+const axios = setupCache(instance);
 
 export const getDataFromPoliciesInBilateralContract = async (
   contract: BilateralContract
@@ -549,32 +553,36 @@ export const getAvailableExchangesForParticipant = async (
     bilateralContractsRes?.data.contracts &&
     bilateralContractsRes?.data.contracts.length > 0
   ) {
-    bilateralContractsRes?.data.contracts.map((contract: BilateralContract) => {
+    for (const contract of bilateralContractsRes.data.contracts) {
       if (as === "provider" && contract.dataProvider === participantSD) {
         bilateralExchanges.push(
-          contractToExchange(contract, contract.dataConsumer)
+          await contractToExchange(contract, contract.dataConsumer)
         );
       } else if (as === "consumer" && contract.dataConsumer === participantSD) {
         bilateralExchanges.push(
-          contractToExchange(contract, contract.dataProvider)
+          await contractToExchange(contract, contract.dataProvider)
         );
       }
-    });
+    }
   }
+
   const ecosystemExchanges = <IExchange[]>[];
   if (
     ecosystemContractsRes.data.contracts &&
     ecosystemContractsRes.data.contracts.length > 0
   ) {
-    ecosystemContractsRes.data.contracts.map((contract: EcosystemContract) => {
-      return contract.serviceOfferings.map((serviceOffering) => {
+    for (const contract of ecosystemContractsRes.data.contracts) {
+      for (const serviceOffering of contract.serviceOfferings) {
         if (serviceOffering.participant !== participantSD) {
           ecosystemExchanges.push(
-            contractEcosystemToExchange(contract, serviceOffering.participant)
+            await contractEcosystemToExchange(
+              contract,
+              serviceOffering.participant
+            )
           );
         }
-      });
-    });
+      }
+    }
   }
 
   return [...bilateralExchanges, ...ecosystemExchanges];

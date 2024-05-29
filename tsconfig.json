@@ -8,7 +8,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "allowJs": true,
-    "lib": ["ES2021.String", "ES7"],
+    "lib": ["ES2021.String", "ES7", "DOM"],
     "resolveJsonModule": true,
     "typeRoots": ["src/types/*/**"],
     "types": ["node", "mocha", "chai", "sinon"]
