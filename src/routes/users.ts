@@ -12,6 +12,22 @@ const r: Router = Router();
 
 r.post("/signup", signup);
 r.post("/login", login);
+r.delete("/logout", async (req, res, next) => {
+  try {
+    if (!req.session) {
+      return res.status(200).send("OK");
+    }
+
+    req?.session?.destroy(() => {
+      return res.status(200).json({
+        data: {},
+        message: "successful logout",
+      });
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 r.get("/me", verifyUserJWT, me);
 
 // Used by Participants / Data Space Connectors to register a end user from their platform
