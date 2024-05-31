@@ -399,6 +399,14 @@ export const giveConsent = async (
     }
 
     if (userId) {
+      if (data) {
+        data = privacyNotice.data.filter((dt: any) => {
+          if (data.includes(dt.resource)) {
+            return dt;
+          }
+        });
+      }
+
       const verification = await Consent.findOne({
         providerUserIdentifier: providerUserIdentifier._id,
         consumerUserIdentifier: consumerUserIdentifier._id,
@@ -410,14 +418,6 @@ export const giveConsent = async (
 
       if (verification) {
         return res.status(200).json(verification);
-      }
-
-      if (data) {
-        data = privacyNotice.data.filter((dt: any) => {
-          if (data.includes(dt.resource)) {
-            return dt;
-          }
-        });
       }
 
       const consent = new Consent({
