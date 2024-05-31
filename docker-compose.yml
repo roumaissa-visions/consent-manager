@@ -1,38 +1,42 @@
 version: "3.8"
 
 services:
-  express-app:
+  consent-manager:
     container_name: "consent-manager"
     build:
       context: .
       dockerfile: docker/app/Dockerfile
+    image: consent-manager:latest
     ports:
-      - "${PORT}:3000"
-    #    links:
-    #      - mongodb
+      - "${PORT}:${PORT}"
+    links:
+      - mongodb
     env_file:
       - .env
-    environment:
-      MONGO_URI: ${MONGO_URI}
+    networks:
+      - consent-manager
+      - ptx
+
+  mongodb:
+    container_name: "consent-manager-mongodb"
+    build:
+      context: .
+      dockerfile: docker/mongodb/Dockerfile
+    #    Uncomment to connect mongodb container to mongo compass or another service
+    #    ports:
+    #      - "27017:27017"
+    volumes:
+      - consent_data:/data/db
     networks:
       - consent-manager
 
-#  mongodb:
-#    container_name: "mongodb"
-#    build:
-#      context: .
-#      dockerfile: docker/mongodb/Dockerfile
-##    Uncomment to connect mongodb container to mongo compass or another service
-#    ports:
-#      - "27017:27017"
-#    volumes:
-#      - mongodb_data:/data/db
-#    networks:
-#      - consent-manager
-
 networks:
   consent-manager:
+    name: consent-manager
     driver: bridge
+  ptx:
+    name: ptx
+    external: true
 
 volumes:
-  mongodb_data:
+  consent_data:

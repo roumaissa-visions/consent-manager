@@ -1,5 +1,5 @@
 # Use the official Node.js image as base image
-FROM node:16
+FROM node:lts
 
 # Install pnpm globally
 RUN npm install -g pnpm
@@ -8,18 +8,20 @@ RUN npm install -g pnpm
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-COPY package.json /usr/src/app/
+# Copy package.json and pnpm-lock.yaml to the working directory
+COPY package.json pnpm-lock.yaml ./
 
 RUN git init
 
-## Bundle app source
-COPY . /usr/src/app
 
 # Install app dependencies
 RUN pnpm install
 
-# Expose the port on which the app will run
-EXPOSE 3000
+# Copy the rest of the application code to the working directory
+COPY . .
+
+# Ensure necessary permissions
+RUN chown -R node:node /usr/src/app
 
 # Command to run the application
-CMD sh -c "npm run build && npm run copyKeys && npm run start"
+CMD ["sh", "-c", "pnpm run build && pnpm run copyKeys && pnpm run start"]
