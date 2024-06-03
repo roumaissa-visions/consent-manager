@@ -107,6 +107,10 @@ export interface IUserIdentifier extends Document, AllSchemas {
    * Alternative to email for decentralized identifiers
    */
   identifier: string;
+  /**
+   * dynamic url
+   */
+  url: string;
   user: Types.ObjectId | null;
 }
 

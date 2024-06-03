@@ -152,7 +152,7 @@ export const registerUserIdentifier = async (
   next: NextFunction
 ) => {
   try {
-    const { email, identifier } = req.body;
+    const { email, identifier, url } = req.body;
     if (!email && !identifier)
       throw new BadRequestError("Missing or invalid fields", [
         { field: "email", message: "Email must exist if identifier does not" },
@@ -172,6 +172,7 @@ export const registerUserIdentifier = async (
       attachedParticipant: req.userParticipant.id,
       email,
       identifier,
+      url,
     });
 
     await newId.save();
@@ -221,6 +222,7 @@ export const registerUserIdentifiers = async (
           attachedParticipant: req.userParticipant.id,
           email: user.email,
           identifier: user.internalID,
+          url: user.url,
         });
 
         await newId.save();

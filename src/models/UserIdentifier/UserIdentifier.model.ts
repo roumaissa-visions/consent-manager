@@ -10,6 +10,7 @@ const schema = new Schema<IUserIdentifier>(
     },
     email: { type: String, required: true },
     identifier: { type: String },
+    url: { type: String },
     user: { type: Schema.Types.ObjectId, ref: "User" },
     jsonld: {
       type: String,
