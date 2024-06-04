@@ -124,6 +124,46 @@ export const login = async (
 };
 
 /**
+ * Finds a user by ID and update it
+ */
+export const updateUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await UserIdentifier.findByIdAndUpdate(req.params.id, {
+      url: req.body.url,
+      identifier: req.body.internalID,
+      email: req.body.email,
+    });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Finds a user by ID and delete it
+ */
+export const deleteUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await UserIdentifier.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * Finds a user by ID and returns it
  */
 export const getUserById = async (
