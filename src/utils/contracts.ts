@@ -1,4 +1,3 @@
-import axios from "axios";
 import { randomUUID } from "crypto";
 import { IConsent, IParticipant, IPrivacyNotice, IUser } from "../types/models";
 import Consent from "../models/Consent/Consent.model";
@@ -13,6 +12,9 @@ import {
   contractToExchange,
   IExchange,
 } from "./exchanges";
+import { Logger } from "../libs/loggers";
+import Axios from "axios";
+import { setupCache } from "axios-cache-interceptor";
 
 type Permission = {
   action: string;
@@ -77,6 +79,9 @@ export type EcosystemContract = {
   status: "signed" | "revoked" | "pending";
   jsonLD: string;
 };
+
+const instance = Axios.create();
+const axios = setupCache(instance);
 
 export const getDataFromPoliciesInBilateralContract = async (
   contract: BilateralContract
@@ -345,6 +350,97 @@ export const getPrivacyNoticesFromContractsBetweenParties = async (
   return [...bilateralPrivacyNotices, ...ecosystemPrivacyNotices];
 };
 
+export const getPrivacyNoticesFromContract = async (
+  dataProviderURI: string,
+  dataConsumerURI: string,
+  contractURI: string
+): Promise<IPrivacyNotice> => {
+  const contractsRes = await axios.get(contractURI, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const contract = contractsRes.data;
+
+  if (contractURI.includes("contracts")) {
+    // Populate the Privacy Notice
+    const pn = ecosystemContractToPrivacyNotice(contractsRes.data);
+    const consumerServiceOfferings = contract.serviceOfferings.filter(
+      (so: any) => so.participant === dataConsumerURI
+    );
+
+    const consumerSOsThatArePurposes = await Promise.all(
+      consumerServiceOfferings.map(async (so: any) => {
+        if (so.serviceOffering.startsWith("http")) {
+          let soSelfDescription;
+          try {
+            soSelfDescription = await axios.get(so.serviceOffering);
+          } catch (e) {
+            Logger.error({
+              message: e.message,
+              location: "consumerServiceOfferings.map",
+            });
+          }
+          if (soSelfDescription.data?.softwareResources?.length > 0) return so;
+        }
+        return null;
+      })
+    );
+
+    const filteredConsumerSOs = consumerSOsThatArePurposes.filter(
+      (so) => so !== null
+    );
+
+    pn.dataProvider = dataProviderURI;
+
+    pn.controllerDetails.name =
+      typeof dataProviderURI === "string" ? dataProviderURI : dataProviderURI;
+
+    pn.data = await getDataFromPoliciesInEcosystemContract(
+      contract,
+      dataProviderURI
+    );
+
+    for (const serviceOffering of filteredConsumerSOs) {
+      let serviceOfferingResponse;
+      try {
+        serviceOfferingResponse = await axios.get(
+          serviceOffering.serviceOffering
+        );
+      } catch (e) {
+        Logger.error({
+          message: e.message,
+          location: "serviceOfferingResponse",
+        });
+      }
+      for (const sf of serviceOfferingResponse.data.softwareResources) {
+        let softwareResourceResponse;
+        try {
+          softwareResourceResponse = await axios.get(sf);
+        } catch (e) {
+          Logger.error({
+            message: e.message,
+            location: "softwareResourceResponse",
+          });
+        }
+
+        pn.purposes.push({
+          purpose: softwareResourceResponse?.data?.name,
+          serviceOffering: serviceOffering.serviceOffering,
+          resource: sf,
+        });
+      }
+    }
+
+    pn.recipients.push(
+      typeof dataConsumerURI === "string" ? dataConsumerURI : dataConsumerURI
+    );
+
+    return pn;
+  } else {
+    return await bilateralContractToPrivacyNotice(contract);
+  }
+};
+
 export const validate = async (
   dataProviderID: string,
   dataConsumerID: string
@@ -457,32 +553,36 @@ export const getAvailableExchangesForParticipant = async (
     bilateralContractsRes?.data.contracts &&
     bilateralContractsRes?.data.contracts.length > 0
   ) {
-    bilateralContractsRes?.data.contracts.map((contract: BilateralContract) => {
+    for (const contract of bilateralContractsRes.data.contracts) {
       if (as === "provider" && contract.dataProvider === participantSD) {
         bilateralExchanges.push(
-          contractToExchange(contract, contract.dataConsumer)
+          await contractToExchange(contract, contract.dataConsumer)
         );
       } else if (as === "consumer" && contract.dataConsumer === participantSD) {
         bilateralExchanges.push(
-          contractToExchange(contract, contract.dataProvider)
+          await contractToExchange(contract, contract.dataProvider)
         );
       }
-    });
+    }
   }
+
   const ecosystemExchanges = <IExchange[]>[];
   if (
     ecosystemContractsRes.data.contracts &&
     ecosystemContractsRes.data.contracts.length > 0
   ) {
-    ecosystemContractsRes.data.contracts.map((contract: EcosystemContract) => {
-      return contract.serviceOfferings.map((serviceOffering) => {
+    for (const contract of ecosystemContractsRes.data.contracts) {
+      for (const serviceOffering of contract.serviceOfferings) {
         if (serviceOffering.participant !== participantSD) {
           ecosystemExchanges.push(
-            contractEcosystemToExchange(contract, serviceOffering.participant)
+            await contractEcosystemToExchange(
+              contract,
+              serviceOffering.participant
+            )
           );
         }
-      });
-    });
+      }
+    }
   }
 
   return [...bilateralExchanges, ...ecosystemExchanges];

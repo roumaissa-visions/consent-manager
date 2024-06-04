@@ -4,10 +4,13 @@ import {
   getAvailableExchanges,
   getPrivacyNoticeById,
   getPrivacyNotices,
+  getPrivacyNoticesByContract,
+  getUserAvailableExchanges,
   getUserConsentById,
   getUserConsents,
   giveConsent,
   giveConsentOnEmailValidation,
+  giveConsentUser,
   resumeConsent,
   revokeConsent,
   triggerDataExchange,
@@ -31,9 +34,17 @@ r.get(
   getUserConsentById
 );
 
+r.get("/exchanges/user", verifyUserJWT, getUserAvailableExchanges);
+
 r.get("/exchanges/:as", verifyParticipantJWT, getAvailableExchanges);
 
 r.get("/privacy-notices/:privacyNoticeId", verifyUserKey, getPrivacyNoticeById); //TODO jwt
+
+r.get(
+  "/privacy-notices/:privacyNoticeId/user",
+  verifyUserJWT,
+  getPrivacyNoticeById
+); //TODO jwt
 
 r.get(
   "/participants/:userId/",
@@ -50,12 +61,24 @@ r.get(
 );
 
 r.get("/:userId/:providerId/:consumerId", verifyUserKey, getPrivacyNotices); //TODO userID jwt
+r.get(
+  "/:userId/:providerURI/:consumerURI/:contractURI",
+  verifyUserJWT,
+  getPrivacyNoticesByContract
+);
 
 r.post(
   "/",
   verifyUserKey,
   // verifyContract,
   giveConsent
+);
+
+r.post(
+  "/user",
+  verifyUserJWT,
+  // verifyContract,
+  giveConsentUser
 );
 
 r.delete("/:id", verifyUserKey, revokeConsent);
@@ -87,5 +110,26 @@ r.post(
   // verifyContract,
   verifyToken
 );
+
+r.get("/pdi/iframe", verifyParticipantJWT, (req, res) => {
+  // let parsedUrl = url.parse(req.url);
+  // res.set("Authorization", `Bearer ${req.query.participant}`);
+
+  if (process.env.PDI_ENDPOINT) {
+    res.redirect(
+      `${process.env.PDI_ENDPOINT}?userIdentifier=${
+        req.query.userIdentifier
+      }&participant=${req.session?.userParticipant.id}${
+        req.query.privacyNoticeId
+          ? `&privacyNoticeId=${req.query.privacyNoticeId}`
+          : ""
+      }`
+    );
+  } else {
+    res.json({
+      message: "No PDI endpoint setup.",
+    });
+  }
+});
 
 export default r;

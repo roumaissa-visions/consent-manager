@@ -13,6 +13,7 @@ import {
   getPublicKey,
   loginParticipant,
   registerParticipant,
+  updateParticipantByClientId,
 } from "../controllers/participantsController";
 import { verifyParticipantJWT } from "../middleware/auth";
 const r: Router = Router();
@@ -22,6 +23,8 @@ r.get("/me", verifyParticipantJWT, getMyParticipant);
 r.get("/clientId/:clientId", getParticipantByClientId);
 r.get("/consent-signature", verifyParticipantJWT, getPublicKey);
 r.get("/:id", getParticipantById);
+
+r.put("/clientId/:clientId", verifyParticipantJWT, updateParticipantByClientId);
 
 // Registering a participant should be a request sent from a catalog registry
 // since a participant can come from any existing catalog

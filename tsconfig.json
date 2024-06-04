@@ -8,14 +8,11 @@
     "sourceMap": true,
     "outDir": "dist",
     "allowJs": true,
-    "lib": ["ES2021.String", "ES7"],
+    "lib": ["ES2021.String", "ES7", "DOM"],
     "resolveJsonModule": true,
     "typeRoots": ["src/types/*/**"],
     "types": ["node", "mocha", "chai", "sinon"]
   },
   "include": ["src/**/*"],
-  "files": [
-    "src/types/index.d.ts",
-    "node_modules/.pnpm/@types+mocha@10.0.1/node_modules/@types/mocha/index.d.ts"
-  ]
+  "files": ["src/types/index.d.ts"]
 }

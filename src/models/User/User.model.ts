@@ -44,7 +44,7 @@ userSchema.methods.validatePassword = async function (
 
 userSchema.pre<IUser>("save", async function (next) {
   try {
-    if (this.password || this.isModified("password")) {
+    if ((this.password && this.isNew) || this.isModified("password")) {
       const saltRounds = parseInt(process.env.SALT_ROUNDS || "10") || 10;
       const hashedPassword: string = await bcrypt.hash(
         this.password,

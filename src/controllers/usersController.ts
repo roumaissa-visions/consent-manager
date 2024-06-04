@@ -46,6 +46,41 @@ export const signup = async (
 /**
  * Logs in a user in the PDI
  */
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const scopes = [OAUTH_SCOPES.userRead, OAUTH_SCOPES.userWrite];
+    const accessToken = generateAccessToken(user, scopes);
+    const refreshToken = await generateRefreshToken(user);
+
+    req.session.user = {
+      id: user.id,
+      oath: {
+        accessToken,
+        refreshToken,
+      },
+    };
+
+    user.oauth.refreshToken = refreshToken;
+    await user.save();
+
+    const publicUser = await User.findById(user.id).select(USER_SELECTION);
+
+    return res.json({ user: publicUser, accessToken, refreshToken });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Logs in a user in the PDI
+ */
 export const login = async (
   req: Request,
   res: Response,
@@ -117,7 +152,7 @@ export const registerUserIdentifier = async (
   next: NextFunction
 ) => {
   try {
-    const { email, identifier } = req.body;
+    const { email, identifier, url } = req.body;
     if (!email && !identifier)
       throw new BadRequestError("Missing or invalid fields", [
         { field: "email", message: "Email must exist if identifier does not" },
@@ -137,6 +172,7 @@ export const registerUserIdentifier = async (
       attachedParticipant: req.userParticipant.id,
       email,
       identifier,
+      url,
     });
 
     await newId.save();
@@ -186,6 +222,7 @@ export const registerUserIdentifiers = async (
           attachedParticipant: req.userParticipant.id,
           email: user.email,
           identifier: user.internalID,
+          url: user.url,
         });
 
         await newId.save();
