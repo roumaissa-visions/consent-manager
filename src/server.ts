@@ -1,4 +1,4 @@
-import express, { json as expressJson, urlencoded } from "express";
+import express, { json as expressJson } from "express";
 import cors from "cors";
 import { loadRoutes } from "./routes";
 import { loadMongoose } from "./config/database";

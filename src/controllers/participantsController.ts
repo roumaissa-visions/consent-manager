@@ -6,7 +6,6 @@ import { issueJwt } from "../libs/jwt";
 import axios from "axios";
 import * as fs from "fs";
 import path from "path";
-import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 
 /**
  * Retrieves a participant by id
