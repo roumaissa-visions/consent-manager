@@ -307,6 +307,11 @@ export interface IPrivacyNotice {
   automatedDecisionMaking?: {
     details: string;
   };
+
+  /**
+   * timestamp to archived a privacy notice
+   */
+  archivedAt?: string;
 }
 
 export interface IPrivacyNoticeDocument
