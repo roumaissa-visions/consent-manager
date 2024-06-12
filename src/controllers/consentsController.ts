@@ -94,6 +94,7 @@ export const getPrivacyNotices = async (
     const existingPrivacyNotices: any = await PrivacyNotice.find({
       dataProvider: providerId,
       recipients: { $in: consumerId },
+      archivedAt: null,
     }).lean();
 
     const existingPrivacyNoticesIds = existingPrivacyNotices
@@ -133,9 +134,27 @@ export const getPrivacyNotices = async (
       }
     }
 
+    // verify for existing privacy notice if the data have changed, if yes the existing pn is archived and a nex one is created
+    for (const pn of privacyNotices) {
+      const existingPrivacyNotice = existingPrivacyNotices.find(
+        (epn: any) => epn.contract === pn.contract
+      );
+      if (
+        existingPrivacyNotice &&
+        !_.isEqual(existingPrivacyNotice.data, pn.data)
+      ) {
+        const newPn = new PrivacyNotice(pn);
+        await newPn.save();
+        await PrivacyNotice.findByIdAndUpdate(existingPrivacyNotice._id, {
+          archivedAt: new Date().toISOString(),
+        });
+      }
+    }
+
     const finalPrivacyNotices: any = await PrivacyNotice.find({
       dataProvider: providerId,
       recipients: { $in: consumerId },
+      archivedAt: null,
     }).lean(); // This is what will be sent back
 
     return res.json(finalPrivacyNotices);
@@ -165,6 +184,8 @@ export const getPrivacyNoticesByContract = async (
     const existingPrivacyNotices: any = await PrivacyNotice.find({
       dataProvider: providerURI,
       recipients: { $in: consumerURI },
+      contract: contractURI,
+      archivedAt: null,
     }).lean();
 
     const existingPrivacyNoticesIds = existingPrivacyNotices
@@ -179,15 +200,29 @@ export const getPrivacyNoticesByContract = async (
     if (!existingPrivacyNoticesIds.includes(privacyNoticesId)) {
       const newPn = new PrivacyNotice(privacyNotice);
       await newPn.save();
-      return res.json([newPn]);
-    } else {
-      const finalPrivacyNotices: any = await PrivacyNotice.find({
-        dataProvider: providerURI,
-        recipients: { $in: consumerURI },
-        contract: privacyNoticesId,
-      }).lean(); // This is what will be sent back
-      return res.json(finalPrivacyNotices);
     }
+
+    const existingPrivacyNotice = existingPrivacyNotices.find(
+      (epn: any) => epn.contract === privacyNotice.contract
+    );
+    if (
+      existingPrivacyNotice &&
+      !_.isEqual(existingPrivacyNotice.data, privacyNotice.data)
+    ) {
+      const newPn = new PrivacyNotice(privacyNotice);
+      await newPn.save();
+      await PrivacyNotice.findByIdAndUpdate(existingPrivacyNotice._id, {
+        archivedAt: new Date().toISOString(),
+      });
+    }
+
+    const finalPrivacyNotices: any = await PrivacyNotice.find({
+      dataProvider: providerURI,
+      recipients: { $in: consumerURI },
+      contract: privacyNoticesId,
+      archivedAt: null,
+    }).lean(); // This is what will be sent back
+    return res.json(finalPrivacyNotices);
   } catch (err) {
     next(err);
   }

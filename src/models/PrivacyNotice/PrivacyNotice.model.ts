@@ -34,6 +34,7 @@ const schema = new Schema<IPrivacyNoticeDocument>(
     },
     jsonld: { type: String },
     schema_version: { type: String, default: "0.1.0" },
+    archivedAt: { type: String },
   },
   { timestamps: true }
 );
