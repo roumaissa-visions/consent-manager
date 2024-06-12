@@ -38,6 +38,18 @@ const schema = new Schema<IConsent>(
         purpose: String,
         resource: String,
         serviceOffering: String,
+        purposeType: String,
+        piiInformation: [
+          {
+            piiType: String,
+            piiAttributeId: String,
+            piiOptional: String,
+            sensitivePiiCategory: String,
+            specialPiiCategory: String,
+          },
+        ],
+        collectionMethod: [String],
+        processingMethod: [String],
       },
     ],
     data: [
@@ -49,7 +61,15 @@ const schema = new Schema<IConsent>(
     ],
     status: {
       type: String,
-      enum: ["pending", "draft", "granted", "revoked", "expired"],
+      enum: [
+        "pending",
+        "draft",
+        "granted",
+        "revoked",
+        "expired",
+        "terminated",
+        "refused",
+      ],
     },
     piiPrincipalRights: [String],
     privacyNotice: { type: String, default: "" },
@@ -63,6 +83,17 @@ const schema = new Schema<IConsent>(
     token: { type: String, default: "" },
     jsonld: { type: String },
     schema_version: { type: String, default: "0.2.0" },
+    geographicRestrictions: [String],
+    services: [String],
+    jurisdiction: String,
+    event: [
+      {
+        eventTime: String,
+        validityDuration: String,
+        eventType: String,
+        eventState: String,
+      },
+    ],
   },
   { timestamps: true }
 );

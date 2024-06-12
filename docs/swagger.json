@@ -1797,6 +1797,312 @@
         }
       }
     },
+    "/consents/{consentId}/refuse": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Refuse the consent",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/re-confirm": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "re-confirme the consent",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/consents/{consentId}/terminate": {
+      "post": {
+        "tags": ["consents"],
+        "summary": "Terminate the consent",
+        "security": [
+          {
+            "participantBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Consent ID",
+            "example": "{{lastGivenConsentID}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "1769"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"6e9-9cTmoduvxxc3ae/Ny/2K/LCez+0\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 01 Sep 2023 14:57:28 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "_id": "64f1e1d278743e80ebc60d48",
+                  "userIdentifiers": [],
+                  "purposes": [],
+                  "data": [
+                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  ],
+                  "schema_version": "0.1.0",
+                  "user": "64f1e17aac8edafbb8f23a26",
+                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
+                  "consented": false,
+                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
+                  "status": "revoked",
+                  "__v": 0,
+                  "createdAt": "2023-09-01T13:06:26.444Z",
+                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/consents/pdi/iframe": {
       "get": {
         "tags": ["consents"],
