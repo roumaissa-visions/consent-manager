@@ -6,6 +6,8 @@ import {
   getUserById,
   registerUserIdentifiers,
   me,
+  updateUserById,
+  deleteUserById,
 } from "../controllers/usersController";
 import { verifyParticipantJWT, verifyUserJWT } from "../middleware/auth";
 const r: Router = Router();
@@ -34,6 +36,8 @@ r.get("/me", verifyUserJWT, me);
 // This might change when using more decentralized identifiers for end users
 r.post("/register", verifyParticipantJWT, registerUserIdentifier);
 r.post("/registers", verifyParticipantJWT, registerUserIdentifiers);
+r.put("/:id", verifyParticipantJWT, updateUserById);
+r.delete("/:id", verifyParticipantJWT, deleteUserById);
 r.get("/:userId/", getUserById);
 r.get("/:userId/:consentId");
 
