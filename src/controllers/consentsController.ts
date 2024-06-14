@@ -78,7 +78,7 @@ export const getUserConsents = async (
       consentReceipts.push(await consentToConsentReceipt(consent));
     }
 
-    res.json({ consentReceipts, totalCount, totalPages });
+    res.json({ consents: consentReceipts, totalCount, totalPages });
   } catch (err) {
     next(err);
   }

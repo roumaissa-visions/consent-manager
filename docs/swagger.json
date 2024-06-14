@@ -705,21 +705,67 @@
                 "example": {
                   "consents": [
                     {
-                      "_id": "64f1e1d278743e80ebc60d48",
-                      "userIdentifiers": [],
-                      "purposes": [],
-                      "data": [
-                        "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                      "record": {
+                        "schemaVersion": "0.2.0",
+                        "recordId": "6668021e3ea60b8a07417b83",
+                        "piiPrincipalId": "660fff4528678b2683bab15f"
+                      },
+                      "piiProcessing": {
+                        "privacyNotice": "6661d465a5059c1edf0b98fe",
+                        "language": "en",
+                        "purposes": [
+                          {
+                            "purpose": "URL",
+                            "lawfulBasis": "consent",
+                            "piiInformation": [],
+                            "piiControllers": [
+                              "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                              "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                            ],
+                            "collectionMethod": [],
+                            "processingMethod": [],
+                            "storageLocation": [],
+                            "processingLocations": [],
+                            "geographicRestrictions": [],
+                            "services": [],
+                            "recipientThirdParties": [],
+                            "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                            "privacyRights": ["right-1", "right-2"],
+                            "codeOfConduct": "https://example.com/CoC-news-media",
+                            "impactAssessment": "https://example.com/dpia",
+                            "authorityParty": "DPC-IE"
+                          }
+                        ]
+                      },
+                      "event": [
+                        {
+                          "eventTime": "2024-06-11T07:51:17.045Z",
+                          "validityDuration": "0",
+                          "eventType": "explicit",
+                          "eventState": "consent given",
+                          "_id": "6668021e3ea60b8a07417b84"
+                        }
                       ],
-                      "schema_version": "0.1.0",
-                      "user": "64f1e17aac8edafbb8f23a26",
-                      "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                      "consented": true,
-                      "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                      "status": "granted",
-                      "__v": 0,
-                      "createdAt": "2023-09-01T13:06:26.444Z",
-                      "updatedAt": "2023-09-01T14:57:37.074Z"
+                      "partyIdentification": [
+                        {
+                          "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                          "partyAddress": {
+                            "countryCode": ""
+                          },
+                          "partyName": "participatnOne",
+                          "partyContact": [],
+                          "partyType": "consumer"
+                        },
+                        {
+                          "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "partyAddress": {
+                            "countryCode": ""
+                          },
+                          "partyName": "participantTwo",
+                          "partyContact": [],
+                          "partyType": "provider"
+                        }
+                      ]
                     }
                   ],
                   "totalCount": 1,
@@ -811,21 +857,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent given",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": true,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "granted",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -1263,21 +1355,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent given",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": true,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "granted",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -1367,21 +1505,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent given",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": true,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "granted",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -1469,21 +1653,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent revoked",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": true,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "granted",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:37.074Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -1877,21 +2107,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent refused",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": false,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "revoked",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -1979,21 +2255,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent re-confirmed",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": false,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "revoked",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
@@ -2081,21 +2403,67 @@
                   "type": "object"
                 },
                 "example": {
-                  "_id": "64f1e1d278743e80ebc60d48",
-                  "userIdentifiers": [],
-                  "purposes": [],
-                  "data": [
-                    "{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}"
+                  "record": {
+                    "schemaVersion": "0.2.0",
+                    "recordId": "6668021e3ea60b8a07417b83",
+                    "piiPrincipalId": "660fff4528678b2683bab15f"
+                  },
+                  "piiProcessing": {
+                    "privacyNotice": "6661d465a5059c1edf0b98fe",
+                    "language": "en",
+                    "purposes": [
+                      {
+                        "purpose": "URL",
+                        "lawfulBasis": "consent",
+                        "piiInformation": [],
+                        "piiControllers": [
+                          "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                          "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1"
+                        ],
+                        "collectionMethod": [],
+                        "processingMethod": [],
+                        "storageLocation": [],
+                        "processingLocations": [],
+                        "geographicRestrictions": [],
+                        "services": [],
+                        "recipientThirdParties": [],
+                        "withdrawalMethod": "https://github.com/Prometheus-X-association/consent-manager",
+                        "privacyRights": ["right-1", "right-2"],
+                        "codeOfConduct": "https://example.com/CoC-news-media",
+                        "impactAssessment": "https://example.com/dpia",
+                        "authorityParty": "DPC-IE"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "eventTime": "2024-06-11T07:51:17.045Z",
+                      "validityDuration": "0",
+                      "eventType": "explicit",
+                      "eventState": "consent terminated",
+                      "_id": "6668021e3ea60b8a07417b84"
+                    }
                   ],
-                  "schema_version": "0.1.0",
-                  "user": "64f1e17aac8edafbb8f23a26",
-                  "identifier": "58505ac5-8560-419b-b728-16d11b753dd8",
-                  "consented": false,
-                  "jsonld": "{\"version\":\"KI-CR-v1.1.O\",\"consentReceiptID\":\"58505ac5-8560-419b-b728-16d11b753dd8\",\"collectionMethod\":\"\",\"jurisdiction\":\"\",\"consentTimestamp\":null,\"publicKey\":\"\",\"language\":\"\",\"piiPrincipalId\":\"bkChXUYZ 4IxkToKO\",\"piiControllers\":[{\"id\":\"http://localhost:3000/\",\"name\":\"consentmanager-pdi\"}],\"policyUrl\":\"http://example.com/policies/policy-abc\",\"data\":[{\"uid\":\"data-1\",\"type\":\"http://example.com/datatypes/personal-info\",\"purpose\":\"http://example.com/purposes/user-authentication\"}],\"services\":[[{\"service\":\"Demo purpose\",\"purposes\":[{\"uid\":\"purpose-1\",\"purpose\":\"Demo purpose\",\"action\":\"http://example.com/actions/authenticate\",\"assigner\":\"http://localhost:3000/64ef1907b8dfb749e4565640\",\"assignee\":\"http://localhost:3000/64ef190bb8dfb749e4565644\",\"purposeCategory\":[\"2 - Contracted Service\"],\"consentType\":\"EXPLICIT\",\"piiCategory\":[\"1 - Biographical\",\"2 - Contact\",\"4 - Communications/Social\"],\"primaryPurpose\":true,\"termination\":\"Subscription end date + 1 year\",\"thirdPartyDisclosure\":true,\"thirdPartyName\":\"The Ankh-morpork Deadbeat Debt Collectors Society\"}]}]],\"sensitive\":true,\"spiCat\":[\"1 - Biographical\",\"7 - Financial\"],\"contract\":\"http://example.com/contract/666\"}",
-                  "status": "revoked",
-                  "__v": 0,
-                  "createdAt": "2023-09-01T13:06:26.444Z",
-                  "updatedAt": "2023-09-01T14:57:28.229Z"
+                  "partyIdentification": [
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564aaebd853e8e05b1317c1",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participatnOne",
+                      "partyContact": [],
+                      "partyType": "consumer"
+                    },
+                    {
+                      "partyId": "https://catalog.com/v1/catalog/participants/6564abb5d853e8e05b132057",
+                      "partyAddress": {
+                        "countryCode": ""
+                      },
+                      "partyName": "participantTwo",
+                      "partyContact": [],
+                      "partyType": "provider"
+                    }
+                  ]
                 }
               }
             }
