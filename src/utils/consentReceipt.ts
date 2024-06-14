@@ -39,7 +39,7 @@ export const consentToConsentReceipt = async (
         jurisdiction: consent.jurisdiction,
         recipientThirdParties: consent.recipientThirdParties,
         withdrawalMethod: process.env.WITHDRAWAL_METHOD,
-        privacyRights: process.env.PRIVACY_RIGHTS.split(","),
+        privacyRights: process.env.PRIVACY_RIGHTS?.split(","),
         codeOfConduct: process.env.CODE_OF_CONDUCT,
         impactAssessment: process.env.IMPACT_ASSESSMENT,
         authorityParty: process.env.AUTHORITY_PARTY,
