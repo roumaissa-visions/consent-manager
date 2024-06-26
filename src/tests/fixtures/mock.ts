@@ -6,30 +6,30 @@ import nock from "nock";
 const baseURL = "http://localhost:8888";
 const pdiURL = process.env.PDI_ENDPOINT || "http://localhost:5173";
 export const setupnockMocks = (providerBase64) => {
-  // Mocking service offerings
+  // Mocking provider service offerings
   nock("https://api.test.com/v1")
     .get("/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1")
     .reply(200, {
-      "@context": "http://host.docker.internal:4040/v1/serviceoffering",
+      "@context": "https://host.docker.internal:4040/v1/serviceoffering",
       "@type": "ServiceOffering",
-      _id: "660432088020cd0ef5427e1b",
+      _id: "65e04da4b37bfc192ddcbdd1",
       name: "test no user interacton",
-      providedBy: "6564abb5d853e8e05b132057",
+      providedBy: "656dfb3e282d47cfa6b66b2b",
       aggregationOf: [
-        "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
+        "https://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
       ],
       dependsOn: [],
       policy: [
         {
           "@context": {
-            xsd: "http://www.w3.org/2001/XMLSchema#",
+            xsd: "https://www.w3.org/2001/XMLSchema#",
             description: {
               "@id": "https://schema.org/description",
               "@container": "@language",
             },
           },
           "@id":
-            "http://localhost:3000/static/references/rules/rule-access-4.json",
+            "https://localhost:3000/static/references/rules/rule-access-4.json",
           title: {
             "@type": "xsd/string",
             "@value": "Count",
@@ -67,17 +67,17 @@ export const setupnockMocks = (providerBase64) => {
       description: "des",
       keywords: [],
       dataResources: [
-        "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
+        "https://api.com/v1/catalog/softwareresources/65e71e4174f9e9026bd5dc41",
       ],
       softwareResources: [],
       archived: false,
       visible: true,
       pricing: "180",
       pricingModel: [
-        "http://localhost:3000/static/references/pricing-model/dataBased.json",
+        "https://localhost:3000/static/references/pricing-model/dataBased.json",
       ],
       businessModel: [
-        "http://localhost:3000/static/references/business-model/subscription.json",
+        "https://localhost:3000/static/references/business-model/subscription.json",
       ],
       maximumConsumption: "",
       maximumPerformance: "",
@@ -91,29 +91,30 @@ export const setupnockMocks = (providerBase64) => {
       __v: 0,
     });
 
+  // Mocking consumer service offerings
   nock("https://api.test.com/v1")
     .get("/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0")
     .reply(200, {
-      "@context": "http://host.docker.internal:4040/v1/serviceoffering",
+      "@context": "https://host.docker.internal:4040/v1/serviceoffering",
       "@type": "ServiceOffering",
-      _id: "65e7380074f9e9026bd5edc8",
+      _id: "65e04da4b37bfc192ddcbdd0",
       name: "CONSUMER PAYLOAD BIL",
-      providedBy: "6564aaebd853e8e05b1317c1",
+      providedBy: "656dfb3e282d47cfa6b66b2a",
       aggregationOf: [
-        "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+        "https://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
       ],
       dependsOn: [],
       policy: [
         {
           "@context": {
-            xsd: "http://www.w3.org/2001/XMLSchema#",
+            xsd: "https://www.w3.org/2001/XMLSchema#",
             description: {
               "@id": "https://schema.org/description",
               "@container": "@language",
             },
           },
           "@id":
-            "http://localhost:3000/static/references/rules/rule-access-4.json",
+            "https://localhost:3000/static/references/rules/rule-access-4.json",
           title: {
             "@type": "xsd/string",
             "@value": "Count",
@@ -152,17 +153,17 @@ export const setupnockMocks = (providerBase64) => {
       keywords: [],
       dataResources: [],
       softwareResources: [
-        "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
+        "https://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
       ],
       archived: false,
       visible: true,
       pricing: "150",
       pricingModel: [
-        "http://localhost:3000/static/references/pricing-model/valueBased.json",
+        "https://localhost:3000/static/references/pricing-model/valueBased.json",
       ],
       businessModel: [
         "https://registry.visionstrust.com/static/references/business-model/freemium.json",
-        "http://localhost:3000/static/references/business-model/subscription.json",
+        "https://localhost:3000/static/references/business-model/subscription.json",
       ],
       maximumConsumption: "",
       maximumPerformance: "",
@@ -263,7 +264,7 @@ export const setupnockMocks = (providerBase64) => {
       ],
     });
 
-  // Mocking participants
+  // Mocking provider in catalog
   nock("https://api.test.com")
     .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b2b`)
     .reply(200, {
@@ -294,7 +295,7 @@ export const setupnockMocks = (providerBase64) => {
       dataspaceEndpoint: "",
     });
 
-  //mocking participant in catalog
+  //mocking consumer in catalog
   nock("https://api.test.com")
     .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b2a`)
     .reply(200, {
@@ -326,13 +327,13 @@ export const setupnockMocks = (providerBase64) => {
     });
 
   // Mocking software resources
-  nock("http://api.com")
+  nock("https://api.com")
     .get(`/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb`)
     .reply(200, {
-      "@context": "http://localhost:4040/v1/softwareresource",
+      "@context": "https://localhost:4040/v1/softwareresource",
       "@type": "SoftwareResource",
-      _id: "666fed36e6c0faa2f36e8e96",
-      providedBy: "666fed32e6c0faa2f36e8e7d",
+      _id: "65e737ed74f9e9026bd5edbb",
+      providedBy: "656dfb3e282d47cfa6b66b2a",
       name: "Test software resources 1",
       description: "software resources Test description 1",
       aggregationOf: [],
@@ -357,19 +358,19 @@ export const setupnockMocks = (providerBase64) => {
     });
 
   // Mocking data resources
-  nock("http://api.com")
-    .get(`/v1/catalog/dataresources/666fed34e6c0faa2f36e8e85`)
+  nock("https://api.com")
+    .get(`/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41`)
     .reply(200, {
-      "@context": "http://localhost:4040/v1/dataresource",
+      "@context": "https://localhost:4040/v1/dataresource",
       "@type": "DataResource",
-      _id: "666fed34e6c0faa2f36e8e85",
+      _id: "65e71e4174f9e9026bd5dc41",
       aggregationOf: [],
       name: "Test data resources 1",
       description: "data resources Test description 1",
       copyrightOwnedBy: [],
       license: [],
       policy: [],
-      producedBy: "666fed31e6c0faa2f36e8e75",
+      providedBy: "656dfb3e282d47cfa6b66b2b",
       exposedThrough: [],
       obsoleteDateTime: "",
       expirationDateTime: "",
@@ -388,6 +389,7 @@ export const setupnockMocks = (providerBase64) => {
       updatedAt: "2024-06-17T08:00:52.365Z",
       __v: 0,
     });
+
   // Mocking pdi endpoint
   // nock(pdiURL)
   // .get(`/`)
