@@ -13,7 +13,10 @@ import User from "../models/User/User.model";
 import { IPrivacyNotice, IUserIdentifier } from "../types/models";
 import Participant from "../models/Participant/Participant.model";
 import { Logger } from "../libs/loggers";
-import axios from "axios";
+import Axios from "axios";
+import {setupCache} from "axios-cache-interceptor";
+const instance = Axios.create();
+const axios = setupCache(instance);
 import * as CryptoJS from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
@@ -1335,7 +1338,7 @@ const dataExchanges = async (consentId: string) => {
     ])
     .lean();
   if (!consent) throw new Error("consent not found");
-
+  console.log('Retrieved consent:', consent); // Log the consent object
   if (consent.status !== "granted") {
     throw new Error("Consent has not been granted by user");
   }
