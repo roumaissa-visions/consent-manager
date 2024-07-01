@@ -235,32 +235,29 @@ describe("Consent Routes Tests", function () {
   // });
 
   // generate pdi-iframe
-  // it("generate pdi-iframe", async () => {
-  //   setupnockMocks(providerBase64);
-  //   //TODO //nock PDI_ENDPOINT
-  //   const response = await supertest(serverInstance.app)
-  //     .get(`/v1/consents/pdi/iframe`)
-  //     // `/v1/consents/iframe?pdiURL=https%3A%2F%2Fapi.preprod.trustedauthority.io%2Fv1%2Fparticipants%2F6484ffaf86e33f792f17d112`
-  //     .set("Authorization", providerJWT)
-  //     .expect(200);
-  //   expect(response.headers["content-type"]).to.include("text/html");
-  // });
+  it("generate pdi-iframe", async () => {
+    setupnockMocks(providerBase64);
+    //TODO //nock PDI_ENDPOINT
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/pdi/iframe`)
+      // `/v1/consents/iframe?pdiURL=https%3A%2F%2Fapi.preprod.trustedauthority.io%2Fv1%2Fparticipants%2F6484ffaf86e33f792f17d112`
+      .set("Authorization", providerJWT)
+      .expect(302);
+  });
 
   // generate pdi-iframe by privacy notice Id
-  // it("generate pdi-iframe by privacy notice Id", async () => {
-  //   setupnockMocks(providerBase64);
-  //   //TODO //nock PDI_ENDPOINT
-  //   const response = await supertest(serverInstance.app)
-  //     .get(`/v1/consents/pdi/iframe`)
-  //     // `/v1/consents/iframe?pdiURL=https%3A%2F%2Fapi.preprod.trustedauthority.io%2Fv1%2Fparticipants%2F6484ffaf86e33f792f17d112`
-  //     .set("Authorization", providerJWT)
-  //     .query({
-  //       userIdentifier: providerUserIdentifier,
-  //       privacyNoticeId: privacyNoticeId,
-  //     })
-  //     .expect(200);
-  //   expect(response.headers["content-type"]).to.include("text/html");
-  // });
+  it("generate pdi-iframe by privacy notice Id", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/pdi/iframe`)
+      // `/v1/consents/iframe?pdiURL=https%3A%2F%2Fapi.preprod.trustedauthority.io%2Fv1%2Fparticipants%2F6484ffaf86e33f792f17d112`
+      .set("Authorization", providerJWT)
+      .query({
+        userIdentifier: providerUserIdentifier,
+        privacyNoticeId: privacyNoticeId,
+      })
+      .expect(302);
+  });
 
   // // user endpoints
   // getUserAvailableExchanges
@@ -464,51 +461,50 @@ describe("Consent Routes Tests", function () {
       );
     });
 
-  // revokeConsent
-  // it("should fail to revoke non existent consent", async () => {
-  //   const nonExistingConsentId="nonExistingConsentId"
-  //   setupnockMocks(providerBase64);
-  //   const response = await supertest(serverInstance.app)
-  //     .delete(`/v1/consents/${nonExistingConsentId}`)
-  //     .set("x-user-key", providerUserIdentifier)
-  //     .expect(404);
+    // revokeConsent
+    // it("should fail to revoke non existent consent", async () => {
+    //   const nonExistingConsentId="nonExistingConsentId"
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .delete(`/v1/consents/${nonExistingConsentId}`)
+    //     .set("x-user-key", providerUserIdentifier)
+    //     .expect(404);
 
-  //   expect(response.body.error).to.equal("Consent not found");
-  // });
+    //   expect(response.body.error).to.equal("Consent not found");
+    // });
 
-  // trigger dataExchange
-  it("should not trigger data exchange for a non-existent consent", async () => {
-    nock("https://test.consent").post("/consent/export").reply(200, {
-      message: "ok",
-      token,
-      dataExchangeId: "5f6dd4e3495aebd3aca59529",
+    // trigger dataExchange
+    it("should not trigger data exchange for a non-existent consent", async () => {
+      nock("https://test.consent").post("/consent/export").reply(200, {
+        message: "ok",
+        token,
+        dataExchangeId: "5f6dd4e3495aebd3aca59529",
+      });
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
+        .set("x-user-key", providerUserIdentifier)
+        .send({ privacyNoticeId: privacyNoticeId });
+      expect(response.status).to.be.equal(404);
+      expect(response.body).to.have.property("error", "consent not found");
     });
-    setupnockMocks(providerBase64);
-    const response = await supertest(serverInstance.app)
-      .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
-      .set("x-user-key", providerUserIdentifier)
-      .send({ privacyNoticeId: privacyNoticeId });
-    expect(response.status).to.be.equal(404);
-    expect(response.body).to.have.property("error", "consent not found");
+
+    // test error trigger exchange
+    // .status(401)
+    // .json({ error: "Consent has not been granted by user" });
+
+    //   // generate iframe
+    //   it("should respond with JSON message if no PDI endpoint setup", async () => {
+    //     const response = await supertest(serverInstance.app)
+    //       .get(`v1/consents/pdi/iframe`)
+    //       .set("Authorization", providerJWT)
+    //       .query({
+    //         userIdentifier: providerUserIdentifier,
+    //         privacyNoticeId: privacyNoticeId,
+    //       })
+    //       .expect("302"); // à vérifier
+
+    //     expect(response.body.message).to.equal("No PDI endpoint setup.");
+    //   });
   });
-
-  // test error trigger exchange
-  // .status(401)
-  // .json({ error: "Consent has not been granted by user" });
-
-  //   // generate iframe
-  //   it("should respond with JSON message if no PDI endpoint setup", async () => {
-  //     const response = await supertest(serverInstance.app)
-  //       .get(`v1/consents/pdi/iframe`)
-  //       .set("Authorization", providerJWT)
-  //       .query({
-  //         userIdentifier: providerUserIdentifier,
-  //         privacyNoticeId: privacyNoticeId,
-  //       })
-  //       .expect(200); // à vérifier
-
-  //     expect(response.body.message).to.equal("No PDI endpoint setup.");
-  //   });
 });
-
- });
