@@ -9,804 +9,762 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import crypto from "crypto";
 import nock from "nock";
+import { setupnockMocks } from "./fixtures/mock";
+import {
+  testProvider1,
+  testConsumer1,
+  testConsumer2,
+  testUser1,
+} from "./fixtures/testAccount";
+import { random } from "lodash";
 
 let serverInstance: {
   app: Application;
   server: http.Server<typeof IncomingMessage, typeof ServerResponse>;
 };
-const mockAxios = new MockAdapter(axios);
 let userId: string;
+let userJwt: string;
 let providerId: string;
 let consumerId: string;
+let selfDesc_consumerId: string;
+let selfDesc_consumer2Id: string;
+let selfDesc_providerId: string;
 let providerUserIdentifier: string;
 let consumerUserIdentifier: string;
 let providerJWT: string;
 let consumerJWT: string;
 let providerBase64: string;
 let consumerBase64: string;
+let consumer2Base64: string;
+let contractbase64: string;
+let contract2base64: string;
+let privacyNoticeId: string;
+let consentId: string;
+const token = crypto.randomUUID();
 
-before(async () => {
-  nock.cleanAll();
+describe("Consent Routes Tests", function () {
+  before(async () => {
+    nock.cleanAll();
 
-  serverInstance = startServer(9090);
-  // Create Provider
-  const providerData = {
-    legalName: "provider",
-    identifier: "656dfb3e282d47cfa6b66b2b",
-    did: "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-    selfDescriptionURL:
-      "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-    email: "provider@email.com",
-    endpoints: {
-      dataExport: "https://test.consent/data/export",
-      dataImport: "https://test.consent/data/import",
-      consentImport: "https://test.consent/consent/import",
-      consentExport: "https://test.consent/consent/export",
-    },
-    clientID:
-      "RiubBgGOCntQQkUZfwxVJMFmvDOjPHucHF2CZpWnwxGlFLDqyjgFZYelvWb3X1piXFyr45dONURbITiSupPHvsJOxggqCp7RHqJ7",
-    clientSecret:
-      "sAK8rnv4StsYnvLViZJZKOQLrwrIdqx5JQVE4GijO5dq9Ppb5oGJcOLmvPddYOKjNBEeFfORrnip36buMfvpbmGotiZC7xLnLgxV",
-  };
-  const providerResponse = await supertest(serverInstance.app)
-    .post(`/v1/participants/`)
-    .send(providerData);
+    serverInstance = startServer(9090);
+    // Create Provider
+    const providerData = testProvider1;
+    const providerResponse = await supertest(serverInstance.app)
+      .post(`/v1/participants/`)
+      .send(providerData);
+    providerId = providerResponse.body._id;
+    selfDesc_providerId = providerData.selfDescriptionURL;
 
-  providerId = providerResponse.body._id;
+    // Login provider
+    const providerAuthResponse = await supertest(serverInstance.app)
+      .post(`/v1/participants/login`)
+      .send({
+        clientID: testProvider1.clientID,
+        clientSecret: testProvider1.clientSecret,
+      });
+    providerJWT = `Bearer ${providerAuthResponse.body.jwt}`;
+    providerBase64 = Buffer.from(providerData.selfDescriptionURL).toString(
+      "base64"
+    );
 
-  const providerAuthResponse = await supertest(serverInstance.app)
-    .post(`/v1/participants/login`)
-    .send({
-      clientID:
-        "RiubBgGOCntQQkUZfwxVJMFmvDOjPHucHF2CZpWnwxGlFLDqyjgFZYelvWb3X1piXFyr45dONURbITiSupPHvsJOxggqCp7RHqJ7",
-      clientSecret:
-        "sAK8rnv4StsYnvLViZJZKOQLrwrIdqx5JQVE4GijO5dq9Ppb5oGJcOLmvPddYOKjNBEeFfORrnip36buMfvpbmGotiZC7xLnLgxV",
+    // Create Consumer
+    const consumerData = testConsumer1;
+    const consumerResponse = await supertest(serverInstance.app)
+      .post(`/v1/participants/`)
+      .send(consumerData);
+    consumerId = consumerResponse.body._id;
+    selfDesc_consumerId = consumerData.selfDescriptionURL;
+
+    // Create Consumer 2
+    const consumer2Data = testConsumer2;
+    const consumer2Response = await supertest(serverInstance.app)
+      .post(`/v1/participants/`)
+      .send(consumer2Data);
+    selfDesc_consumer2Id = consumer2Data.selfDescriptionURL;
+    consumer2Base64 = Buffer.from(consumer2Data.selfDescriptionURL).toString(
+      "base64"
+    );
+
+    // Login consumer
+    const consumerAuthResponse = await supertest(serverInstance.app)
+      .post(`/v1/participants/login`)
+      .send({
+        clientID: testConsumer1.clientID,
+        clientSecret: testConsumer1.clientSecret,
+      });
+    consumerJWT = `Bearer ${consumerAuthResponse.body.jwt}`;
+    consumerBase64 = Buffer.from(consumerData.selfDescriptionURL).toString(
+      "base64"
+    );
+
+    // Create User
+    const userData = testUser1;
+    const userResponse = await supertest(serverInstance.app)
+      .post(`/v1/users/signup`)
+      .send(userData);
+    userId = userResponse.body.user._id;
+    // Login user
+    const userAuthresponse = await supertest(serverInstance.app)
+      .post(`/v1/users/login`)
+      .send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+    userJwt = `Bearer ${userAuthresponse.body.accessToken}`;
+    // Create UserIdentifier Provider
+    const providerUserIdentifierResponse = await supertest(serverInstance.app)
+      .post(`/v1/users/register`)
+      .set("Authorization", providerJWT)
+      .send({
+        email: testUser1.email,
+        identifier: "providerUserIdentifier1",
+      });
+    providerUserIdentifier = providerUserIdentifierResponse.body._id;
+
+    // Create UserIdentifier Consumer
+    const consumerUserIdentifierResponse = await supertest(serverInstance.app)
+      .post(`/v1/users/register`)
+      .set("Authorization", consumerJWT)
+      .send({
+        email: testUser1.email,
+        identifier: "consumerUserIdentifier1",
+      });
+    consumerUserIdentifier = consumerUserIdentifierResponse.body._id;
+  });
+
+  after(async () => {
+    serverInstance.server.close();
+  });
+
+  // getAvailableExchanges
+  it("should get available exchanges", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/exchanges/as?as=provider`)
+      .set("Authorization", providerJWT)
+      .expect(200);
+    expect(response.body).to.have.property("participant");
+    expect(response.body).to.have.property("exchanges");
+    expect(response.body.participant).to.have.property("selfDescription");
+    expect(response.body.participant).to.have.property("base64SelfDescription");
+  });
+
+  // getPrivacyNotices
+  it("should get the privacy notices", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/${userId}/${providerBase64}/${consumerBase64}`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    privacyNoticeId = response.body[0]?._id;
+    expect(response.body).to.not.be.empty;
+    expect(response.body[0]).to.have.property("_id");
+    expect(response.body[0]).to.have.property(
+      "dataProvider",
+      "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b"
+    );
+    expect(response.body[0]).to.have.property(
+      "contract",
+      "http://localhost:8888/contracts/65e5d715c99e484e4685a964"
+    );
+  });
+
+  // getPrivacyNoticeById
+  it("should get a privacy notice by id", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/privacy-notices/${privacyNoticeId}`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    expect(response.body).to.not.be.empty;
+    expect(response.body).to.have.property("_id").and.to.equal(privacyNoticeId);
+    expect(response.body).to.have.property("contract");
+    expect(response.body.dataProvider._id).to.equal(testProvider1.identifier);
+  });
+
+  // giveConsent
+  it("should give consent", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .post(`/v1/consents`)
+      .set("x-user-key", providerUserIdentifier)
+      .send({
+        privacyNoticeId: privacyNoticeId,
+      })
+      .expect(201);
+    consentId = response.body._id;
+    // expect(response.body.user).to.equal(userId);
+    expect(response.body.providerUserIdentifier).to.equal(
+      providerUserIdentifier
+    );
+    expect(response.body.consumerUserIdentifier).to.equal(
+      consumerUserIdentifier
+    );
+    expect(response.body.consented).to.equal(true);
+    expect(response.body.dataProvider).to.equal(providerId);
+    expect(response.body.dataConsumer).to.equal(consumerId);
+    expect(response.body.privacyNotice).to.equal(privacyNoticeId);
+    expect(response.body.status).to.equal("granted");
+  });
+
+  // trigger data exchange
+  it("should triggerDataExchange", async () => {
+    // mocking export consent
+    nock("https://test.consent").post("/consent/export").reply(200, {
+      message: "ok",
+      token,
+      dataExchangeId: "5f6dd4e3495aebd3aca59529",
     });
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .post(`/v1/consents/${consentId}/data-exchange`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    expect(response.body).to.have.property(
+      "message",
+      "successfully sent consent to the provider's consent export endpoint to trigger the data exchange"
+    );
+  });
 
-  providerJWT = `Bearer ${providerAuthResponse.body.jwt}`;
+  // revoke consent
+  it("should revoke consent", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .delete(`/v1/consents/${consentId}`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    expect(response.body.status).to.equal("revoked");
+  });
 
-  providerBase64 = Buffer.from(providerData.selfDescriptionURL).toString(
-    "base64"
-  );
+  // generate pdi-iframe
+  it("generate pdi-iframe", async () => {
+    setupnockMocks(providerBase64);
+    //TODO //nock PDI_ENDPOINT
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/pdi/iframe`)
+      .set("Authorization", providerJWT)
+      .expect(302);
+  });
 
-  // Create Consumer
+  // generate pdi-iframe by privacy notice Id
+  it("generate pdi-iframe by privacy notice Id", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/pdi/iframe`)
+      .set("Authorization", providerJWT)
+      .query({
+        userIdentifier: providerUserIdentifier,
+        privacyNoticeId: privacyNoticeId,
+      })
+      .expect(302);
+  });
 
-  const consumerData = {
-    legalName: "consumer",
-    identifier: "656dfb3e282d47cfa6b66b2a",
-    did: "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-    selfDescriptionURL:
-      "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-    email: "consumer@email.com",
-    endpoints: {
-      dataExport: "https://test.consent/data/export",
-      dataImport: "https://test.consent/data/import",
-      consentImport: "https://test.consent/consent/import",
-      consentExport: "https://test.consent/consent/export",
-    },
-    clientID:
-      "BgH8XG6YFiTxlVM5xsWtKXRBuNQviwJWFkVuU4CtOPZSNS0yckvqcdeEsTNW7UkjBVQas5NQVZSmxtj7jchD8P7slhLwj6wOrLU2",
-    clientSecret:
-      "POG3X0NqdymBYBxuxxz4UMmmtPnYtNXBtWq4RmTic4br6Srt0DGeruhEfLIO9EeOxXpoqsb3uDW2pdx2uFqnLUbjrlONzqquxoq4",
-  };
-  const consumerResponse = await supertest(serverInstance.app)
-    .post(`/v1/participants/`)
-    .send(consumerData);
+  // // user endpoints
+  // getUserAvailableExchanges
+  it("getUserAvailableExchanges", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/exchanges/user`)
+      .set("Authorization", userJwt)
+      .query({ participantId: providerId })
+      .expect(200);
 
-  consumerId = consumerResponse.body._id;
+    contractbase64 = response.body.exchanges[0].base64Contract;
+    expect(response.body.participant.selfDescription).to.equal(
+      selfDesc_providerId
+    );
+    expect(response.body.exchanges).to.not.be.empty;
+    expect(response.body.exchanges[0].participantSelfDescription).to.equal(
+      selfDesc_consumerId
+    );
+  });
 
-  const consumerAuthResponse = await supertest(serverInstance.app)
-    .post(`/v1/participants/login`)
-    .send({
-      clientID:
-        "BgH8XG6YFiTxlVM5xsWtKXRBuNQviwJWFkVuU4CtOPZSNS0yckvqcdeEsTNW7UkjBVQas5NQVZSmxtj7jchD8P7slhLwj6wOrLU2",
-      clientSecret:
-        "POG3X0NqdymBYBxuxxz4UMmmtPnYtNXBtWq4RmTic4br6Srt0DGeruhEfLIO9EeOxXpoqsb3uDW2pdx2uFqnLUbjrlONzqquxoq4",
+  // getUserPrivacyNoticesByContract
+  it("getUserPrivacyNoticesByContract", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .get(
+        `/v1/consents/${providerUserIdentifier}/${providerBase64}/${consumerBase64}/${contractbase64}`
+      )
+      .set("Authorization", userJwt)
+      .expect(200);
+    expect(response.body[0].dataProvider).to.equal(selfDesc_providerId);
+    console.log(response.body[0].recipients);
+    expect(response.body[0].recipients).to.deep.include(selfDesc_consumerId);
+  });
+
+  // getUserPrivacyNoticeById
+  it("getUserPrivacyNoticeById", async () => {
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/privacy-notices/${privacyNoticeId}/user`)
+      .set("Authorization", userJwt)
+      .expect(200);
+    expect(response.body).to.have.property("_id");
+    expect(response.body.contract.orchestrator).to.equal(testProvider1.did);
+    expect(response.body.contract.status).to.equal("pending");
+    expect(response.body.dataProvider._id).to.equal(testProvider1.identifier);
+    expect(response.body.purposes[0].providedBy).to.equal(
+      testConsumer1.identifier
+    );
+    expect(response.body.data[0].providedBy).to.equal(testProvider1.identifier);
+  });
+
+  // giveConsentUser
+  it("giveConsentUser", async () => {
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .post(`/v1/consents/user`)
+      .send({ privacyNoticeId: privacyNoticeId })
+      .set("Authorization", userJwt)
+      .expect(201);
+    console.log(privacyNoticeId);
+    expect(response.body).to.have.property("contract");
+    // expect(response.body.dataProvider._id).to.equal(providerId);
+  });
+
+  // getUserConsents
+  it("should getUserConsents - by user", async () => {
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/me`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    expect(response.body).to.have.property("consents");
+    expect(response.body.consents[0]._id).to.equal(consentId);
+    expect(response.body.consents[0].providerUserIdentifier).to.equal(
+      providerUserIdentifier
+    );
+    expect(response.body.consents[0].consumerUserIdentifier).to.equal(
+      consumerUserIdentifier
+    );
+    expect(response.body.consents[0].consented).to.equal(true);
+    expect(response.body.consents[0].dataProvider).to.equal(providerId);
+    expect(response.body.consents[0].dataConsumer).to.equal(consumerId);
+    expect(response.body.consents[0].status).to.equal("granted");
+    expect(response.body.consents[0].privacyNotice).to.equal(privacyNoticeId);
+  });
+
+  it("should getUserConsents - by participant", async () => {
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/participants/${providerUserIdentifier}/`)
+      .set("Authorization", providerJWT)
+      .expect(200);
+    expect(response.body).to.have.property("consents");
+    expect(response.body.consents[0]._id).to.equal(consentId);
+    expect(response.body.consents[0].providerUserIdentifier).to.equal(
+      providerUserIdentifier
+    );
+    expect(response.body.consents[0].consumerUserIdentifier).to.equal(
+      consumerUserIdentifier
+    );
+    expect(response.body.consents[0].consented).to.equal(true);
+    expect(response.body.consents[0].dataProvider).to.equal(providerId);
+    expect(response.body.consents[0].dataConsumer).to.equal(consumerId);
+    expect(response.body.consents[0].status).to.equal("granted");
+    expect(response.body.consents[0].privacyNotice).to.equal(privacyNoticeId);
+    console.log(privacyNoticeId);
+    console.log(response.body.consents[0].privacyNotice);
+  });
+
+  // getUserConsentById by user
+  it("should getUserConsentById - by user", async () => {
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/me/${consentId}`)
+      .set("x-user-key", providerUserIdentifier)
+      .expect(200);
+    expect(response.body._id).to.equal(consentId);
+    expect(response.body.providerUserIdentifier).to.equal(
+      providerUserIdentifier
+    );
+    expect(response.body.consumerUserIdentifier).to.equal(
+      consumerUserIdentifier
+    );
+    expect(response.body.consented).to.equal(true);
+    expect(response.body.dataProvider).to.equal(providerId);
+    expect(response.body.dataConsumer).to.equal(consumerId);
+    expect(response.body.status).to.equal("granted");
+    expect(response.body.privacyNotice).to.equal(privacyNoticeId);
+  });
+
+  // getUserConsentById by participant
+  it("should getUserConsentById - by participant", async () => {
+    const response = await supertest(serverInstance.app)
+      .get(`/v1/consents/participants/${providerUserIdentifier}/${consentId}`)
+      .set("Authorization", providerJWT)
+      .expect(200);
+    expect(response.body._id).to.equal(consentId);
+    expect(response.body.providerUserIdentifier).to.equal(
+      providerUserIdentifier
+    );
+    expect(response.body.consumerUserIdentifier).to.equal(
+      consumerUserIdentifier
+    );
+    expect(response.body.consented).to.equal(true);
+    expect(response.body.dataProvider).to.equal(providerId);
+    expect(response.body.dataConsumer).to.equal(consumerId);
+    expect(response.body.status).to.equal("granted");
+    expect(response.body.privacyNotice).to.equal(privacyNoticeId);
+  });
+
+  // attachTokenToConsent
+  it("should attachTokenToConsent", async () => {
+    //Mocking import consent
+    nock("https://test.consent").post("/consent/import").reply(200, {
+      message: "ok",
+      token,
+      dataExchangeId: "5f6dd4e3495aebd3aca59529",
     });
+    const response = await supertest(serverInstance.app)
+      .post(`/v1/consents/${consentId}/token`)
+      .set("Authorization", providerJWT)
+      .send({
+        token,
+        providerDataExchangeId: "5f6dd4e3495aebd3aca59529",
+      })
+      .expect(200);
+    expect(response.body).to.have.property(
+      "message",
+      "successfully forwarded consent to the data consumer"
+    );
+  });
 
-  consumerJWT = `Bearer ${consumerAuthResponse.body.jwt}`;
-
-  consumerBase64 = Buffer.from(consumerData.selfDescriptionURL).toString(
-    "base64"
-  );
-
-  // Create User
-  const userResponse = await supertest(serverInstance.app)
-    .post(`/v1/users/signup`)
-    .send({
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@example.com",
-      password: "password",
+  // verifyToken
+  it("should validate the consent", async () => {
+    //mocking export consent
+    nock("https://test.consent").post("/consent/export").reply(200, {
+      message: "ok",
+      token,
+      dataExchangeId: "5f6dd4e3495aebd3aca59529",
     });
-  userId = userResponse.body.user._id;
+    setupnockMocks(providerBase64);
+    const response = await supertest(serverInstance.app)
+      .post(`/v1/consents/${consentId}/validate`)
+      .set("Authorization", providerJWT)
+      .send({
+        token,
+      })
+      .expect(200);
+    expect(response.body).to.have.property(
+      "message",
+      "token matches consent token"
+    );
+    expect(response.body).to.have.property("verified", true);
+  });
 
-  //Create UserIdentifier Provider
-  const providerUserIdentifierResponse = await supertest(serverInstance.app)
-    .post(`/v1/users/register`)
-    .set("Authorization", providerJWT)
-    .send({
-      email: "john@example.com",
-      identifier: "660181e9b0eb2a45540546ba",
-    });
-
-  providerUserIdentifier = providerUserIdentifierResponse.body._id;
-
-  //Create UserIdentifier Consumer
-  const consumerUserIdentifierResponse = await supertest(serverInstance.app)
-    .post(`/v1/users/register`)
-    .set("Authorization", consumerJWT)
-    .send({
-      email: "john@example.com",
-      identifier: "660181e445ed86a1a9de8aac",
-    });
-
-  consumerUserIdentifier = consumerUserIdentifierResponse.body._id;
-});
-
-after(async () => {
-  serverInstance.server.close();
-});
-
-describe("Consent Controller Tests", () => {
-  let privacyNoticeId: string;
-  let consentId: string;
-  let consent: any;
-  let token: string;
-
-  describe("getUserConsents", () => {
-    it("should get user consents", async () => {
+  ///**********************//
+  // Test Error
+  describe("Test error", () => {
+    const nonExistentId = "65d624e8ce9bcded716692f8";
+    it("should not getUserConsents with no authorization", async () => {
       const response = await supertest(serverInstance.app)
         .get(`/v1/consents/me`)
-        .set("x-user-key", providerUserIdentifier);
-      expect(response.status).to.be.equal(200);
-      expect(response.body).to.have.property("consents");
-      // Add more assertions as needed
-    });
-
-    it("should handle errors gracefully", async () => {
-      const response = await supertest(serverInstance.app).get(
-        `/v1/consents/me`
-      );
-      expect(response.status).to.be.equal(401);
+        .expect(401);
       expect(response.body).to.have.property(
         "message",
         "Authorization header missing or invalid"
       );
     });
-  });
 
-  describe("getAvailableExchanges", () => {
-    it("should get available exchanges", async () => {
-      mockAxios
-        .onGet(
-          `${process.env.CONTRACT_SERVICE_BASE_URL}/bilaterals/for/${providerBase64}?hasSigned=true`
-        )
-        .reply(200, { contracts: [] });
-      mockAxios
-        .onGet(
-          `${process.env.CONTRACT_SERVICE_BASE_URL}/contracts/for/${providerBase64}?hasSigned=true`
-        )
-        .reply(200, {
-          contracts: [
-            {
-              _id: "65e5d715c99e484e4685a964",
-              ecosystem:
-                "https://api.test.com/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
-              orchestrator:
-                "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-              rolesAndObligations: [],
-              status: "pending",
-              serviceOfferings: [
-                {
-                  participant:
-                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-                  serviceOffering:
-                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e5d73dc99e484e4685a970",
-                },
-                {
-                  participant:
-                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-                  serviceOffering:
-                    "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
-                  policies: [
-                    {
-                      description: "CAN use data without any restrictions",
-                      permission: [
-                        {
-                          action: "use",
-                          target:
-                            "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
-                          constraint: [],
-                        },
-                      ],
-                      prohibition: [],
-                    },
-                  ],
-                  _id: "65e5d73dc99e484e4685a971",
-                },
-              ],
-              purpose: [],
-              members: [
-                {
-                  participant:
-                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-                  role: "orchestrator",
-                  signature: "hasSigned",
-                  date: "2024-03-04T14:13:47.598Z",
-                },
-                {
-                  participant:
-                    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-                  role: "participant",
-                  signature: "hasSigned",
-                  date: "2024-03-04T14:14:21.410Z",
-                },
-              ],
-              revokedMembers: [],
-              createdAt: "2024-03-04T14:13:41.616Z",
-              updatedAt: "2024-03-04T14:14:21.409Z",
-              __v: 1,
-            },
-          ],
-        });
+    // resume consent
+    it("resume Consent with status not draft&pending", async () => {
+      setupnockMocks(providerBase64);
       const response = await supertest(serverInstance.app)
-        .get(`/v1/consents/exchanges/provider`)
-        .set("Authorization", providerJWT);
-      expect(response.status).to.be.equal(200);
-      expect(response.body).to.have.property("participant");
-      expect(response.body).to.have.property("exchanges");
-      expect(response.body.participant).to.have.property("selfDescription");
-      expect(response.body.participant).to.have.property(
-        "base64SelfDescription"
+        .post(`/v1/consents/${consentId}/resume`)
+        .send({
+          internalID: providerUserIdentifier,
+          email: testUser1.email,
+        })
+        .query({ consentId: consentId })
+        .set("Authorization", providerJWT)
+        .expect(400);
+    });
+
+    //     // getUserConsentById by user //error:  -- Error:
+    // it("should not getUserConsent by a non-existent Id", async () => {
+    //   const response = await supertest(serverInstance.app)
+    //     .get(`/v1/consents/me/${nonExistentId}`)
+    //     .set("x-user-key", providerUserIdentifier)
+    //     .expect(404);
+    //     console.log('response getUserConsent',response.body)
+    //     // expect(response.body.Error).to.equal("Consent not found");
+    // });
+
+    // getAvailableExchanges
+    it("should not get available exchanges with no authorization", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(`/v1/consents/exchanges/as?as=provider`)
+        .expect(401);
+    });
+
+    //FAIL: 200
+    // it("should not get available exchanges with no as parameter", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .get(`/v1/consents/exchanges/as`)
+    //     .set("Authorization", providerJWT)
+    //     .expect(400);
+    //     expect(response.body.error).to.equal("Missing parameters");
+    // });
+
+    //FAIL: 500
+
+    // getUserAvailableExchanges
+    it("should not getUserAvailableExchanges for a non-existent participant", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(`/v1/consents/exchanges/user`)
+        .set("Authorization", userJwt)
+        .query({ participantId: nonExistentId })
+        .expect(404);
+      console.log(response.body);
+      expect(response.body.Error).to.equal("Participant not found");
+    });
+
+    // getPrivacyNotices
+    it("should not get privacy notices by participant with no authorization", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(
+          `/v1/consents/${providerUserIdentifier}/${providerBase64}/${consumerBase64}`
+        )
+        .expect(401);
+      expect(response.body).to.have.property(
+        "message",
+        "Authorization header missing or invalid"
       );
     });
-  });
 
-  // describe("getPrivacyNotices", () => {
-  //     it("should get the privacy notices", async () => {
-  //         //data resources
-  //         nock(
-  //             "https://api.test.com/v1"
-  //         )
-  //             .get('/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1')
-  //             .reply(200, {
-  //                 "@context": "http://host.docker.internal:4040/v1/serviceoffering",
-  //                 "@type": "ServiceOffering",
-  //                 _id: "660432088020cd0ef5427e1b",
-  //                 name: "test no user interacton",
-  //                 providedBy: "6564abb5d853e8e05b132057",
-  //                 aggregationOf: [
-  //                     "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
-  //                 ],
-  //                 dependsOn: [],
-  //                 policy: [
-  //                     {
-  //                         "@context": {
-  //                             xsd: "http://www.w3.org/2001/XMLSchema#",
-  //                             description: {
-  //                                 "@id": "https://schema.org/description",
-  //                                 "@container": "@language",
-  //                             },
-  //                         },
-  //                         "@id":
-  //                             "http://localhost:3000/static/references/rules/rule-access-4.json",
-  //                         title: {
-  //                             "@type": "xsd/string",
-  //                             "@value": "Count",
-  //                         },
-  //                         uid: "rule-access-4",
-  //                         name: "Count",
-  //                         description: [
-  //                             {
-  //                                 "@value": "MUST not use data for more than n times",
-  //                                 "@language": "en",
-  //                             },
-  //                         ],
-  //                         policy: {
-  //                             permission: [
-  //                                 {
-  //                                     action: "use",
-  //                                     target: "@{target}",
-  //                                     constraint: [
-  //                                         {
-  //                                             leftOperand: "count",
-  //                                             operator: "lt",
-  //                                             rightOperand: "@{value}",
-  //                                         },
-  //                                     ],
-  //                                 },
-  //                             ],
-  //                         },
-  //                         requestedFields: ["target", "value"],
-  //                     },
-  //                 ],
-  //                 termsAndConditions: "",
-  //                 dataProtectionRegime: [],
-  //                 dataAccountExport: [],
-  //                 location: "World",
-  //                 description: "des",
-  //                 keywords: [],
-  //                 dataResources: [
-  //                     "http://host.docker.internal:4040/v1/catalog/dataresources/65e71e4174f9e9026bd5dc41",
-  //                 ],
-  //                 softwareResources: [],
-  //                 archived: false,
-  //                 visible: true,
-  //                 pricing: "180",
-  //                 pricingModel: [
-  //                     "http://localhost:3000/static/references/pricing-model/dataBased.json",
-  //                 ],
-  //                 businessModel: [
-  //                     "http://localhost:3000/static/references/business-model/subscription.json",
-  //                 ],
-  //                 maximumConsumption: "",
-  //                 maximumPerformance: "",
-  //                 pricingDescription: "dfezd",
-  //                 userInteraction: true,
-  //                 compliantServiceOfferingVC: "",
-  //                 serviceOfferingVC: "",
-  //                 schema_version: "1.1.0",
-  //                 createdAt: "2024-03-27T14:49:44.506Z",
-  //                 updatedAt: "2024-03-27T14:50:02.746Z",
-  //                 __v: 0,
-  //             });
-  //
-  //         nock(
-  //             "https://api.test.com/v1"
-  //         )
-  //             .get('/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0')
-  //             .reply(200, {
-  //                 "@context": "http://host.docker.internal:4040/v1/serviceoffering",
-  //                 "@type": "ServiceOffering",
-  //                 _id: "65e7380074f9e9026bd5edc8",
-  //                 name: "CONSUMER PAYLOAD BIL",
-  //                 providedBy: "6564aaebd853e8e05b1317c1",
-  //                 aggregationOf: [
-  //                     "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
-  //                 ],
-  //                 dependsOn: [],
-  //                 policy: [
-  //                     {
-  //                         "@context": {
-  //                             xsd: "http://www.w3.org/2001/XMLSchema#",
-  //                             description: {
-  //                                 "@id": "https://schema.org/description",
-  //                                 "@container": "@language",
-  //                             },
-  //                         },
-  //                         "@id":
-  //                             "http://localhost:3000/static/references/rules/rule-access-4.json",
-  //                         title: {
-  //                             "@type": "xsd/string",
-  //                             "@value": "Count",
-  //                         },
-  //                         uid: "rule-access-4",
-  //                         name: "Count",
-  //                         description: [
-  //                             {
-  //                                 "@value": "MUST not use data for more than n times",
-  //                                 "@language": "en",
-  //                             },
-  //                         ],
-  //                         policy: {
-  //                             permission: [
-  //                                 {
-  //                                     action: "use",
-  //                                     target: "@{target}",
-  //                                     constraint: [
-  //                                         {
-  //                                             leftOperand: "count",
-  //                                             operator: "lt",
-  //                                             rightOperand: "@{value}",
-  //                                         },
-  //                                     ],
-  //                                 },
-  //                             ],
-  //                         },
-  //                         requestedFields: ["target", "value"],
-  //                     },
-  //                 ],
-  //                 termsAndConditions: "",
-  //                 dataProtectionRegime: [],
-  //                 dataAccountExport: [],
-  //                 location: "World",
-  //                 description: "desc",
-  //                 keywords: [],
-  //                 dataResources: [],
-  //                 softwareResources: [
-  //                     "http://api.com/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb",
-  //                 ],
-  //                 archived: false,
-  //                 visible: true,
-  //                 pricing: "150",
-  //                 pricingModel: [
-  //                     "http://localhost:3000/static/references/pricing-model/valueBased.json",
-  //                 ],
-  //                 businessModel: [
-  //                     "https://registry.visionstrust.com/static/references/business-model/freemium.json",
-  //                     "http://localhost:3000/static/references/business-model/subscription.json",
-  //                 ],
-  //                 maximumConsumption: "",
-  //                 maximumPerformance: "",
-  //                 pricingDescription: "desc",
-  //                 compliantServiceOfferingVC: "",
-  //                 serviceOfferingVC: "",
-  //                 schema_version: "1.1.0",
-  //                 createdAt: "2024-03-05T15:19:28.562Z",
-  //                 updatedAt: "2024-03-29T09:08:33.183Z",
-  //                 __v: 0,
-  //                 userInteraction: true,
-  //             });
-  //
-  //         nock(
-  //             `${process.env.CONTRACT_SERVICE_BASE_URL}`
-  //         )
-  //             .get(`/bilaterals/for/${providerBase64}?hasSigned=true`)
-  //             .reply(200, {contracts: []});
-  //
-  //         nock(
-  //             `${process.env.CONTRACT_SERVICE_BASE_URL}`
-  //         )
-  //             .get(`/contracts/for/${providerBase64}?hasSigned=true`)
-  //             .reply(200, {
-  //                 contracts: [
-  //                     {
-  //                         _id: "65e5d715c99e484e4685a964",
-  //                         ecosystem:
-  //                             "https://api.test.com/v1/catalog/ecosystems/65e5d7152e3f7f210edcaa77",
-  //                         orchestrator:
-  //                             "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-  //                         rolesAndObligations: [],
-  //                         status: "pending",
-  //                         serviceOfferings: [
-  //                             {
-  //                                 participant:
-  //                                     "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-  //                                 serviceOffering:
-  //                                     "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
-  //                                 policies: [
-  //                                     {
-  //                                         description: "CAN use data without any restrictions",
-  //                                         permission: [
-  //                                             {
-  //                                                 action: "use",
-  //                                                 target:
-  //                                                     "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd0",
-  //                                                 constraint: [],
-  //                                             },
-  //                                         ],
-  //                                         prohibition: [],
-  //                                     },
-  //                                 ],
-  //                                 _id: "65e5d73dc99e484e4685a970",
-  //                             },
-  //                             {
-  //                                 participant:
-  //                                     "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-  //                                 serviceOffering:
-  //                                     "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
-  //                                 policies: [
-  //                                     {
-  //                                         description: "CAN use data without any restrictions",
-  //                                         permission: [
-  //                                             {
-  //                                                 action: "use",
-  //                                                 target:
-  //                                                     "https://api.test.com/v1/catalog/serviceofferings/65e04da4b37bfc192ddcbdd1",
-  //                                                 constraint: [],
-  //                                             },
-  //                                         ],
-  //                                         prohibition: [],
-  //                                     },
-  //                                 ],
-  //                                 _id: "65e5d73dc99e484e4685a971",
-  //                             },
-  //                         ],
-  //                         purpose: [],
-  //                         members: [
-  //                             {
-  //                                 participant:
-  //                                     "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2b",
-  //                                 role: "orchestrator",
-  //                                 signature: "hasSigned",
-  //                                 date: "2024-03-04T14:13:47.598Z",
-  //                             },
-  //                             {
-  //                                 participant:
-  //                                     "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b2a",
-  //                                 role: "participant",
-  //                                 signature: "hasSigned",
-  //                                 date: "2024-03-04T14:14:21.410Z",
-  //                             },
-  //                         ],
-  //                         revokedMembers: [],
-  //                         createdAt: "2024-03-04T14:13:41.616Z",
-  //                         updatedAt: "2024-03-04T14:14:21.409Z",
-  //                         __v: 1,
-  //                     },
-  //                 ],
-  //             });
-  //
-  //         nock(
-  //             `https://api.test.com`
-  //         )
-  //             .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b2b`)
-  //             .reply(200, {
-  //                 "@context": "https://api.test.com/v1/participant",
-  //                 "@type": "Participant",
-  //                 _id: "656dfb3e282d47cfa6b66b2b",
-  //                 did: null,
-  //                 legalName: "provider",
-  //                 legalPerson: {
-  //                     registrationNumber: "",
-  //                     headquartersAddress: {
-  //                         countryCode: "",
-  //                     },
-  //                     legalAddress: {
-  //                         countryCode: "",
-  //                     },
-  //                     parentOrganization: [],
-  //                     subOrganization: [],
-  //                 },
-  //                 termsAndConditions: "",
-  //                 associatedOrganisation: "6564abb5d853e8e05b132057",
-  //                 schema_version: "1",
-  //                 createdAt: "2023-11-27T14:46:13.705Z",
-  //                 updatedAt: "2024-03-06T10:47:26.913Z",
-  //                 __v: 0,
-  //                 dataspaceConnectorAppKey:
-  //                     "60302602dd21b879636317d54886f0181dd409f7f962d2a40a282f8cd099dad0837c86ddaa78a82c650a6d18347767a4c8f2532568ead3d267bf78e262a89444",
-  //                 dataspaceEndpoint: "",
-  //             });
-  //
-  //         nock(
-  //             `https://api.test.com`
-  //         )
-  //             .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b2a`)
-  //             .reply(200, {
-  //                 "@context": "https://api.test.com/v1/participant",
-  //                 "@type": "Participant",
-  //                 _id: "656dfb3e282d47cfa6b66b2a",
-  //                 did: null,
-  //                 legalName: "provider",
-  //                 legalPerson: {
-  //                     registrationNumber: "",
-  //                     headquartersAddress: {
-  //                         countryCode: "",
-  //                     },
-  //                     legalAddress: {
-  //                         countryCode: "",
-  //                     },
-  //                     parentOrganization: [],
-  //                     subOrganization: [],
-  //                 },
-  //                 termsAndConditions: "",
-  //                 associatedOrganisation: "6564abb5d853e8e05b132056",
-  //                 schema_version: "1",
-  //                 createdAt: "2023-11-27T14:46:13.705Z",
-  //                 updatedAt: "2024-03-06T10:47:26.913Z",
-  //                 __v: 0,
-  //                 dataspaceConnectorAppKey:
-  //                     "60302602dd21b879636317d54886f0181dd409f7f962d2a40a282f8cd099dad0837c86ddaa78a82c650a6d18347767a4c8f2532568ead3d267bf78e262a89444",
-  //                 dataspaceEndpoint: "",
-  //             });
-  //
-  //         nock(
-  //             `http://api.com`
-  //         )
-  //             .get(`/v1/catalog/softwareresources/65e737ed74f9e9026bd5edbb`)
-  //             .reply(200, {
-  //                 "@context": "http://host.docker.internal:4040/v1/softwareresource",
-  //                 "@type": "SoftwareResource",
-  //                 _id: "65e737ed74f9e9026bd5edbb",
-  //                 providedBy: "6564aaebd853e8e05b1317c1",
-  //                 name: "CONSUMER PAYLOAD BIL",
-  //                 description: "desc",
-  //                 aggregationOf: [],
-  //                 copyrightOwnedBy: ["6564aaebd853e8e05b1317c1"],
-  //                 license: [],
-  //                 policy: [
-  //                     {
-  //                         "@context": {
-  //                             xsd: "http://www.w3.org/2001/XMLSchema#",
-  //                             description: {
-  //                                 "@id": "https://schema.org/description",
-  //                                 "@container": "@language",
-  //                             },
-  //                         },
-  //                         "@id":
-  //                             "http://localhost:3000/static/references/rules/rule-access-4.json",
-  //                         title: {
-  //                             "@type": "xsd/string",
-  //                             "@value": "Count",
-  //                         },
-  //                         uid: "rule-access-4",
-  //                         name: "Count",
-  //                         description: [
-  //                             {
-  //                                 "@value": "MUST not use data for more than n times",
-  //                                 "@language": "en",
-  //                             },
-  //                         ],
-  //                         policy: {
-  //                             permission: [
-  //                                 {
-  //                                     action: "use",
-  //                                     target: "@{target}",
-  //                                     constraint: [
-  //                                         {
-  //                                             leftOperand: "count",
-  //                                             operator: "lt",
-  //                                             rightOperand: "@{value}",
-  //                                         },
-  //                                     ],
-  //                                 },
-  //                             ],
-  //                         },
-  //                         requestedFields: ["target", "value"],
-  //                     },
-  //                 ],
-  //                 category: "5f8d9ea341184f59787e605a",
-  //                 locationAddress: [
-  //                     {
-  //                         countryCode: "World",
-  //                         _id: "65e737ed74f9e9026bd5edbc",
-  //                     },
-  //                 ],
-  //                 users_clients: 0,
-  //                 demo_link: "",
-  //                 relevant_project_link: "",
-  //                 schema_version: "1.1.0",
-  //                 usePII: false,
-  //                 isAPI: true,
-  //                 createdAt: "2024-03-05T15:19:09.387Z",
-  //                 updatedAt: "2024-03-05T15:19:09.426Z",
-  //                 __v: 0,
-  //                 representation: {
-  //                     _id: "65e737ed74f9e9026bd5edc3",
-  //                     resourceID: "65e737ed74f9e9026bd5edbb",
-  //                     type: "REST",
-  //                     url: "http://host.docker.internal:3332/users",
-  //                     method: "none",
-  //                     credential: "",
-  //                     createdAt: "2024-03-05T15:19:09.429Z",
-  //                     updatedAt: "2024-03-05T15:19:09.429Z",
-  //                     __v: 0,
-  //                 },
-  //             });
-  //
-  //         const response = await supertest(serverInstance.app)
-  //             .get(
-  //                 `/v1/consents/${userId}/${providerBase64}/${consumerBase64}`
-  //             )
-  //             .set("x-user-key", providerUserIdentifier);
-  //         console.log("response", response.body);
-  //         privacyNoticeId = response.body[0]?._id;
-  //         expect(response.status).to.be.equal(200);
-  //         expect(response.body).to.not.be.empty;
-  //         expect(response.body[0]).to.have.property("_id");
-  //     });
-  // });
-  //
-  // describe("getPrivacyNoticeById", () => {
-  //     it("should get a privacy notice by id", async () => {
-  //         const response = await supertest(serverInstance.app)
-  //             .get(`/v1/consents/privacy-notices/${privacyNoticeId}`)
-  //             .set("x-user-key", providerUserIdentifier);
-  //         expect(response.status).to.be.equal(200);
-  //         expect(response.body).to.not.be.empty;
-  //         expect(response.body).to.have.property("_id");
-  //         expect(response.body).to.have.property("contract");
-  //     });
-  // });
-  //
-  // describe("giveConsent", () => {
-  //     it("should give consent", async () => {
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents`)
-  //             .set("x-user-key", providerUserIdentifier)
-  //             .send({
-  //                 privacyNoticeId: privacyNoticeId,
-  //             });
-  //         consentId = response.body._id;
-  //         expect(response.status).to.be.equal(201);
-  //         expect(response.body).to.not.be.empty;
-  //         expect(response.body).to.have.property("_id");
-  //     });
-  // });
-  //
-  // describe("triggerDataExchange", () => {
-  //     it("should failed to communicate with endpoint", async () => {
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents/${consentId}/data-exchange`)
-  //             .set("x-user-key", providerUserIdentifier);
-  //         expect(response.status).to.be.equal(424);
-  //         expect(response.body).to.have.property(
-  //             "error",
-  //             "Failed to communicate with the data consumer connector"
-  //         );
-  //     });
-  //
-  //     it("should trigger the data exchange", async () => {
-  //         mockAxios
-  //             .onPost("https://test.consent/consent/export")
-  //             .reply(200, {message: "ok"});
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents/${consentId}/data-exchange`)
-  //             .set("x-user-key", providerUserIdentifier);
-  //         consent = response.body.consent;
-  //         expect(response.status).to.be.equal(200);
-  //         expect(response.body).to.have.property(
-  //             "message",
-  //             "successfully sent consent to the provider's consent export endpoint to trigger the data exchange"
-  //         );
-  //     });
-  //
-  //     it("should not found the consent", async () => {
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
-  //             .set("x-user-key", providerUserIdentifier)
-  //             .send({
-  //                 privacyNoticeId: privacyNoticeId,
-  //             });
-  //         expect(response.status).to.be.equal(404);
-  //         expect(response.body).to.have.property("error", "consent not found");
-  //     });
-  // });
-  //
-  // describe("attachTokenToConsent", () => {
-  //     it("should attach token to consent", async () => {
-  //         mockAxios
-  //             .onPost("https://test.consent/consent/import")
-  //             .reply(200, {message: "ok"});
-  //
-  //         token = crypto.randomUUID();
-  //
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents/${consentId}/token`)
-  //             .set("Authorization", providerJWT)
-  //             .send({
-  //                 token,
-  //                 providerDataExchangeId: "6601aa0cc344579ca63aeb9b",
-  //             });
-  //         expect(response.status).to.be.equal(200);
-  //         expect(response.body).to.have.property(
-  //             "message",
-  //             "successfully forwarded consent to the data consumer"
-  //         );
-  //     });
-  // });
-  //
-  // describe("verifyToken", () => {
-  //     it("should validate the consent", async () => {
-  //         const response = await supertest(serverInstance.app)
-  //             .post(`/v1/consents/${consentId}/validate`)
-  //             .set("Authorization", providerJWT)
-  //             .send({
-  //                 token,
-  //             });
-  //         expect(response.status).to.be.equal(200);
-  //         expect(response.body).to.have.property(
-  //             "message",
-  //             "token matches consent token"
-  //         );
-  //         expect(response.body).to.have.property("verified", true);
-  //     });
-  // });
+    //FAIL: 200
+    // it("should not get privacy notices by participant with an invalid UserIdentifierId", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .get(`/v1/consents/${nonExistentId}/${providerBase64}/${consumerBase64}`)
+    //     .set("x-user-key", providerUserIdentifier)
+    //     .expect(404);
+    //   console.log(response.body)
+    //   expect(response.body.error).to.equal("User identifier not found");
+    // });
+
+    //FAIL: 200
+    // it("should not get privacy notices for a consent based on non existing contracts between two participant", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .get(`/v1/consents/${providerUserIdentifier}/${providerBase64}/${consumer2Base64}`)
+    //     .set("x-user-key", providerUserIdentifier)
+    //     .expect(404);
+    //   console.log(response.body)
+    //   expect(response.body.error).to.equal("No contracts found");
+    // });
+
+    // getUserPrivacyNoticesByContract
+    it("should not getUserPrivacyNotices with no authorization", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(
+          `/v1/consents/${providerUserIdentifier}/${providerBase64}/${consumerBase64}/${consumerBase64}`
+        )
+        .expect(401);
+      expect(response.body).to.have.property(
+        "message",
+        "Authorization header missing or invalid"
+      );
+    });
+
+    //FAIL: 500
+    it("should not getUserPrivacyNotices By a non-existent contract", async () => {
+      setupnockMocks(providerBase64);
+      const contract2 =
+        "http://localhost:8888/contracts/65d624e80e4afe01b8906e14";
+      contract2base64 = Buffer.from(contract2).toString("base64");
+      const response = await supertest(serverInstance.app)
+        .get(
+          `/v1/consents/${providerUserIdentifier}/${providerBase64}/${consumerBase64}/${contract2base64}`
+        )
+        .set("Authorization", userJwt)
+        .expect(404);
+      expect(response.body.error).to.equal("No contracts found");
+      console.log(response.body);
+    });
+
+    // getPrivacyNoticeById
+    it("should not get privacy notice by a non-existent id -by participant", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(`/v1/consents/privacy-notices/${nonExistentId}`)
+        .set("x-user-key", providerUserIdentifier)
+        .expect(404);
+      expect(response.body.error).to.equal("Privacy notice not found");
+    });
+
+    it("should not get privacy notice by a non-existent id -by user", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .get(`/v1/consents/privacy-notices/${nonExistentId}/user`)
+        .set("Authorization", userJwt);
+      expect(response.status).to.be.equal(404);
+      expect(response.body.error).to.equal("Privacy notice not found");
+    });
+
+    // giveConsent
+    it("should not give consent with no authorization", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents`)
+        .send({
+          privacyNoticeId: privacyNoticeId,
+        })
+        .expect(401);
+      expect(response.body).to.have.property(
+        "message",
+        "Authorization header missing or invalid"
+      );
+    });
+
+    //FAIL: Refused
+    // // giveConsentUser
+    // it("should not giveConsentUser with no authorization", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .post(`v1/consents/user`)
+    //     .send({ privacyNoticeId: privacyNoticeId })
+    //     .set("Authorization", null)
+    //     .expect(401);
+    //     expect(response.body.message).to.equal("user unauthenticated");
+    // });
+
+    // it("should not giveConsentUser with no privacyNoticeId in body", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .post(`v1/consents/user`)
+    //     .set("Authorization", userJwt)
+    //     .expect(400);
+    //     expect(response.body.error).to.equal("Missing privacyNoticeId");
+    //   });
+
+    // it("should not giveConsentUser with non-existent privacyNoticeId", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .post(`v1/consents/user`)
+    //     .send({ privacyNoticeId: nonExistentId })
+    //     .set("Authorization", userJwt)
+    //     .expect(404);
+    //     expect(response.body.error).to.equal("privacy notice not found");
+    //   });
+
+    //FAIL: Refused
+    // resume consent
+    // it("should not resume a non-existent consent", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .post(`v1/consents/${nonExistentId}/resume`)
+    //     .send({
+    //       internalID: userId,
+    //       email: testUser1.email,
+    //     })
+    //     .set("Authorization", providerJWT)
+    //     .expect(404);
+    //     expect(response.body.Error).to.equal("consent not found");
+    // });
+
+    //TODO: consent on status draft et pending
+    // it("resumeConsent", async () => {
+    //   setupnockMocks(providerBase64);
+    //   const response = await supertest(serverInstance.app)
+    //     .post(`v1/consents/${consentId}/resume`)
+    //     .send({
+    //       internalID: providerUserIdentifier,
+    //       email: testUser1.email,
+    //     })
+    //     .set("Authorization", providerJWT)
+    //     .expect(400);
+    //     expect(response.body.error).to.equal("The consent can't be resume");
+    // });
+
+    //FAIL:  error: Consent not found -- Error: Consent not found
+
+    // revokeConsent
+    it("should fail to revoke non existent consent", async () => {
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .delete(`/v1/consents/${nonExistentId}`)
+        .set("x-user-key", providerUserIdentifier)
+        .expect(404);
+      console.log(response.body);
+      expect(response.body.error).to.equal("consent not found");
+    });
+
+    // trigger dataExchange
+    it("should not trigger data exchange for a non-existent consent", async () => {
+      nock("https://test.consent").post("/consent/export").reply(200, {
+        message: "ok",
+        token,
+        dataExchangeId: "5f6dd4e3495aebd3aca59529",
+      });
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/6601a6265cbdad603e4e9a8c/data-exchange`)
+        .set("x-user-key", providerUserIdentifier)
+        .send({ privacyNoticeId: privacyNoticeId })
+        .expect(404);
+      expect(response.body).to.have.property("error", "consent not found");
+    });
+    //TODO
+    // .status(401)
+    // .json({ error: "Consent has not been granted by user" });
+
+    // attachTokenToConsent
+    it("should not attach token to a non-existent consent", async () => {
+      //Mocking import consent
+      nock("https://test.consent").post("/consent/import").reply(200, {
+        message: "ok",
+        token,
+        dataExchangeId: "5f6dd4e3495aebd3aca59529",
+      });
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${nonExistentId}/token`)
+        .set("Authorization", providerJWT)
+        .send({
+          token,
+          providerDataExchangeId: "5f6dd4e3495aebd3aca59529",
+        })
+        .expect(404);
+      expect(response.body.error).to.equal("Consent not found");
+    });
+
+    // verifyToken
+    it("should not validate the consent with a token not attached to consent", async () => {
+      const notAttachedToken = crypto.randomUUID();
+      //mocking export consent
+      nock("https://test.consent").post("/consent/export").reply(200, {
+        message: "ok",
+        token,
+        dataExchangeId: "5f6dd4e3495aebd3aca59529",
+      });
+      setupnockMocks(providerBase64);
+      const response = await supertest(serverInstance.app)
+        .post(`/v1/consents/${consentId}/validate`)
+        .set("Authorization", providerJWT)
+        .send({
+          notAttachedToken,
+        })
+        .expect(400);
+      expect(response.body).to.have.property(
+        "error",
+        "token does not match consent token"
+      );
+    });
+
+    // // generate iframe
+    //     it("should respond with JSON message if no PDI endpoint setup", async () => {
+    //       const response = await supertest(serverInstance.app)
+    //         .get(`v1/consents/pdi/iframe`)
+    //         .set("Authorization", providerJWT)
+    //         .query({
+    //           userIdentifier: providerUserIdentifier,
+    //           privacyNoticeId: privacyNoticeId,
+    //         })
+    //         .expect("302"); // à vérifier
+    //       expect(response.body.message).to.equal("No PDI endpoint setup.");
+    //     });
+  });
 });
