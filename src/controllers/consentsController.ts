@@ -532,9 +532,7 @@ export const giveConsent = async (
         data: data?.length > 0 ? data : [...privacyNotice.data],
         user: userId,
         status: {
-          $ne: {
-            $in: ["terminated", "revoked", "refused"],
-          },
+          $nin: ["terminated", "revoked", "refused"],
         },
       }).lean();
 

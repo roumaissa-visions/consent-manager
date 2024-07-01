@@ -21,7 +21,10 @@ export const checkUserIdentifier = async (
     //find user reattached to this userIdentifier
     let user: IUser;
     if (existingUser) user = existingUser;
-    else user = await User.findOne({ identifiers: verifyUserIdentifier._id });
+    else
+      user = await User.findOne({
+        $or: [{ identifiers: verifyUserIdentifier._id }, { email }],
+      });
 
     //if user is found add new userIdentifier to user
     if (user) {
