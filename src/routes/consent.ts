@@ -11,8 +11,11 @@ import {
   giveConsent,
   giveConsentOnEmailValidation,
   giveConsentUser,
+  reConfirmConsent,
+  refuseConsent,
   resumeConsent,
   revokeConsent,
+  terminateConsent,
   triggerDataExchange,
   verifyToken,
 } from "../controllers/consentsController";
@@ -26,10 +29,10 @@ import { setUserIdForParticipant } from "../middleware/participantsMiddleware";
 const r: Router = Router();
 
 r.get("/emailverification", giveConsentOnEmailValidation);
-r.get("/me", verifyUserKey, getUserConsents);
+r.get("/me", verifyUserJWT, getUserConsents);
 r.get(
   "/me/:id",
-  verifyUserKey,
+  verifyUserJWT,
   // checkIDFormatMiddleware,
   getUserConsentById
 );
@@ -81,11 +84,11 @@ r.post(
   giveConsentUser
 );
 
-r.delete("/:id", verifyUserKey, revokeConsent);
+r.delete("/:id", verifyUserJWT, revokeConsent);
 
 r.post(
   "/:consentId/data-exchange",
-  verifyUserKey,
+  verifyUserJWT,
   // verifyContract,
   triggerDataExchange
 );
@@ -109,6 +112,27 @@ r.post(
   verifyParticipantJWT,
   // verifyContract,
   verifyToken
+);
+
+r.post(
+  "/:consentId/refuse",
+  verifyUserJWT,
+  // verifyContract,
+  refuseConsent
+);
+
+r.post(
+  "/:consentId/re-confirm",
+  verifyUserJWT,
+  // verifyContract,
+  reConfirmConsent
+);
+
+r.post(
+  "/:consentId/terminate",
+  verifyUserJWT,
+  // verifyContract,
+  terminateConsent
 );
 
 r.get("/pdi/iframe", verifyParticipantJWT, (req, res) => {

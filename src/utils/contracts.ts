@@ -15,6 +15,7 @@ import {
 import { Logger } from "../libs/loggers";
 import Axios from "axios";
 import { setupCache } from "axios-cache-interceptor";
+import { consentEvent } from "./consentEvent";
 
 type Permission = {
   action: string;
@@ -508,12 +509,13 @@ export const buildConsentsFromContracts = async (
         purposes.push(...s.purposes.map((p: any) => p.purpose));
       }
     });
-    savedConsent.purposes = purposes.map((purpose) => ({
-      purpose: purpose,
-    }));
+    // savedConsent.purposes = purposes.map((purpose) => ({
+    //   purpose: purpose,
+    // }));
     savedConsent.data = consent.data.map((data: any) => JSON.stringify(data));
     savedConsent.jsonld = JSON.stringify(consent);
     savedConsent.status = "pending";
+    savedConsent.event = [consentEvent.given];
     toSave.push(savedConsent);
   });
 

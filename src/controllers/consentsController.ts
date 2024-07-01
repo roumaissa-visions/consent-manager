@@ -10,7 +10,11 @@ import { BadRequestError } from "../errors/BadRequestError";
 import PrivacyNotice from "../models/PrivacyNotice/PrivacyNotice.model";
 import UserIdentifier from "../models/UserIdentifier/UserIdentifier.model";
 import User from "../models/User/User.model";
-import { IPrivacyNotice, IUserIdentifier } from "../types/models";
+import {
+  IConsentReceipt,
+  IPrivacyNotice,
+  IUserIdentifier,
+} from "../types/models";
 import Participant from "../models/Participant/Participant.model";
 import { Logger } from "../libs/loggers";
 import Axios from "axios";
@@ -27,6 +31,8 @@ import { urlChecker } from "../utils/urlChecker";
 import { checkUserIdentifier } from "../utils/UserIdentifierMatchingProcessor";
 import mongoose from "mongoose";
 import { populatePrivacyNotice } from "../utils/populatePrivacyNotice";
+import { consentToConsentReceipt } from "../utils/consentReceipt";
+import { consentEvent } from "../utils/consentEvent";
 
 const consentSignaturePrivateKey = readFileSync(
   path.join(__dirname, "..", "config", "keys", "consentSignature.pem")
@@ -69,7 +75,13 @@ export const getUserConsents = async (
 
     const totalPages = Math.ceil(totalCount / parseInt(limit.toString()));
 
-    res.json({ consents, totalCount, totalPages });
+    const consentReceipts: IConsentReceipt[] = [];
+
+    for (const consent of consents) {
+      consentReceipts.push(await consentToConsentReceipt(consent));
+    }
+
+    res.json({ consents: consentReceipts, totalCount, totalPages });
   } catch (err) {
     next(err);
   }
@@ -325,7 +337,7 @@ export const getUserConsentById = async (
 
     if (!consent) throw new NotFoundError();
 
-    res.json(consent);
+    res.json(await consentToConsentReceipt(consent));
   } catch (err) {
     next(err);
   }
@@ -339,10 +351,6 @@ const findMatchingUserIdentifier = async (
     email,
     attachedParticipant: participantId,
   });
-
-  // if (!userIdentifier) {
-  //   throw new Error("User identifier not found");
-  // }
 
   return userIdentifier;
 };
@@ -526,10 +534,15 @@ export const giveConsent = async (
         privacyNotice: privacyNoticeId,
         data: data?.length > 0 ? data : [...privacyNotice.data],
         user: userId,
+        status: {
+          $nin: ["terminated", "revoked", "refused"],
+        },
       }).lean();
 
       if (verification) {
-        return res.status(200).json(verification);
+        return res
+          .status(200)
+          .json(await consentToConsentReceipt(verification));
       }
 
       const consent = new Consent({
@@ -545,11 +558,12 @@ export const giveConsent = async (
         status: "granted",
         consented: true,
         contract: privacyNotice.contract,
+        event: [consentEvent.given],
       });
 
       const newConsent = await consent.save();
 
-      return res.status(201).json(newConsent);
+      return res.status(201).json(await consentToConsentReceipt(newConsent));
     } else {
       return res.status(404).json({ error: "No Matching user found" });
     }
@@ -780,13 +794,18 @@ export const giveConsentUser = async (
       privacyNotice: privacyNoticeId,
       data: data?.length > 0 ? data : [...privacyNotice.data],
       user: userId,
+      status: {
+        $nin: ["terminated", "revoked", "refused"],
+      },
     }).lean();
 
     if (verification) {
       if (triggerDataExchange) {
         await triggerDataExchangeByConsentId(verification._id, res);
       } else {
-        return res.status(200).json(verification);
+        return res
+          .status(200)
+          .json(await consentToConsentReceipt(verification));
       }
     }
 
@@ -803,6 +822,7 @@ export const giveConsentUser = async (
       status: "granted",
       consented: true,
       contract: privacyNotice.contract,
+      event: [consentEvent.given],
     });
 
     const newConsent = await consent.save();
@@ -810,7 +830,7 @@ export const giveConsentUser = async (
     if (triggerDataExchange) {
       await triggerDataExchangeByConsentId(newConsent._id, res);
     } else {
-      return res.status(201).json(newConsent);
+      return res.status(201).json(await consentToConsentReceipt(newConsent));
     }
   } catch (err) {
     next(err);
@@ -864,7 +884,9 @@ export const giveConsentOnEmailValidation = async (
       recipients: pn.recipients,
       purposes: pn.purposes,
       data: selectedData,
-      status: "granted",
+      status: {
+        $nin: ["terminated", "revoked", "refused"],
+      },
       consented: true,
       providerUserIdentifier: providerUserIdentifier,
       consumerUserIdentifier: consumerUserIdentifier,
@@ -976,6 +998,7 @@ export const giveConsentOnEmailValidation = async (
       providerUserIdentifier: providerUserIdentifier,
       consumerUserIdentifier: consumerUserIdentifier,
       contract: pn.contract,
+      event: [consentEvent.given],
     });
 
     await Promise.all([userToUpdate.save(), consent.save()]);
@@ -1068,9 +1091,10 @@ export const revokeConsent = async (
 
     consent.consented = false;
     consent.status = "revoked";
+    consent.event.push(consentEvent.revoked);
     await consent.save();
 
-    res.status(200).json(consent);
+    res.status(200).json(await consentToConsentReceipt(consent));
   } catch (err) {
     next(err);
   }
@@ -1086,7 +1110,7 @@ export const triggerDataExchange = async (
 ) => {
   try {
     const { consentId } = req.params;
-    await triggerDataExchangeByConsentId(consentId, res);
+    return await triggerDataExchangeByConsentId(consentId, res);
   } catch (err) {
     next(err);
   }
@@ -1103,7 +1127,10 @@ const triggerDataExchangeByConsentId = async (
         { path: "dataProvider", select: "-clientID -clientSecret" },
       ])
       .lean();
-    if (!consent) return res.status(404).json({ error: "consent not found" });
+
+    if (!consent) {
+      return res.status(404).json({ error: "Consent not found" });
+    }
 
     if (consent.status !== "granted") {
       return res
@@ -1111,44 +1138,38 @@ const triggerDataExchangeByConsentId = async (
         .json({ error: "Consent has not been granted by user" });
     }
 
-    const payload = {
-      ...consent,
-    };
-
+    const payload = { ...consent };
     const { signedConsent, encrypted } = encryptPayloadAndKey(payload);
 
-    try {
-      const consentExportResponse = await axios.post(
-        consent.dataProvider.endpoints.consentExport,
-        {
-          signedConsent,
-          encrypted,
-        }
-      );
+    const consentExportResponse = await axios.post(
+      consent.dataProvider.endpoints.consentExport,
+      { signedConsent, encrypted }
+    );
 
-      return res.status(200).json({
-        message:
-          "successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
-        consent,
-        dataExchangeId: consentExportResponse?.data?.dataExchangeId,
-      });
-    } catch (err) {
-      Logger.error({
-        location: "consents.triggerDataExchange",
-        message: err.message,
-      });
+    const consentReceipt = await consentToConsentReceipt(consent);
+
+    return res.status(200).json({
+      message:
+        "Successfully sent consent to the provider's consent export endpoint to trigger the data exchange",
+      consentReceipt,
+      dataExchangeId: consentExportResponse?.data?.dataExchangeId,
+    });
+  } catch (err) {
+    if (err.response) {
+      // Error response from axios
       return res.status(424).json({
         error: "Failed to communicate with the data consumer connector",
         message:
           "An error occurred after calling the consent data exchange trigger endpoint of the consumer service",
       });
     }
-  } catch (e) {
+
+    // Other errors
     Logger.error({
       location: "consents.triggerDataExchangeByConsentId",
-      message: e.message,
+      message: err.message,
     });
-    throw e;
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -1208,14 +1229,6 @@ export const attachTokenToConsent = async (
       );
     } catch (err) {
       Logger.error({ location: "consents.attachToken", message: err.message });
-      // return res.status(424).json({
-      //   message: `an error occurred after calling the data consumer's /consent/import endpoint`,
-      //   data: {
-      //     details: {
-      //       errorMessage: err.message,
-      //     },
-      //   },
-      // });
     }
 
     return res
@@ -1457,7 +1470,7 @@ export const resumeConsent = async (
       }
 
       //return userIdentifier and consent
-      return res.status(200).json(consent);
+      return res.status(200).json(await consentToConsentReceipt(consent));
     }
   } catch (err) {
     next(err);
@@ -1543,92 +1556,91 @@ const registerNewUserToConsumerSide = async ({
   providerUserIdentifierDocument: any;
   data: any;
 }): Promise<{ consent?: any; error?: string; status: number }> => {
-  {
-    //draft consent
-    let consent;
-    const verifyDraftConsent = await Consent.findOne({
+  //draft consent
+  let consent;
+  const verifyDraftConsent = await Consent.findOne({
+    privacyNotice: privacyNotice._id,
+    providerUserIdentifier: providerUserIdentifier,
+    dataProvider: dataProvider?._id,
+    dataConsumer: dataConsumer?._id,
+    recipients: privacyNotice.recipients,
+    purposes: privacyNotice.purposes,
+    data: data ?? privacyNotice.data,
+    status: req.query.triggerDataExchange ? "draft" : "pending",
+    consented: false,
+    contract: privacyNotice.contract,
+  });
+
+  if (!verifyDraftConsent) {
+    consent = new Consent({
       privacyNotice: privacyNotice._id,
       providerUserIdentifier: providerUserIdentifier,
       dataProvider: dataProvider?._id,
       dataConsumer: dataConsumer?._id,
       recipients: privacyNotice.recipients,
       purposes: privacyNotice.purposes,
-      data: data ?? privacyNotice.data,
+      data: data.length > 0 ? data : [...privacyNotice.data],
       status: req.query.triggerDataExchange ? "draft" : "pending",
       consented: false,
       contract: privacyNotice.contract,
+      event: [consentEvent.given],
     });
+    await consent.save();
+  } else {
+    consent = verifyDraftConsent;
+  }
 
-    if (!verifyDraftConsent) {
-      consent = new Consent({
-        privacyNotice: privacyNotice._id,
-        providerUserIdentifier: providerUserIdentifier,
-        dataProvider: dataProvider?._id,
-        dataConsumer: dataConsumer?._id,
-        recipients: privacyNotice.recipients,
-        purposes: privacyNotice.purposes,
-        data: data.length > 0 ? data : [...privacyNotice.data],
-        status: req.query.triggerDataExchange ? "draft" : "pending",
-        consented: false,
-        contract: privacyNotice.contract,
-      });
-      await consent.save();
-    } else {
-      consent = verifyDraftConsent;
+  // call new dsc endpoint
+  //login
+  const consumerLogin = await axios.post(
+    urlChecker(dataConsumer.dataspaceEndpoint, "login"),
+    {
+      serviceKey: dataConsumer.clientID,
+      secretKey: dataConsumer.clientSecret,
+    },
+    {
+      headers: { "Content-Type": "application/json" },
     }
+  );
 
-    // call new dsc endpoint
-    //login
-    const consumerLogin = await axios.post(
-      urlChecker(dataConsumer.dataspaceEndpoint, "login"),
+  //post to register user app side
+  try {
+    const consumerRegisterUserAppSide = await axios.post(
+      urlChecker(dataConsumer.dataspaceEndpoint, "private/users/app"),
       {
-        serviceKey: dataConsumer.clientID,
-        secretKey: dataConsumer.clientSecret,
+        email: providerUserIdentifierDocument.email,
+        consentID: consent._id,
       },
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${consumerLogin.data.content.token}`,
+        },
       }
     );
-
-    //post to register user app side
-    try {
-      const consumerRegisterUserAppSide = await axios.post(
-        urlChecker(dataConsumer.dataspaceEndpoint, "private/users/app"),
-        {
-          email: providerUserIdentifierDocument.email,
-          consentID: consent._id,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${consumerLogin.data.content.token}`,
-          },
-        }
-      );
-      if (consumerRegisterUserAppSide.status === 200) {
-        return {
-          status: 200,
-          consent,
-        };
-      }
-    } catch (e) {
-      if (e?.response?.status === 404) {
-        return {
-          status: 400,
-          error: "Registration Uri error.",
-        };
-      } else if (e?.response?.status === 500) {
-        return {
-          status: 400,
-          error: "Registration Error.",
-        };
-      } else {
-        return {
-          status: 400,
-          error:
-            "User identifier not found in provider and no email was passed in the payload to look for an existing identifier with a different user email. Please provide the email",
-        };
-      }
+    if (consumerRegisterUserAppSide.status === 200) {
+      return {
+        status: 200,
+        consent,
+      };
+    }
+  } catch (e) {
+    if (e?.response?.status === 404) {
+      return {
+        status: 400,
+        error: "Registration Uri error.",
+      };
+    } else if (e?.response?.status === 500) {
+      return {
+        status: 400,
+        error: "Registration Error.",
+      };
+    } else {
+      return {
+        status: 400,
+        error:
+          "User identifier not found in provider and no email was passed in the payload to look for an existing identifier with a different user email. Please provide the email",
+      };
     }
   }
 };
@@ -1842,4 +1854,75 @@ const sendEmail = async ({
     case: "email-validation-requested",
     status: 200,
   };
+};
+
+export const refuseConsent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { consentId } = req.params;
+    const consent = await Consent.findOne({
+      _id: consentId,
+      status: {
+        $nin: ["terminated", "revoked", "refused"],
+      },
+    });
+    if (!consent) return res.status(404).json({ error: "consent not found" });
+    consent.status = "refused";
+    consent.event.push(consentEvent.refused);
+    consent.save();
+    return res.status(200).json(await consentToConsentReceipt(consent));
+  } catch (err) {
+    Logger.error(err);
+    next(err);
+  }
+};
+
+export const reConfirmConsent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { consentId } = req.params;
+    const consent = await Consent.findOne({
+      _id: consentId,
+      status: {
+        $nin: ["terminated", "revoked", "refused"],
+      },
+    });
+    if (!consent) return res.status(404).json({ error: "consent not found" });
+    consent.event.push(consentEvent.reConfirmed);
+    consent.save();
+    return res.status(200).json(await consentToConsentReceipt(consent));
+  } catch (err) {
+    Logger.error(err);
+    next(err);
+  }
+};
+
+export const terminateConsent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { consentId } = req.params;
+    const consent = await Consent.findOne({
+      _id: consentId,
+      status: {
+        $nin: ["terminated", "revoked", "refused"],
+      },
+    });
+    if (!consent) return res.status(404).json({ error: "consent not found" });
+    consent.status = "terminated";
+    consent.event.push(consentEvent.terminated);
+    consent.save();
+    return res.status(200).json(await consentToConsentReceipt(consent));
+  } catch (err) {
+    Logger.error(err);
+    next(err);
+  }
 };
