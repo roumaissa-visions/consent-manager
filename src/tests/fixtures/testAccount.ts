@@ -108,5 +108,21 @@ export const testUser2 = {
   password: "password",
 };
 
-export const testConsumer3 = {};
-export const testConsumer4 = {};
+export const testConsumer2 = {
+  legalName: "consumer2",
+  identifier: "656dfb3e282d47cfa6b66b22",
+  did: "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b22",
+  selfDescriptionURL:
+    "https://api.test.com/v1/catalog/participants/656dfb3e282d47cfa6b66b22",
+  email: "consumer2@email.com",
+  endpoints: {
+    dataExport: "https://test.consent/data/export",
+    dataImport: "https://test.consent/data/import",
+    consentImport: "https://test.consent/consent/import",
+    consentExport: "https://test.consent/consent/export",
+  },
+  clientID:
+    "Uy5LnKefxFUFJo_AsHB8GHTTBXYT7pJLMTTWJT2QmBevuUtY05TVGhBev_LPOAd8Hxs8vWA1OJu8VR1Bs2yl_YHfAhkIWQixaFwk",
+  clientSecret:
+    "Y0676IgQ3v4d5XuwxZhZIaJmzj0dSGw7XGp9aRYVD5mSHkWon3SYK5oaIjFZGXWgrrEAtavNermOFAKklav9wjpbHB1nrSi6grlk",
+};

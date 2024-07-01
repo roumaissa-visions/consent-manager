@@ -391,6 +391,11 @@ export const setupnockMocks = (providerBase64) => {
       __v: 1,
     });
 
+  // Mocking ecosystem contract not found
+  nock(baseURL)
+    .get(`/contracts/65d624e80e4afe01b8906e14`)
+    .reply(404, { error: "Contract not found" });
+
   // Mocking provider in catalog
   nock("https://api.test.com")
     .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b2b`)
@@ -450,6 +455,37 @@ export const setupnockMocks = (providerBase64) => {
       __v: 0,
       dataspaceConnectorAppKey:
         "60302602dd21b879636317d54886f0181dd409f7f962d2a40a282f8cd099dad0837c86ddaa78a82c650a6d18347767a4c8f2532568ead3d267bf78e262a89444",
+      dataspaceEndpoint: "",
+    });
+
+  //mocking consumer2 in catalog
+  nock("https://api.test.com")
+    .get(`/v1/catalog/participants/656dfb3e282d47cfa6b66b22`)
+    .reply(200, {
+      "@context": "https://api.test.com/v1/participant",
+      "@type": "Participant",
+      _id: "656dfb3e282d47cfa6b66b22",
+      did: null,
+      legalName: "consumer2",
+      legalPerson: {
+        registrationNumber: "",
+        headquartersAddress: {
+          countryCode: "",
+        },
+        legalAddress: {
+          countryCode: "",
+        },
+        parentOrganization: [],
+        subOrganization: [],
+      },
+      termsAndConditions: "",
+      associatedOrganisation: "6564abb5d853e8e05b132066",
+      schema_version: "1",
+      createdAt: "2023-11-27T14:46:13.705Z",
+      updatedAt: "2024-03-06T10:47:26.913Z",
+      __v: 0,
+      dataspaceConnectorAppKey:
+        "60302602dd21b879636317d54886f0181dd409f7f962d2a40a282f8cd099dad0837c86ddaa78a82c650a6d18347767a4c8f2532568ead3d267bf78e262a89555",
       dataspaceEndpoint: "",
     });
 
